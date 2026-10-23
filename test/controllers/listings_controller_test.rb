@@ -28,7 +28,7 @@ class ListingsControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
     get listings_url
     assert_response :success
-    assert_select "h1", /AI Vehicle Merchandising/
+    assert_select "h1", /Araç Filosu|360° Vitrin/
   end
 
   test "should get show" do

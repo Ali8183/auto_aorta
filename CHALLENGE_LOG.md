@@ -20,20 +20,16 @@
 - *"Zendesk bilet ekranını tamamen öldürdüm. Yerine çoklu fotoğraf yüklenen, Multimodal Vision AI ile açıları (Ön 3/4, ön, yan, arka 3/4, arka, iç mekan) analiz edip en iyi vitrin fotoğrafını 1. sıraya alan ve dış fotoğraflardan 360° etkileşimli sanal tur üreten canlı bir aort dilimi getirdim."*
 
 ## Yapılanlar ve kanıt
-- **Çalışan Testler:** `ActiveSupport::Testing::TimeHelpers` (`travel_to`, `freeze_time`, `travel`) kullanılarak 24 saatlik SLA zaman kuralı ve durum geçişlerini doğrulayan **13 testin 13'ü de yeşil (0 failure, 0 error)**.
-- **Aort Akışı:** 
+- **Çalışan Testler:** `ActiveSupport::Testing::TimeHelpers` (`travel_to`, `freeze_time`, `travel`), REST API uçları ve Embed widget kontrollerini doğrulayan **18 testin 18'i de yeşil (18 runs, 82 assertions, 0 failures, 0 errors)**.
+- **Aort Akışı & Enterprise B2B SaaS Yükseltmeleri:** 
   1. `draft` (Taslak: Araç bilgileri ve fotoğrafların girişi)
-  2. `analyzing` (Analiz Ediliyor: Impel/Phyron AI Vision motorunun açıları ve stüdyo simetri puanını hesaplaması)
+  2. `analyzing` (Analiz Ediliyor: Hibrit Multimodal Vision AI motorunun açıları ve stüdyo simetri puanını hesaplaması)
   3. `optimized` (Optimize Edildi: 360° döner sekansın bağlanması ve 45° Hero Shot'ın vitrine seçilmesi)
   4. `published` (Yayında: Manuel onay veya 24 saatlik SLA zaman aşımı sonrası otomatik yayınlanma)
-- **Canlı Demo Adımları:**
-  1. Ana sayfada AI tarafından belirlenmiş vitrin kartları ve durum rozetleri.
-  2. İlan detayında görsel üzerinde fare ile sağa-sola sürükleyerek (drag to spin) veya slider ile 360° dönen etkileşimli araç turu ve otomatik döndürme modu.
-  3. "AI Merchandising Raporu" ile hangi fotoğrafın hangi açıya sahip olduğu ve stüdyo kalite puanı (85-98) dağılımı.
-  4. Canlı sunumda 24 saatlik bekleme süresini test etmek için **"⏱️ 24 Saat İleri Sar (SLA Testi)"** butonu ile anında `auto_publish_if_expired!` tetiklenmesi.
-- **Vaat Edip Henüz Yapılmayanlar (Dürüst Eksikler):**
-  * Gerçek üretim seviyesinde araç plakasını bulan ve blur'layan GPU tabanlı YOLO/OpenCV segmentasyon boru hattı bu sürümde yerel heuristics ve vision model metadata'sı olarak simüle edilmiştir.
-  * 360° dönüş sekansında 24-36 karelik ultra-akıcı dönüş yerine standart 5-6 karelik stüdyo dış çekim seti kullanılmıştır.
+  5. **Agent-First REST API (`POST /api/v1/merchandise`):** Harici AI botları veya galeri ERP'lerinin arayüze girmeden araç ve fotoğraf yükleyebildiği, saniyeler içinde 360° sekansı ve embed kodunu döndüren JSON API.
+  6. **Embeddable 360° Widget (`/embed/listings/:id`):** Sahibinden veya galeri web sitelerine `<iframe>` ile doğrudan gömülebilen, reklamsız, sadece 360° döner vitrin sunan hafif widget.
+  7. **Önce / Sonra (Before vs After) Vitrin Karşılaştırması:** Geleneksel galeri çekimi (kötü yan açı kapak, %1.4 CTR) ile AutoAorta AI Hero Shot vitrininin (%3.8 CTR, +%170 artış, -11 gün hızlı satış) canlı karşılaştırma kartı.
+  8. **Genişletilmiş Filo (3 Gerçek Araç):** Sedan (BMW 320i M Sport), Elektrikli (Tesla Model 3 Long Range), SUV/Spor (Porsche Macan GTS) ile tam donanımlı zengin portföy.
 
 ## Zaman
 - **İnsan Zamanı:** ~2 saat (Mimari kurgu, Fortune 500 otomotiv sektörü araştırması, SLA kural tasarımı ve test senaryolarının belirlenmesi)

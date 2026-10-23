@@ -82,7 +82,9 @@ class ListingsController < ApplicationController
   def listing_params
     params.require(:listing).permit(
       :title, :brand, :model_name, :year, :price, :mileage,
-      :fuel_type, :transmission, :description, photos: []
+      :fuel_type, :transmission, :description,
+      :color, :body_type, :tramer, :expertise, :dealer_phone, :dealer_name,
+      photos: []
     )
   end
 end

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="tr" class="h-full bg-slate-950 text-slate-100 antialiased">
   <head>
-    <title><%= content_for(:title) || "AutoAorta AI | 360° Spin & Merchandising Studio" %></title>
+    <title><%= content_for(:title) || "AutoAorta AI | Enterprise Vehicle Merchandising & 360 Spin Platform" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -26,46 +26,44 @@
     </style>
   </head>
 
-  <body class="min-h-full flex flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
-    <!-- Top Studio Header -->
-    <header class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
+  <body class="min-h-full flex flex-col bg-slate-950 text-slate-100 selection:bg-blue-600 selection:text-white">
+    <!-- Top Enterprise Header -->
+    <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur-md sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <div class="flex items-center space-x-4">
           <%= link_to root_path, class: "flex items-center space-x-3 group" do %>
-            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-cyan-600 via-indigo-600 to-fuchsia-600 p-[2px] shadow-lg shadow-cyan-500/20 group-hover:shadow-cyan-500/40 transition">
-              <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                <svg class="w-6 h-6 text-cyan-400 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-              </div>
+            <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 group-hover:bg-blue-500 transition">
+              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
             </div>
             <div>
               <div class="flex items-center space-x-2">
-                <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">AutoAorta</span>
-                <span class="px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">AI STUDIO</span>
+                <span class="text-xl font-extrabold tracking-tight text-white">AutoAorta</span>
+                <span class="px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase rounded bg-blue-500/10 text-blue-400 border border-blue-500/30">ENTERPRISE SaaS</span>
               </div>
-              <p class="text-xs text-slate-400 tracking-wide">Vehicle Merchandising & 360 Spin</p>
+              <p class="text-xs text-slate-400">Automotive Merchandising & 360° Spin Studio</p>
             </div>
           <% end %>
         </div>
 
         <!-- Navigation Links & Status -->
-        <div class="flex items-center space-x-4">
-          <div class="hidden md:flex items-center space-x-3 px-3 py-1.5 rounded-full bg-slate-900/90 border border-slate-800 text-xs">
+        <div class="flex items-center space-x-3 sm:space-x-4">
+          <div class="hidden lg:flex items-center space-x-3 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs">
             <span class="flex h-2 w-2 relative">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span class="text-slate-300 font-medium">Impel.io & Phyron AI Engine</span>
+            <span class="text-slate-300 font-medium">Impel.io & Carvana Standard</span>
             <span class="text-slate-600">|</span>
-            <span class="text-slate-400 font-mono-code">AORTA-v8.1</span>
+            <span class="text-slate-400 font-mono-code">REST API v1</span>
           </div>
 
-          <%= link_to root_path, class: "px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition" do %>
-            İlan Portföyü
+          <%= link_to root_path, class: "px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition" do %>
+            Araç Filosu
           <% end %>
 
-          <%= link_to new_listing_path, class: "inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold text-sm shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-500 transition-all hover:scale-[1.02]" do %>
+          <%= link_to new_listing_path, class: "inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/30 transition-all hover:scale-[1.02]" do %>
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
@@ -106,24 +104,28 @@
     </main>
 
     <!-- Studio Footer -->
-    <footer class="border-t border-slate-900 bg-slate-950 py-8 mt-16 text-slate-500 text-xs">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+    <footer class="border-t border-slate-900 bg-slate-950 py-10 mt-16 text-slate-500 text-xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div class="flex items-center space-x-3">
-          <span class="font-bold text-slate-300">AutoAorta AI</span>
+          <span class="font-bold text-slate-300 text-sm">AutoAorta AI</span>
           <span>&copy; <%= Time.current.year %> Enterprise Automotive Merchandising Platform</span>
         </div>
-        <div class="flex items-center space-x-6">
+        <div class="flex flex-wrap items-center gap-6">
           <span class="inline-flex items-center text-slate-400">
-            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 mr-2"></span>
-            Automated 360 Spin Engine
+            <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+            360° Automated Turntable
           </span>
           <span class="inline-flex items-center text-slate-400">
-            <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 mr-2"></span>
-            Vision Quality Scoring (85-98)
+            <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>
+            Vision Quality (85-98)
           </span>
           <span class="inline-flex items-center text-slate-400">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
-            24h Auto-Publish SLA Engine
+            <span class="w-2 h-2 rounded-full bg-amber-500 mr-2"></span>
+            24h SLA Auto-Publish
+          </span>
+          <span class="inline-flex items-center text-slate-400">
+            <span class="w-2 h-2 rounded-full bg-purple-500 mr-2"></span>
+            Embed Widget & REST API
           </span>
         </div>
       </div>

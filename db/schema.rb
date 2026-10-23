@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_23_130129) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_23_233000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -55,6 +55,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_23_130129) do
     t.datetime "auto_published_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "color", default: "Metalik Gri"
+    t.string "body_type", default: "Sedan"
+    t.string "tramer", default: "Hasar Kaydı Yok / 0 TL"
+    t.string "expertise", default: "Hatasız / Boyasız / Değişensiz"
+    t.string "dealer_phone", default: "+90 532 500 40 30"
+    t.string "dealer_name", default: "AutoAorta Premier Fleet"
   end
 
   create_table "photo_analyses", force: :cascade do |t|
