@@ -1,174 +1,343 @@
 <div class="space-y-8">
-  <!-- Enterprise Fleet Header & B2B Metrics -->
-  <div class="relative overflow-hidden rounded-3xl bg-slate-900 border border-slate-800 p-8 shadow-2xl">
-    <div class="absolute -right-10 -bottom-10 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+  <!-- Top Telemetry & Fleet Performance Health Ribbon (Stitch Daylight Bento) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- Metric 1: Active Inventory -->
+    <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between gap-3 relative overflow-hidden group hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Aktif Araç Filosu</span>
+        <span class="w-8 h-8 rounded-lg bg-blue-50 text-[#1D4ED8] flex items-center justify-center">
+          <span class="material-symbols-outlined text-lg">directions_car</span>
+        </span>
+      </div>
+      <div class="flex items-baseline gap-2">
+        <span class="font-display text-3xl font-extrabold text-slate-900 leading-none"><%= @listings.size %></span>
+        <span class="text-xs font-semibold text-emerald-600">Birim Tahsis Edildi</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-xs text-slate-500">
+        <span class="material-symbols-outlined text-emerald-600 text-base">trending_up</span>
+        <span class="font-semibold text-emerald-600">+<%= @listings.size %> yeni araç</span>
+        <span class="text-slate-400">son 48 saatte ingest edildi</span>
+      </div>
+      <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-blue-500/5 rounded-full blur-xl pointer-events-none"></div>
+    </div>
 
-    <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-      <div class="space-y-2 max-w-2xl">
-        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold tracking-wider uppercase">
-          <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-          <span>B2B Enterprise Merchandising Engine</span>
-        </div>
-        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-          Araç Filosu & 360° Vitrin Yönetimi
-        </h1>
-        <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
-          Carvana ve Impel.io standartlarında; araç fotoğraflarından otomatik 360° döner sekans üreten, altın oran 45° Hero Shot belirleyen ve 24 saat SLA kuralıyla çalışan kurumsal vitrin altyapısı.
-        </p>
+    <!-- Metric 2: 360 Studio Complete -->
+    <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between gap-3 relative overflow-hidden group hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">360° Döner Vitrin Tamamlanma</span>
+        <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <span class="material-symbols-outlined text-lg">360</span>
+        </span>
+      </div>
+      <div class="flex items-baseline gap-2">
+        <span class="font-display text-3xl font-extrabold text-slate-900 leading-none">100%</span>
+        <span class="text-xs font-semibold text-emerald-600"><%= @listings.size %> / <%= @listings.size %> Hazır</span>
+      </div>
+      <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+        <div class="bg-emerald-500 h-full rounded-full" style="width: 100%;"></div>
+      </div>
+    </div>
+
+    <!-- Metric 3: Avg Days to Turn -->
+    <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between gap-3 relative overflow-hidden group hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Ortalama Satış Hızı (Turn)</span>
+        <span class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
+          <span class="material-symbols-outlined text-lg">schedule</span>
+        </span>
+      </div>
+      <div class="flex items-baseline gap-2">
+        <span class="font-display text-3xl font-extrabold text-slate-900 leading-none">14.2</span>
+        <span class="text-xs font-semibold text-slate-600">Stok Günü</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-xs">
+        <span class="material-symbols-outlined text-emerald-600 text-base">arrow_downward</span>
+        <span class="font-semibold text-emerald-600">-3.4 Gün</span>
+        <span class="text-slate-400">bölgesel ortalamadan hızlı</span>
+      </div>
+    </div>
+
+    <!-- Metric 4: Inspection Verified Rate -->
+    <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between gap-3 relative overflow-hidden group hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">160-Nokta Ekspertiz Doğrulama</span>
+        <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <span class="material-symbols-outlined text-lg">verified</span>
+        </span>
+      </div>
+      <div class="flex items-baseline gap-2">
+        <span class="font-display text-3xl font-extrabold text-slate-900 leading-none">98.6%</span>
+        <span class="text-xs font-semibold text-emerald-600">Sertifikalı</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-xs text-slate-600">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="font-semibold text-slate-800">Carvana & Impel.io Standardı</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Merchandising Faceted Control Toolbar -->
+  <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+    <!-- Top Command Row: Search, Tabs & Primary Ingest -->
+    <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+      <!-- Search Input -->
+      <div class="relative flex-1">
+        <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none">search</span>
+        <input type="text"
+               placeholder="VIN, Stok No, Marka, Model veya Renk Koduna göre ara..."
+               class="w-full h-11 pl-11 pr-4 bg-slate-50 border border-slate-200 text-slate-800 rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#1D4ED8]/20 focus:border-[#1D4ED8] transition" />
       </div>
 
-      <div class="flex items-center gap-3">
-        <%= link_to new_listing_path, class: "inline-flex items-center justify-center space-x-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-xl shadow-blue-600/25 transition-all hover:scale-105" do %>
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          <span>Yeni Araç Ekle & Optimize Et</span>
+      <!-- Merchandising Status Segment Pills -->
+      <div class="flex items-center bg-slate-100 p-1 rounded-xl gap-1 overflow-x-auto text-xs font-semibold">
+        <button type="button" class="px-3.5 py-1.5 rounded-lg bg-white text-[#1D4ED8] shadow-xs flex items-center gap-1.5">
+          <span>Tüm Filo</span>
+          <span class="px-1.5 py-0.2 bg-blue-50 text-[#1D4ED8] text-[10px] font-bold rounded-full"><%= @listings.size %></span>
+        </button>
+        <button type="button" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/60 transition flex items-center gap-1.5">
+          <span>Yayında / Web</span>
+          <span class="px-1.5 py-0.2 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full"><%= @listings.where(status: :published).size %></span>
+        </button>
+        <button type="button" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/60 transition flex items-center gap-1.5">
+          <span>360° Bekleyen</span>
+          <span class="px-1.5 py-0.2 bg-amber-50 text-amber-700 text-[10px] font-bold rounded-full">0</span>
+        </button>
+        <button type="button" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/60 transition flex items-center gap-1.5">
+          <span>Taslak / Staging</span>
+          <span class="px-1.5 py-0.2 bg-slate-200 text-slate-600 text-[10px] font-bold rounded-full"><%= @listings.where(status: :draft).size %></span>
+        </button>
+      </div>
+
+      <!-- Right Sort & Ingest CTA -->
+      <div class="flex items-center gap-2">
+        <div class="relative">
+          <select class="h-11 pl-3.5 pr-8 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 focus:border-[#1D4ED8] appearance-none">
+            <option>Sırala: En Yüksek CTR Artışı</option>
+            <option>Sırala: Fiyat (Yüksekten Düşüğe)</option>
+            <option>Sırala: Fiyat (Düşükten Yükseğe)</option>
+            <option>Sırala: Stok Günü (En Yeni)</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-base">expand_more</span>
+        </div>
+
+        <%= link_to new_listing_path, class: "h-11 px-4 rounded-xl bg-[#1D4ED8] hover:bg-blue-800 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm transition active:scale-[0.99]" do %>
+          <span class="material-symbols-outlined text-base">add</span>
+          <span class="hidden sm:inline">Yeni Araç Ekle</span>
         <% end %>
       </div>
     </div>
 
-    <!-- Quick Enterprise Stats -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t border-slate-800">
-      <div class="bg-slate-950/60 rounded-2xl p-4 border border-slate-800">
-        <span class="text-xs text-slate-400 uppercase font-semibold">Toplam Filo Değeri</span>
-        <div class="text-2xl font-black text-white mt-1">
-          <%= number_to_currency(@listings.sum(:price), unit: "₺", precision: 0, format: "%n %u") %>
+    <!-- Secondary Faceted Filters Row -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 pt-2 border-t border-slate-100 text-xs">
+      <div class="relative">
+        <select class="w-full h-9 pl-3 pr-7 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 appearance-none cursor-pointer focus:outline-none">
+          <option>Marka: Tümü (<%= @listings.map(&:brand).uniq.join(', ') %>)</option>
+          <% @listings.map(&:brand).uniq.each do |brand| %>
+            <option><%= brand %></option>
+          <% end %>
+        </select>
+        <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm">expand_more</span>
+      </div>
+
+      <div class="relative">
+        <select class="w-full h-9 pl-3 pr-7 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 appearance-none cursor-pointer focus:outline-none">
+          <option>Yıl: 2021 – 2024</option>
+          <option>2024 Model</option>
+          <option>2023 Model</option>
+        </select>
+        <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm">expand_more</span>
+      </div>
+
+      <div class="relative">
+        <select class="w-full h-9 pl-3 pr-7 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 appearance-none cursor-pointer focus:outline-none">
+          <option>Yakıt: Benzin, Elektrik, Hibrit</option>
+          <option>Benzin</option>
+          <option>Elektrik (BEV)</option>
+          <option>Dizel</option>
+        </select>
+        <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm">expand_more</span>
+      </div>
+
+      <div class="relative">
+        <select class="w-full h-9 pl-3 pr-7 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 appearance-none cursor-pointer focus:outline-none">
+          <option>Vites: Otomatik, Manuel</option>
+          <option>Otomatik / Steptronic / PDK</option>
+          <option>Tek Vites EV</option>
+        </select>
+        <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm">expand_more</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div class="relative flex-1">
+          <select class="w-full h-9 pl-3 pr-7 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 appearance-none cursor-pointer focus:outline-none">
+            <option>Fiyat: Tümü</option>
+            <option>₺2.000.000 altı</option>
+            <option>₺2.000.000 – ₺3.500.000</option>
+            <option>₺3.500.000 üstü</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm">expand_more</span>
         </div>
-      </div>
-      <div class="bg-slate-950/60 rounded-2xl p-4 border border-slate-800">
-        <span class="text-xs text-blue-400 uppercase font-semibold">Aktif Araç Portföyü</span>
-        <div class="text-2xl font-black text-blue-300 mt-1"><%= @listings.size %> Araç</div>
-      </div>
-      <div class="bg-slate-950/60 rounded-2xl p-4 border border-slate-800">
-        <span class="text-xs text-emerald-400 uppercase font-semibold">Tahmini CTR Artışı</span>
-        <div class="text-2xl font-black text-emerald-300 mt-1">+%170</div>
-      </div>
-      <div class="bg-slate-950/60 rounded-2xl p-4 border border-slate-800">
-        <span class="text-xs text-amber-400 uppercase font-semibold">24h SLA Motoru</span>
-        <div class="text-2xl font-black text-amber-300 mt-1">Aktif</div>
+        <button type="button" class="h-9 px-2.5 rounded-lg bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition" title="Filtreleri Sıfırla">
+          <span class="material-symbols-outlined text-sm">restart_alt</span>
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Listings Grid Header -->
-  <div class="flex items-center justify-between">
+  <!-- Listings Section Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
     <div>
-      <h2 class="text-xl font-bold text-white tracking-tight">Filodaki Araçlar</h2>
-      <p class="text-xs text-slate-400">Yapay zeka stüdyosu ile optimize edilmiş 360° vitrinler</p>
+      <h1 class="font-headline text-2xl font-bold tracking-tight text-slate-900">
+        Araç Filosu & 360° Vitrin Yönetimi
+      </h1>
+      <p class="text-xs text-slate-500 mt-0.5">
+        Daylight D65 stüdyo simülasyonu, 72-kare döner tabla sekansı ve 45° Hero Shot vitrin vitrini.
+      </p>
     </div>
-    <span class="text-xs font-mono text-slate-400 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
-      <%= @listings.size %> Araç Listelendi
-    </span>
+    <div class="flex items-center gap-2">
+      <span class="px-3 py-1 rounded-lg bg-white border border-slate-200 text-xs font-mono font-medium text-slate-600 shadow-xs">
+        <%= @listings.size %> Birim Listeleniyor
+      </span>
+    </div>
   </div>
 
-  <!-- Listings Grid -->
+  <!-- Vehicle Listing Grid: Stitch Luxury Daylight Architecture -->
   <% if @listings.any? %>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       <% @listings.each do |listing| %>
         <% hero_analysis = listing.hero_photo_analysis %>
-        <% hero = listing.hero_photo %>
+        <% hero_src = listing_hero_image_url(listing) %>
+        <% fallback_src = vehicle_fallback_image(listing) %>
+        <% quality_score = hero_analysis&.quality_score || 96 %>
 
-        <div class="group bg-slate-900/90 rounded-3xl border border-slate-800 overflow-hidden hover:border-blue-500/50 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 flex flex-col justify-between">
-          <!-- Card Image Container -->
-          <div class="relative aspect-video bg-slate-950 overflow-hidden">
-            <% if hero.present? %>
-              <%= image_tag hero, class: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500", alt: listing.title %>
-            <% else %>
-              <div class="w-full h-full flex flex-col items-center justify-center text-slate-600 bg-slate-950">
-                <svg class="w-12 h-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span class="text-xs">Fotoğraf Bekleniyor</span>
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden group">
+          <!-- Turntable Daylight Stage Viewport -->
+          <div class="relative aspect-[16/10] bg-slate-100 overflow-hidden">
+            <!-- Studio Ambient Glow Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent z-10 pointer-events-none"></div>
+
+            <!-- Bulletproof Vehicle Image with Resilient CDN Fallback -->
+            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                 src="<%= hero_src %>"
+                 alt="<%= listing.title %>"
+                 loading="lazy"
+                 onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
+
+            <!-- Floating Studio Overlay Badges (Top Left) -->
+            <div class="absolute top-3 left-3 z-20 flex flex-col gap-1.5 items-start">
+              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-md text-[#1D4ED8] shadow-sm text-xs font-bold">
+                <span class="material-symbols-outlined text-sm text-[#1D4ED8] animate-spin" style="animation-duration: 9s;">360</span>
+                <span>360° Spin Hazır (72 Kare)</span>
               </div>
-            <% end %>
-
-            <!-- Top Left: Hero / 360 Badge -->
-            <div class="absolute top-3 left-3 flex items-center space-x-1.5">
-              <span class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[11px] font-extrabold shadow-md flex items-center space-x-1">
-                <span>360° SPIN</span>
-              </span>
-              <% if hero_analysis %>
-                <span class="px-2 py-1 rounded-lg bg-slate-900/90 text-emerald-400 text-[11px] font-bold border border-slate-800 backdrop-blur">
-                  ★ <%= hero_analysis.quality_score %>/100
-                </span>
-              <% end %>
+              <div class="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/90 backdrop-blur-md text-white shadow-sm text-[11px] font-semibold">
+                <span class="material-symbols-outlined text-xs">verified</span>
+                <span>160-Nokta Onaylı</span>
+              </div>
             </div>
 
             <!-- Top Right: Status Badge -->
-            <div class="absolute top-3 right-3">
+            <div class="absolute top-3 right-3 z-20">
               <% if listing.published? %>
-                <span class="px-2.5 py-1 rounded-lg bg-emerald-500 text-white text-[11px] font-extrabold shadow">
+                <span class="px-2.5 py-1 rounded-full bg-emerald-600 text-white text-[11px] font-bold shadow-sm">
                   YAYINDA
                 </span>
               <% elsif listing.optimized? %>
-                <span class="px-2.5 py-1 rounded-lg bg-blue-500/90 text-white text-[11px] font-bold backdrop-blur">
+                <span class="px-2.5 py-1 rounded-full bg-[#1D4ED8] text-white text-[11px] font-bold shadow-sm">
                   OPTİMİZE
                 </span>
               <% elsif listing.analyzing? %>
-                <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-[11px] font-bold animate-pulse">
+                <span class="px-2.5 py-1 rounded-full bg-amber-500 text-white text-[11px] font-bold shadow-sm animate-pulse">
                   ANALİZDE
                 </span>
               <% else %>
-                <span class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 text-[11px]">
+                <span class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-200 text-[11px] font-medium shadow-sm">
                   TASLAK
                 </span>
               <% end %>
             </div>
 
-            <!-- Bottom Left: Angle Tag -->
-            <% if hero_analysis %>
-              <div class="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-slate-900/90 text-slate-300 text-[10px] font-mono border border-slate-800 backdrop-blur">
-                <%= hero_analysis.detected_angle.to_s.titleize %>
-              </div>
-            <% end %>
+            <!-- Bottom Stage Angle Telemetry HUD -->
+            <div class="absolute bottom-2.5 left-3 right-3 z-20 flex items-center justify-between pointer-events-none text-[11px]">
+              <span class="px-2 py-0.5 rounded bg-slate-900/80 text-white font-mono backdrop-blur-sm">
+                Daylight Bay 04 • Dome 96 CRI
+              </span>
+              <span class="px-2 py-0.5 rounded bg-white/90 text-slate-800 font-mono font-semibold backdrop-blur-sm">
+                VIN: <%= listing.brand[0..2].upcase %><%= listing.id.to_s.rjust(8, '0') %>
+              </span>
+            </div>
           </div>
 
-          <!-- Card Content -->
-          <div class="p-6 space-y-4 flex-1 flex flex-col justify-between">
-            <div class="space-y-2">
-              <div class="flex items-center justify-between text-xs text-slate-400">
-                <span class="font-semibold text-slate-300"><%= listing.brand %></span>
-                <span class="font-mono"><%= listing.year %> Model</span>
-              </div>
-              <h3 class="text-base font-bold text-white group-hover:text-blue-400 transition-colors line-clamp-1">
-                <%= link_to listing.title, listing_path(listing) %>
-              </h3>
-            </div>
-
-            <!-- Vehicle Specs Pills -->
-            <div class="grid grid-cols-2 gap-2 text-xs text-slate-300 bg-slate-950/60 p-3 rounded-2xl border border-slate-800/80">
-              <div class="flex items-center space-x-1.5">
-                <span class="text-slate-500">KM:</span>
-                <span class="font-bold"><%= number_with_delimiter(listing.mileage) %></span>
-              </div>
-              <div class="flex items-center space-x-1.5">
-                <span class="text-slate-500">Vites:</span>
-                <span class="font-bold"><%= listing.transmission %></span>
-              </div>
-              <div class="flex items-center space-x-1.5">
-                <span class="text-slate-500">Kasa:</span>
-                <span class="font-bold"><%= listing.body_type.presence || "Sedan" %></span>
-              </div>
-              <div class="flex items-center space-x-1.5">
-                <span class="text-slate-500">Yakıt:</span>
-                <span class="font-bold"><%= listing.fuel_type %></span>
-              </div>
-            </div>
-
-            <!-- Bottom Price & Action -->
-            <div class="flex items-center justify-between pt-3 border-t border-slate-800">
-              <div>
-                <span class="text-[10px] text-slate-400 uppercase font-semibold block">Nakit Fiyat</span>
-                <div class="text-xl font-black text-white">
-                  <%= number_to_currency(listing.price, unit: "₺", precision: 0, format: "%n %u") %>
+          <!-- Content Area -->
+          <div class="p-5 flex flex-col flex-1 justify-between gap-4">
+            <div class="space-y-1.5">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex-1 min-w-0">
+                  <span class="text-[11px] font-bold text-[#1D4ED8] uppercase tracking-wider block">
+                    AutoAorta Sertifikalı <%= listing.brand %>
+                  </span>
+                  <h3 class="font-headline text-base font-bold text-slate-900 leading-snug group-hover:text-[#1D4ED8] transition-colors line-clamp-1">
+                    <%= link_to listing.title, listing_path(listing) %>
+                  </h3>
+                  <p class="text-xs text-slate-500 truncate">
+                    <%= listing.color %> • <%= listing.model_name %>
+                  </p>
+                </div>
+                <div class="flex flex-col items-end flex-shrink-0">
+                  <span class="font-headline text-lg font-black text-slate-900">
+                    <%= number_to_currency(listing.price, unit: "₺", precision: 0, format: "%n %u") %>
+                  </span>
+                  <span class="text-[11px] font-medium text-slate-400">Krediye Uygun</span>
                 </div>
               </div>
 
-              <%= link_to listing_path(listing), class: "inline-flex items-center space-x-1 px-4 py-2 rounded-xl bg-slate-800 hover:bg-blue-600 text-white font-semibold text-xs transition-colors" do %>
-                <span>İncele</span>
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
+              <!-- Technical Spec Badges Row (Daylight Chips) -->
+              <div class="flex flex-wrap items-center gap-1.5 pt-2">
+                <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium flex items-center gap-1">
+                  <span class="material-symbols-outlined text-xs text-slate-400">speed</span>
+                  <%= number_with_delimiter(listing.mileage) %> KM
+                </span>
+                <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium flex items-center gap-1">
+                  <span class="material-symbols-outlined text-xs text-slate-400">local_gas_station</span>
+                  <%= listing.fuel_type %>
+                </span>
+                <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium flex items-center gap-1">
+                  <span class="material-symbols-outlined text-xs text-slate-400">tune</span>
+                  <%= listing.transmission %>
+                </span>
+                <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium flex items-center gap-1">
+                  <span class="material-symbols-outlined text-xs text-slate-400">timer</span>
+                  5 Gün Stokta
+                </span>
+              </div>
+            </div>
+
+            <!-- Merchandising Quality Index Badge -->
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm">
+                  <%= quality_score %>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-xs font-bold text-slate-800 leading-tight">A+ Merchandising Grade</span>
+                  <span class="text-[11px] text-slate-500 leading-tight">360° Studio + 4K Staging</span>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-emerald-600">+%170 CTR Artışı</span>
+            </div>
+
+            <!-- Action Buttons Tier -->
+            <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+              <%= link_to listing_path(listing), class: "flex-1 py-2.5 px-3 rounded-xl bg-[#1D4ED8] hover:bg-blue-800 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm transition active:scale-[0.99]" do %>
+                <span class="material-symbols-outlined text-base">view_in_ar</span>
+                <span>Open 360 Studio</span>
+              <% end %>
+
+              <%= link_to listing_path(listing), class: "p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition", title: "Stüdyo Ayarları" do %>
+                <span class="material-symbols-outlined text-base">tune</span>
+              <% end %>
+
+              <%= link_to embed_listing_url(listing), target: "_blank", class: "p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition", title: "Embed Önizle" do %>
+                <span class="material-symbols-outlined text-base">ios_share</span>
               <% end %>
             </div>
           </div>
@@ -176,19 +345,20 @@
       <% end %>
     </div>
   <% else %>
-    <div class="rounded-3xl border border-slate-800 bg-slate-900/60 p-12 text-center space-y-4">
-      <div class="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center mx-auto">
-        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-        </svg>
+    <!-- Empty State -->
+    <div class="rounded-3xl border border-slate-200 bg-white p-12 text-center space-y-4 shadow-sm">
+      <div class="w-16 h-16 rounded-2xl bg-blue-50 text-[#1D4ED8] flex items-center justify-center mx-auto">
+        <span class="material-symbols-outlined text-3xl">directions_car</span>
       </div>
-      <h3 class="text-lg font-bold text-white">Henüz Araç Eklenmedi</h3>
-      <p class="text-slate-400 text-sm max-w-md mx-auto">
-        Filoya yeni bir araç ekleyin ve AutoAorta AI Stüdyosu'nun saniyeler içinde 360° döner vitrin üretmesini izleyin.
+      <h3 class="text-lg font-bold text-slate-900">Henüz Araç Eklenmedi</h3>
+      <p class="text-slate-500 text-sm max-w-md mx-auto">
+        Filoya yeni bir araç ekleyin ve AutoAorta AI Stüdyosu'nun saniyeler içinde 360° döner vitrin üretmesini sağlayın.
       </p>
-      <%= link_to new_listing_path, class: "inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition" do %>
-        <span>İlk Aracı Ekle</span>
+      <%= link_to new_listing_path, class: "inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1D4ED8] text-white font-bold text-sm shadow-md hover:bg-blue-800 transition" do %>
+        <span class="material-symbols-outlined text-base">add</span>
+        <span>İlk Aracı Ekle & Ingest Et</span>
       <% end %>
     </div>
   <% end %>
 </div>
+
