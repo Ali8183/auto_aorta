@@ -26,4 +26,4 @@ jobs:
           RAILS_ENV: test
         run: |
           chmod +x bin/*
-          bin/rails db:test:prepare test
+          bundle exec rails db:test:prepare test
