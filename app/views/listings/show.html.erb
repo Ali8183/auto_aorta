@@ -1,0 +1,382 @@
+<div class="space-y-8">
+  <!-- Top Breadcrumb & Action Toolbar -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+    <div class="space-y-1">
+      <div class="flex items-center space-x-2 text-xs text-slate-400">
+        <%= link_to "Araç Portföyü", root_path, class: "hover:text-cyan-400 transition" %>
+        <span>/</span>
+        <span class="text-slate-300 font-medium"><%= @listing.brand %> <%= @listing.model_name %></span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        <%= @listing.title %>
+      </h1>
+      <p class="text-xs text-slate-400">
+        Model Yılı: <span class="text-slate-200 font-semibold"><%= @listing.year %></span> &bull;
+        Kilometre: <span class="text-slate-200 font-semibold"><%= number_with_delimiter(@listing.mileage) %> km</span> &bull;
+        Fiyat: <span class="text-cyan-400 font-bold"><%= number_to_currency(@listing.price, unit: "₺", precision: 0, format: "%n %u") %></span>
+      </p>
+    </div>
+
+    <!-- Action Buttons Group (SLA Test, AI Optimize, Publish) -->
+    <div class="flex flex-wrap items-center gap-2">
+      <!-- AI Optimizasyonunu Başlat -->
+      <%= button_to optimize_listing_path(@listing), method: :post, class: "inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-lg shadow-indigo-600/25 transition cursor-pointer" do %>
+        <svg class="w-4 h-4 text-indigo-200 animate-spin" style="animation-duration: 8s;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+        </svg>
+        <span>AI Optimizasyonunu Başlat</span>
+      <% end %>
+
+      <!-- Yayına Al -->
+      <% unless @listing.published? %>
+        <%= button_to publish_listing_path(@listing), method: :post, class: "inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg shadow-emerald-600/25 transition cursor-pointer" do %>
+          <svg class="w-4 h-4 text-emerald-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span>Yayına Al</span>
+        <% end %>
+      <% end %>
+
+      <!-- 24 Saat İleri Sar (SLA Testi) -->
+      <%= button_to simulate_time_lapse_listing_path(@listing), method: :post, class: "inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-semibold text-xs shadow-lg shadow-amber-500/10 transition cursor-pointer", title: "24 saat kuralını test etmek için zamanı ileri sarar" do %>
+        <span>⏱️ 24 Saat İleri Sar (SLA Testi)</span>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- SLA Test Notice / Rule Info Banner -->
+  <div class="rounded-2xl border border-cyan-500/30 bg-slate-900/60 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-slate-300">
+    <div class="flex items-center space-x-3">
+      <div class="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center text-cyan-400 flex-shrink-0">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div>
+        <span class="font-bold text-white">24 Saatlik Akıllı SLA Kuralı:</span>
+        <span class="text-slate-400"> Araç optimize edildikten sonra 24 saat onay bekler. Süre dolduğunda sistem otomatik olarak aracı vitrine alır (Auto-Publish).</span>
+      </div>
+    </div>
+    <% if @listing.optimized? && @listing.optimized_at.present? %>
+      <div class="px-3 py-1 rounded-lg bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 font-mono-code font-semibold whitespace-nowrap">
+        Optimize Zamanı: <%= @listing.optimized_at.strftime("%d.%m.%Y %H:%M") %>
+      </div>
+    <% elsif @listing.published? && @listing.auto_published_at.present? %>
+      <div class="px-3 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono-code font-semibold whitespace-nowrap">
+        Auto-Published: <%= @listing.auto_published_at.strftime("%d.%m.%Y %H:%M") %> (SLA Kuralı ile)
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Durum Çubuğu (Status Stepper) -->
+  <div class="bg-slate-900/90 rounded-2xl border border-slate-800 p-6">
+    <div class="relative">
+      <!-- Progress Bar Track -->
+      <div class="hidden sm:block absolute top-1/2 left-0 w-full h-0.5 bg-slate-800 -translate-y-1/2 z-0"></div>
+
+      <!-- Steps Grid -->
+      <div class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <!-- Step 1: Taslak -->
+        <% step1_done = true %>
+        <div class="flex flex-col items-center text-center space-y-2">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm <%= @listing.draft? ? 'bg-cyan-500 text-white ring-4 ring-cyan-500/20 shadow-lg shadow-cyan-500/40' : 'bg-emerald-500 text-white' %>">
+            1
+          </div>
+          <div>
+            <div class="text-xs font-bold text-white">Taslak</div>
+            <div class="text-[11px] text-slate-400">Araç Bilgisi Girildi</div>
+          </div>
+        </div>
+
+        <!-- Step 2: Analiz Ediliyor -->
+        <% step2_active = @listing.analyzing? %>
+        <% step2_done = @listing.optimized? || @listing.published? %>
+        <div class="flex flex-col items-center text-center space-y-2">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm <%= step2_active ? 'bg-blue-600 text-white ring-4 ring-blue-500/20 animate-pulse' : (step2_done ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400 border border-slate-700') %>">
+            2
+          </div>
+          <div>
+            <div class="text-xs font-bold <%= step2_active ? 'text-blue-400' : (step2_done ? 'text-white' : 'text-slate-400') %>">Analiz Ediliyor</div>
+            <div class="text-[11px] text-slate-400">Impel Vision Motoru</div>
+          </div>
+        </div>
+
+        <!-- Step 3: Optimize Edildi -->
+        <% step3_active = @listing.optimized? %>
+        <% step3_done = @listing.published? %>
+        <div class="flex flex-col items-center text-center space-y-2">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm <%= step3_active ? 'bg-indigo-600 text-white ring-4 ring-indigo-500/20 shadow-lg shadow-indigo-600/40' : (step3_done ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400 border border-slate-700') %>">
+            3
+          </div>
+          <div>
+            <div class="text-xs font-bold <%= step3_active ? 'text-indigo-400' : (step3_done ? 'text-white' : 'text-slate-400') %>">Optimize Edildi</div>
+            <div class="text-[11px] text-slate-400">360° & Hero Belirlendi</div>
+          </div>
+        </div>
+
+        <!-- Step 4: Yayında -->
+        <% step4_active = @listing.published? %>
+        <div class="flex flex-col items-center text-center space-y-2">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm <%= step4_active ? 'bg-emerald-500 text-white ring-4 ring-emerald-500/20 shadow-lg shadow-emerald-500/40' : 'bg-slate-800 text-slate-400 border border-slate-700' %>">
+            4
+          </div>
+          <div>
+            <div class="text-xs font-bold <%= step4_active ? 'text-emerald-400' : 'text-slate-400' %>">Yayında (Canlı)</div>
+            <div class="text-[11px] text-slate-400">Vitrinde Yayında</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: 360° ETKİLEŞİMLİ ARAÇ TURU (STIMULUS CONTROLLER) -->
+  <% spin_images_urls = @spin_photos.map { |p| url_for(p) } %>
+  <% spin_angle_labels = @spin_photos.map { |p| a = @listing.photo_analyses.find_by(blob_id: p.blob_id); a ? "#{a.angle_label} (Puan: #{a.quality_score})" : "Dış Açı" } %>
+
+  <div class="bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl"
+       data-controller="vehicle-spin"
+       data-vehicle-spin-images-value="<%= spin_images_urls.to_json %>"
+       data-vehicle-spin-angles-value="<%= spin_angle_labels.to_json %>"
+       data-vehicle-spin-current-index-value="0">
+
+    <!-- Spin Viewer Header -->
+    <div class="px-6 py-4 bg-slate-950/70 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+          <svg class="w-5 h-5 animate-spin" style="animation-duration: 8s;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center space-x-2">
+            <span>360° Etkileşimli Araç Sanal Turu</span>
+            <span class="px-2 py-0.5 text-[10px] uppercase font-bold rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+              Interactive 360 Spin
+            </span>
+          </h2>
+          <p class="text-xs text-slate-400">Aracı 360 derece döndürmek için farenizle görselin üzerinde sağa-sola sürükleyin veya alttaki çubuğu kaydırın.</p>
+        </div>
+      </div>
+
+      <!-- Controls Right: Frame indicator & Auto-play button -->
+      <div class="flex items-center space-x-3">
+        <div class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono-code text-cyan-400">
+          Kare: <span data-vehicle-spin-target="currentFrame" class="font-bold text-white">1 / <%= @spin_photos.size %></span>
+        </div>
+
+        <button type="button"
+                data-vehicle-spin-target="autoPlayBtn"
+                data-action="click->vehicle-spin#toggleAutoSpin"
+                class="inline-flex items-center px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition cursor-pointer">
+          <svg class="w-4 h-4 inline-block mr-1 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          360° Otomatik Döndür
+        </button>
+      </div>
+    </div>
+
+    <!-- Spin Canvas / Interactive Image Container -->
+    <div class="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center select-none overflow-hidden min-h-[420px] max-h-[580px]">
+      <% if @spin_photos.any? %>
+        <div data-vehicle-spin-target="spinContainer"
+             data-action="pointerdown->vehicle-spin#onPointerDown"
+             class="w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing p-4 touch-none">
+
+          <img data-vehicle-spin-target="image"
+               src="<%= url_for(@spin_photos.first) %>"
+               alt="<%= @listing.title %> 360 Spin Frame"
+               class="max-h-[520px] max-w-full object-contain pointer-events-none drop-shadow-2xl transition-opacity duration-75" />
+        </div>
+
+        <!-- Floating Angle Pill on Top Left -->
+        <div class="absolute top-4 left-4 pointer-events-none">
+          <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-slate-950/80 backdrop-blur-md border border-slate-700/80 text-xs font-semibold text-slate-200 shadow-xl">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+            <span data-vehicle-spin-target="angleLabel"><%= spin_angle_labels.first %></span>
+          </div>
+        </div>
+
+        <!-- Floating Drag Instruction Hint on Center Bottom -->
+        <div class="absolute bottom-4 pointer-events-none flex items-center space-x-2 px-4 py-1.5 rounded-full bg-slate-950/70 backdrop-blur-md border border-slate-800 text-[11px] text-slate-400">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+          </svg>
+          <span>Döndürmek için sağa/sola sürükleyin (Drag to Spin)</span>
+        </div>
+
+        <!-- Quick Left & Right Frame Step Buttons -->
+        <button type="button"
+                data-action="click->vehicle-spin#previousFrame"
+                class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-slate-900/80 hover:bg-cyan-600 text-white flex items-center justify-center border border-slate-700 backdrop-blur transition shadow-xl cursor-pointer"
+                title="Önceki Kare">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        <button type="button"
+                data-action="click->vehicle-spin#nextFrame"
+                class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-slate-900/80 hover:bg-cyan-600 text-white flex items-center justify-center border border-slate-700 backdrop-blur transition shadow-xl cursor-pointer"
+                title="Sonraki Kare">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      <% else %>
+        <div class="p-12 text-center text-slate-500">
+          <svg class="w-12 h-12 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <p class="text-sm">360° sanal tur için fotoğraf bulunamadı. Lütfen araç fotoğrafları yükleyip AI Optimizasyonunu başlatın.</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Spin Slider & Navigation Footer -->
+    <% if @spin_photos.any? %>
+      <div class="p-6 bg-slate-950/80 border-t border-slate-800 space-y-3">
+        <div class="flex items-center space-x-4">
+          <span class="text-xs font-semibold text-slate-400 whitespace-nowrap">360° Açı İlerlemesi:</span>
+          <input type="range"
+                 min="0"
+                 max="<%= @spin_photos.size - 1 %>"
+                 value="0"
+                 data-vehicle-spin-target="slider"
+                 data-action="input->vehicle-spin#onSliderChange"
+                 class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500 hover:accent-cyan-400 transition" />
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- SECTION 2: AI MERCHANDISING RAPORU -->
+  <div class="bg-slate-900 rounded-3xl border border-slate-800 p-6 sm:p-8 space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-800 gap-4">
+      <div>
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-2">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Impel & Phyron AI Vision Raporu</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">AI Merchandising & Stüdyo Kalite Analizi</h2>
+        <p class="text-xs text-slate-400 mt-1">
+          Yapay zeka görsel motoru her fotoğrafı açı, aydınlatma, stüdyo simetrisi ve çözünürlük kriterlerine göre puanladı.
+        </p>
+      </div>
+
+      <!-- Hero Shot Summary Badge -->
+      <% if @hero_analysis %>
+        <div class="p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/40 flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold">
+            ★
+          </div>
+          <div>
+            <div class="text-[11px] text-cyan-300 font-bold uppercase tracking-wider">Seçilen Hero Shot</div>
+            <div class="text-sm font-bold text-white"><%= @hero_analysis.angle_label %></div>
+            <div class="text-[10px] text-cyan-400">Kalite Skoru: <%= @hero_analysis.quality_score %>/100</div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Photo Analyses Cards Grid -->
+    <% if @photo_analyses.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% @photo_analyses.each do |analysis| %>
+          <% photo = analysis.attachment %>
+          <div class="rounded-2xl border <%= analysis.is_hero_candidate? ? 'border-cyan-500/60 bg-slate-950/90 shadow-xl shadow-cyan-500/10' : 'border-slate-800 bg-slate-950/50' %> overflow-hidden flex flex-col justify-between">
+            <!-- Thumbnail with overlay -->
+            <div class="relative aspect-video bg-slate-950 overflow-hidden">
+              <% if photo %>
+                <%= image_tag photo, class: "w-full h-full object-cover", alt: analysis.angle_label %>
+              <% else %>
+                <div class="w-full h-full flex items-center justify-center text-slate-600 bg-slate-950">Görsel Yok</div>
+              <% end %>
+
+              <!-- Hero Shot Ribbon if candidate -->
+              <% if analysis.is_hero_candidate? %>
+                <div class="absolute top-2 left-2 inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-cyan-500 text-slate-950 text-[10px] font-black uppercase tracking-wider shadow-lg">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                  <span>ANA VİTRİN (HERO SHOT)</span>
+                </div>
+              <% end %>
+
+              <!-- Spin Order Badge -->
+              <% if analysis.spin_order > 0 %>
+                <div class="absolute top-2 right-2 px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-slate-700 text-[10px] font-bold text-slate-300">
+                  360° Kare #<%= analysis.spin_order %>
+                </div>
+              <% else %>
+                <div class="absolute top-2 right-2 px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-slate-700 text-[10px] font-medium text-slate-400">
+                  Galeri Görseli
+                </div>
+              <% end %>
+            </div>
+
+            <!-- Analysis Details -->
+            <div class="p-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-sm font-bold text-white"><%= analysis.angle_label %></div>
+                  <div class="text-[11px] font-mono-code text-slate-400"><%= analysis.detected_angle %></div>
+                </div>
+
+                <!-- Quality Score Gauge -->
+                <div class="text-right">
+                  <div class="text-lg font-black <%= analysis.quality_score >= 95 ? 'text-cyan-400' : 'text-emerald-400' %>">
+                    <%= analysis.quality_score %><span class="text-xs font-normal text-slate-400">/100</span>
+                  </div>
+                  <div class="text-[10px] text-slate-400">Stüdyo Skoru</div>
+                </div>
+              </div>
+
+              <!-- Visual Quality Score Bar -->
+              <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-cyan-500 to-indigo-500 rounded-full" style="width: <%= analysis.quality_score %>%;"></div>
+              </div>
+
+              <!-- AI Notes -->
+              <p class="text-xs text-slate-300 bg-slate-900/80 p-3 rounded-xl border border-slate-800 leading-relaxed">
+                <%= analysis.notes.presence || "AI Analizi: Yüksek kontrast ve netlik standardı onaylandı." %>
+              </p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-10 text-slate-500">
+        <p class="text-sm">Henüz AI analizi yapılmamış. Fotoğrafları incelemek için yukarıdaki "AI Optimizasyonunu Başlat" butonuna tıklayınız.</p>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- SECTION 3: ARAÇ DETAYLARI VE AÇIKLAMA -->
+  <div class="bg-slate-900 rounded-3xl border border-slate-800 p-6 sm:p-8 space-y-6">
+    <h2 class="text-lg font-bold text-white tracking-tight">Araç Donanım & Teknik Detaylar</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+      <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
+        <span class="text-slate-500">Marka / Seri</span>
+        <div class="text-sm font-bold text-white mt-1"><%= @listing.brand %> <%= @listing.model_name %></div>
+      </div>
+      <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
+        <span class="text-slate-500">Yıl</span>
+        <div class="text-sm font-bold text-white mt-1"><%= @listing.year %></div>
+      </div>
+      <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
+        <span class="text-slate-500">Yakıt Türü</span>
+        <div class="text-sm font-bold text-white mt-1"><%= @listing.fuel_type.presence || "Benzin" %></div>
+      </div>
+      <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
+        <span class="text-slate-500">Şanzıman</span>
+        <div class="text-sm font-bold text-white mt-1"><%= @listing.transmission.presence || "Otomatik" %></div>
+      </div>
+    </div>
+
+    <% if @listing.description.present? %>
+      <div class="pt-4 border-t border-slate-800">
+        <h3 class="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Açıklama</h3>
+        <p class="text-sm text-slate-300 leading-relaxed whitespace-pre-line"><%= @listing.description %></p>
+      </div>
+    <% end %>
+  </div>
+</div>

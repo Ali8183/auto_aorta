@@ -1,0 +1,136 @@
+<div class="max-w-4xl mx-auto space-y-8">
+  <!-- Top Navigation & Header -->
+  <div class="space-y-1">
+    <div class="flex items-center space-x-2 text-xs text-slate-400">
+      <%= link_to "Araç Portföyü", root_path, class: "hover:text-cyan-400 transition" %>
+      <span>/</span>
+      <span class="text-slate-300 font-medium">Yeni Araç & AI Studio Girişi</span>
+    </div>
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Yeni Araç İlanı Ekle</h1>
+    <p class="text-sm text-slate-400">
+      Araç bilgilerini girip fotoğrafları toplu yükleyin. Impel/Phyron AI motorumuz 360° sekansını ve vitrin açısını otomatik oluşturacaktır.
+    </p>
+  </div>
+
+  <!-- Form Container -->
+  <%= form_with model: @listing, local: true, class: "space-y-8" do |f| %>
+    <% if @listing.errors.any? %>
+      <div class="p-4 rounded-2xl bg-rose-950/60 border border-rose-500/40 text-rose-200 text-sm space-y-1">
+        <div class="font-bold">Lütfen formdaki hataları düzeltin:</div>
+        <ul class="list-disc list-inside text-xs space-y-0.5">
+          <% @listing.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <!-- Card 1: Temel Bilgiler -->
+    <div class="bg-slate-900 rounded-3xl border border-slate-800 p-6 sm:p-8 space-y-6">
+      <h2 class="text-lg font-bold text-white tracking-tight flex items-center space-x-2">
+        <span class="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black">1</span>
+        <span>Araç Tanımı & Temel Özellikler</span>
+      </h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <%= f.label :title, "İlan Başlığı", class: "block text-xs font-semibold text-slate-300 mb-1" %>
+          <%= f.text_field :title, placeholder: "Örn: 2023 BMW 320i M Sport Hatasız Stüdyo Çekim", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition" %>
+        </div>
+
+        <div>
+          <%= f.label :brand, "Marka", class: "block text-xs font-semibold text-slate-300 mb-1" %>
+          <%= f.text_field :brand, placeholder: "BMW, Mercedes-Benz, Audi, Porsche...", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition" %>
+        </div>
+
+        <div>
+          <%= f.label :model_name, "Model / Seri", class: "block text-xs font-semibold text-slate-300 mb-1" %>
+          <%= f.text_field :model_name, placeholder: "Örn: 320i Sedan M Sport", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition" %>
+        </div>
+
+        <div>
+          <%= f.label :year, "Model Yılı", class: "block text-xs font-semibold text-slate-300 mb-1" %>
+          <%= f.number_field :year, placeholder: "2023", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition" %>
+        </div>
+
+        <div>
+          <%= f.label :price, "Fiyat (₺)", class: "block text-xs font-semibold text-slate-300 mb-1" %>
+          <%= f.number_field :price, placeholder: "2850000", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition" %>
+        </div>
+
+        <div>
+          <%= f.label :mileage, "Kilometre (km)", class: "block text-xs font-semibold text-slate-300 mb-1" %>
+          <%= f.number_field :mileage, placeholder: "28500", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition" %>
+        </div>
+
+        <div>
+          <%= f.label :fuel_type, "Yakıt Türü", class: "block text-xs font-semibold text-slate-300 mb-1" %>
+          <%= f.select :fuel_type, ["Benzin", "Dizel", "Hibrit", "Elektrik"], {}, class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition" %>
+        </div>
+
+        <div>
+          <%= f.label :transmission, "Vites Türü", class: "block text-xs font-semibold text-slate-300 mb-1" %>
+          <%= f.select :transmission, ["Otomatik", "Manuel", "Yarı Otomatik"], {}, class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition" %>
+        </div>
+      </div>
+
+      <div>
+        <%= f.label :description, "İlan Açıklaması", class: "block text-xs font-semibold text-slate-300 mb-1" %>
+        <%= f.text_area :description, rows: 4, placeholder: "Aracın durumu, opsiyonları, servis geçmişi ve ekspertiz bilgileri...", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition" %>
+      </div>
+    </div>
+
+    <!-- Card 2: AI Stüdyo & Toplu Fotoğraf Yükleme -->
+    <div class="bg-slate-900 rounded-3xl border border-slate-800 p-6 sm:p-8 space-y-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <h2 class="text-lg font-bold text-white tracking-tight flex items-center space-x-2">
+            <span class="w-6 h-6 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs font-black">2</span>
+            <span>AI Studio Fotoğraf Yükleme (360° Açı & Vitrin Analizi)</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">
+            Aracın etrafında çekilmiş dış fotoğraflarını ve iç mekan fotoğraflarını topluca seçiniz.
+          </p>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold">
+          Otomatik Sıralama
+        </span>
+      </div>
+
+      <!-- AI Feature Callout -->
+      <div class="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 flex items-start space-x-3 text-xs text-slate-300">
+        <svg class="w-5 h-5 text-cyan-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        <div class="leading-relaxed">
+          <span class="font-bold text-white">Yapay Zeka Nasıl Çalışır?</span> Fotoğraflar sisteme yüklendiğinde, AI motorumuz açıları otomatik sınıflandırır (Ön 3/4, Ön, Yan, Arka 3/4, Arka, Kokpit). En yüksek stüdyo simetri puanına sahip Ön 3/4 açılı kareyi <span class="text-cyan-400 font-semibold">Hero Shot</span> olarak işaretler ve dış çekimleri 360° döner araba sekansına bağlar.
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-2">Fotoğrafları Seçin (Birden Fazla Dosya Desteklenir)</label>
+        <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-slate-800 border-dashed rounded-2xl hover:border-cyan-500/60 transition bg-slate-950/40">
+          <div class="space-y-2 text-center">
+            <svg class="mx-auto h-12 w-12 text-slate-500" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+              <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <div class="text-sm text-slate-400">
+              <label for="listing_photos" class="relative cursor-pointer rounded-md font-semibold text-cyan-400 hover:text-cyan-300 focus-within:outline-none">
+                <span>Fotoğrafları Seç</span>
+                <%= f.file_field :photos, multiple: true, accept: "image/*", class: "sr-only", id: "listing_photos" %>
+              </label>
+              <span class="pl-1">veya sürükleyip bırakın</span>
+            </div>
+            <p class="text-[11px] text-slate-500">PNG, JPG, WEBP formatları desteklenir</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Toolbar -->
+    <div class="flex items-center justify-end space-x-4 pt-4">
+      <%= link_to "İptal", root_path, class: "px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition" %>
+      <%= f.submit "İlanı Kaydet & AI Stüdyoyu Başlat", class: "px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-sm shadow-xl shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-500 transition cursor-pointer" %>
+    </div>
+  <% end %>
+</div>
