@@ -141,4 +141,4 @@ Bir mühendislik projesinin en değerli yanı neleri başardığı kadar sınır
 ---
 
 ## 📄 Lisans
-Bu proje MIT lisansı ile lisanslanmıştır.
+Bu proje MIT lisansı ile lisanslanmıştır. Geliştirici: Ali8183.
