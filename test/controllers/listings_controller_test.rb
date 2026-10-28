@@ -35,6 +35,14 @@ class ListingsControllerTest < ActionDispatch::IntegrationTest
     get listing_url(@listing)
     assert_response :success
     assert_select "h1", /#{@listing.title}/
+    assert_select "#tab-btn-photo", /360° Doğrulanmış Fotoğraf Turu/
+    assert_select "#tab-btn-playcanvas", /PlayCanvas 3D Canlı Showroom/
+    assert_select "#tab-btn-guardrail", /Tüketici Güvenliği & Ekspertiz Kilidi/
+    assert_select "iframe#playcanvas-3d-iframe[src='https://playcanv.as/e/p/RqJJ9oU9/']"
+    assert_match "Kozmetik Durum: 2mm yüzeysel taş izi (Boya gerektirmez)", response.body
+    assert_match "19 inç M-Sport Jant: Çiziksiz, balans hatasız", response.body
+    assert_match "Orijinal fabrika camı: Çatlak yok", response.body
+    assert_match "Sıfır Halüsinasyon Güvencesi", response.body
   end
 
   test "should get new" do
