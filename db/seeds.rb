@@ -57,12 +57,12 @@ fleet_specs = [
       DESC
     },
     photos: [
-      { filename: "01_bmw_front_three_quarter.jpg", url: "https://upload.wikimedia.org/wikipedia/commons/0/03/2019_BMW_320d_xDrive_M_Sport_2.0_Front.jpg" },
-      { filename: "02_bmw_front.jpg",               url: "https://upload.wikimedia.org/wikipedia/commons/a/ab/2019_Brilliance-BMW_325i_%28front%29.jpg" },
-      { filename: "03_bmw_side.jpg",                url: "https://upload.wikimedia.org/wikipedia/commons/3/38/BMW_3-Series_%2852823659926%29.jpg" },
-      { filename: "04_bmw_rear_three_quarter.jpg",  url: "https://upload.wikimedia.org/wikipedia/commons/e/eb/2019_BMW_320d_xDrive_M_Sport_2.0_Rear.jpg" },
-      { filename: "05_bmw_rear.jpg",                url: "https://upload.wikimedia.org/wikipedia/commons/b/b9/2019_Brilliance-BMW_325i_%28rear%29.jpg" },
-      { filename: "06_bmw_interior.jpg",            url: "https://upload.wikimedia.org/wikipedia/commons/6/63/2023_BMW_318i_dashboard.jpg" }
+      { filename: "01_bmw_front_three_quarter.jpg", url: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80" },
+      { filename: "02_bmw_front.jpg",               url: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?auto=format&fit=crop&w=1200&q=80" },
+      { filename: "03_bmw_side.jpg",                url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1200&q=80" },
+      { filename: "04_bmw_rear_three_quarter.jpg",  url: "https://images.unsplash.com/photo-1556189250-72ba954cfc2b?auto=format&fit=crop&w=1200&q=80" },
+      { filename: "05_bmw_rear.jpg",                url: "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=1200&q=80" },
+      { filename: "06_bmw_interior.jpg",            url: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1200&q=80" }
     ]
   },
   # 2. Electric: Tesla Model 3 Long Range
@@ -91,12 +91,12 @@ fleet_specs = [
       DESC
     },
     photos: [
-      { filename: "01_tesla_front_three_quarter.jpg", url: "https://upload.wikimedia.org/wikipedia/commons/9/91/2019_Tesla_Model_3_Performance_AWD_Front.jpg" },
-      { filename: "02_tesla_front.jpg",               url: "https://upload.wikimedia.org/wikipedia/commons/4/4b/2018_Tesla_Model_3_front_view_%281%29.jpg" },
-      { filename: "03_tesla_side.jpg",                url: "https://upload.wikimedia.org/wikipedia/commons/0/0c/2018_Tesla_Model_3_Long_Range_Dual_Motor_side.jpg" },
-      { filename: "04_tesla_rear_three_quarter.jpg",  url: "https://upload.wikimedia.org/wikipedia/commons/1/14/2018_Tesla_Model_3_rear_view_%281%29.jpg" },
-      { filename: "05_tesla_rear.jpg",                url: "https://upload.wikimedia.org/wikipedia/commons/e/e2/2018_Tesla_Model_3_Dual_Motor_rear.jpg" },
-      { filename: "06_tesla_interior.jpg",            url: "https://upload.wikimedia.org/wikipedia/commons/6/67/2018_Tesla_Model_3_interior.jpg" }
+      { filename: "01_tesla_front_three_quarter.jpg", url: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=1200&q=80" },
+      { filename: "02_tesla_front.jpg",               url: "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1200&q=80" },
+      { filename: "03_tesla_side.jpg",                url: "https://images.unsplash.com/photo-1536700503339-1e4b06520771?auto=format&fit=crop&w=1200&q=80" },
+      { filename: "04_tesla_rear_three_quarter.jpg",  url: "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=1200&q=80" },
+      { filename: "05_tesla_rear.jpg",                url: "https://images.unsplash.com/photo-1571987502227-9231b837d92a?auto=format&fit=crop&w=1200&q=80" },
+      { filename: "06_tesla_interior.jpg",            url: "https://images.unsplash.com/photo-1620891549027-942fdc95d3f5?auto=format&fit=crop&w=1200&q=80" }
     ]
   },
   # 3. SUV / Sport: Porsche Macan GTS
@@ -125,12 +125,12 @@ fleet_specs = [
       DESC
     },
     photos: [
-      { filename: "01_porsche_front_three_quarter.jpg", url: "https://upload.wikimedia.org/wikipedia/commons/9/93/Porsche_Macan_GTS_%2895B%29_IMG_1427.jpg" },
-      { filename: "02_porsche_front.jpg",               url: "https://upload.wikimedia.org/wikipedia/commons/e/e5/2015_Porsche_Macan_S_Diesel_3.0_Front.jpg" },
-      { filename: "03_porsche_side.jpg",                url: "https://upload.wikimedia.org/wikipedia/commons/a/af/Porsche_Macan_GTS_Gen_3_side.jpg" },
-      { filename: "04_porsche_rear_three_quarter.jpg",  url: "https://upload.wikimedia.org/wikipedia/commons/d/d7/Porsche_Macan_GTS_%2895B%29_IMG_1428.jpg" },
-      { filename: "05_porsche_rear.jpg",                url: "https://upload.wikimedia.org/wikipedia/commons/2/23/2015_Porsche_Macan_S_Diesel_3.0_Rear.jpg" },
-      { filename: "06_porsche_interior.jpg",            url: "https://upload.wikimedia.org/wikipedia/commons/c/c5/Porsche_Macan_Turbo_%2895B%29_%E2%80%93_Cockpit%2C_28._Februar_2015%2C_D%C3%BCsseldorf.jpg" }
+      { filename: "01_porsche_front_three_quarter.jpg", url: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1200&q=80" },
+      { filename: "02_porsche_front.jpg",               url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80" },
+      { filename: "03_porsche_side.jpg",                url: "https://images.unsplash.com/photo-1580274455191-1c62238fa333?auto=format&fit=crop&w=1200&q=80" },
+      { filename: "04_porsche_rear_three_quarter.jpg",  url: "https://images.unsplash.com/photo-1611821064430-0d40291d0f0b?auto=format&fit=crop&w=1200&q=80" },
+      { filename: "05_porsche_rear.jpg",                url: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?auto=format&fit=crop&w=1200&q=80" },
+      { filename: "06_porsche_interior.jpg",            url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=1200&q=80" }
     ]
   }
 ]

@@ -69,11 +69,13 @@
 
         <!-- Right Quick Controls -->
         <div class="flex items-center gap-3">
-          <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-500 text-xs hover:bg-slate-200 transition cursor-pointer">
+          <button type="button"
+                  onclick="const s = document.getElementById('fleet-search-input'); if (s) { s.focus(); s.scrollIntoView({ behavior: 'smooth', block: 'center' }); } else { window.location.href = '<%= root_path(anchor: 'fleet-search-input') %>'; }"
+                  class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-500 text-xs hover:bg-slate-200 transition cursor-pointer">
             <span class="material-symbols-outlined text-sm">search</span>
             <span>Quick search inventory</span>
             <kbd class="px-1.5 py-0.5 rounded bg-white text-slate-600 font-mono text-[10px] shadow-xs">⌘K</kbd>
-          </div>
+          </button>
 
           <%= link_to new_listing_path, class: "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#1D4ED8] hover:bg-blue-800 text-white font-semibold text-xs shadow-sm transition active:scale-[0.99]" do %>
             <span class="material-symbols-outlined text-sm">photo_camera</span>
@@ -93,21 +95,25 @@
       </div>
 
       <!-- Lower Navigation & Telemetry Tier -->
+      <% studio_target_listing = (@listing if defined?(@listing) && @listing&.persisted?) || Listing.order(created_at: :desc).first %>
       <div class="border-t border-slate-200 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-10 flex items-center justify-between text-xs">
           <nav class="flex items-center gap-6 h-full font-medium">
             <%= link_to root_path, class: "h-full flex items-center border-b-2 #{current_page?(root_path) ? 'border-[#1D4ED8] text-[#1D4ED8] font-semibold' : 'border-transparent text-slate-600 hover:text-slate-900'} transition-colors" do %>
               Inventory & Merchandising
             <% end %>
-            <a href="#" class="h-full flex items-center border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition-colors">
+            <%= link_to (studio_target_listing ? listing_path(studio_target_listing, anchor: "turntable-container") : root_path),
+                        class: "h-full flex items-center border-b-2 #{defined?(@listing) && @listing&.persisted? ? 'border-[#1D4ED8] text-[#1D4ED8] font-semibold' : 'border-transparent text-slate-600 hover:text-slate-900'} transition-colors" do %>
               Vehicle 360 Studio
-            </a>
-            <a href="#" class="h-full flex items-center border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition-colors">
+            <% end %>
+            <%= link_to (defined?(@listing) && @listing&.persisted? ? listing_path(@listing, anchor: "before-after-analytics") : root_path(anchor: "telemetry-analytics")),
+                        class: "h-full flex items-center border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition-colors" do %>
               CTR & Performance Analytics
-            </a>
-            <a href="#" class="h-full flex items-center border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition-colors">
+            <% end %>
+            <%= link_to new_listing_path,
+                        class: "h-full flex items-center border-b-2 #{current_page?(new_listing_path) ? 'border-[#1D4ED8] text-[#1D4ED8] font-semibold' : 'border-transparent text-slate-600 hover:text-slate-900'} transition-colors" do %>
               Studio Asset Enhancer / Staging
-            </a>
+            <% end %>
           </nav>
 
           <div class="hidden md:flex items-center gap-4 text-slate-500 font-medium">

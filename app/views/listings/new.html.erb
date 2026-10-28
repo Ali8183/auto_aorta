@@ -1,13 +1,13 @@
 <div class="max-w-4xl mx-auto space-y-8">
   <!-- Top Navigation & Header -->
   <div class="space-y-1">
-    <div class="flex items-center space-x-2 text-xs text-slate-400">
-      <%= link_to "Araç Filosu", root_path, class: "hover:text-blue-400 transition" %>
-      <span>/</span>
-      <span class="text-slate-300 font-medium">Yeni Araç & AI Studio Girişi</span>
+    <div class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+      <%= link_to "Inventory & Merchandising", root_path, class: "hover:text-[#1D4ED8] transition" %>
+      <span class="material-symbols-outlined text-xs text-slate-300">chevron_right</span>
+      <span class="text-slate-800 font-semibold">Yeni Araç & AI Studio Ingest</span>
     </div>
-    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Yeni Araç İlanı Ekle</h1>
-    <p class="text-sm text-slate-400">
+    <h1 class="font-headline text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Yeni Araç İlanı Ekle</h1>
+    <p class="text-sm text-slate-500">
       Araç bilgilerini ve ticari kondisyonu girin. AutoAorta AI motoru 360° döner vitrin sekansını ve altın oran Hero Shot vitrin açısını otomatik oluşturacaktır.
     </p>
   </div>
@@ -15,7 +15,7 @@
   <!-- Form Container -->
   <%= form_with model: @listing, local: true, class: "space-y-8" do |f| %>
     <% if @listing.errors.any? %>
-      <div class="p-4 rounded-2xl bg-rose-950/60 border border-rose-500/40 text-rose-200 text-sm space-y-1">
+      <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm space-y-1 shadow-xs">
         <div class="font-bold">Lütfen formdaki hataları düzeltin:</div>
         <ul class="list-disc list-inside text-xs space-y-0.5">
           <% @listing.errors.full_messages.each do |msg| %>
@@ -26,141 +26,137 @@
     <% end %>
 
     <!-- Card 1: Temel Bilgiler & Ticari Özellikler -->
-    <div class="bg-slate-900 rounded-3xl border border-slate-800 p-6 sm:p-8 space-y-6">
-      <h2 class="text-lg font-bold text-white tracking-tight flex items-center space-x-2">
-        <span class="w-6 h-6 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center text-xs font-black">1</span>
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 space-y-6 shadow-sm">
+      <h2 class="font-headline text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
+        <span class="w-7 h-7 rounded-lg bg-blue-50 text-[#1D4ED8] border border-blue-200 flex items-center justify-center text-xs font-black">1</span>
         <span>Araç Tanımı & Ticari Bilgiler</span>
       </h2>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <%= f.label :title, "İlan Başlığı", class: "block text-xs font-semibold text-slate-300 mb-1" %>
-          <%= f.text_field :title, placeholder: "Örn: 2023 BMW 320i M Sport Hatasız Stüdyo Çekim", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" %>
+          <%= f.label :title, "İlan Başlığı", class: "block text-xs font-semibold text-slate-700 mb-1.5" %>
+          <%= f.text_field :title, placeholder: "Örn: 2023 BMW 320i M Sport Hatasız Stüdyo Çekim", class: "w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 transition" %>
         </div>
 
         <div>
-          <%= f.label :brand, "Marka", class: "block text-xs font-semibold text-slate-300 mb-1" %>
-          <%= f.text_field :brand, placeholder: "BMW, Tesla, Porsche, Mercedes-Benz...", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" %>
+          <%= f.label :brand, "Marka", class: "block text-xs font-semibold text-slate-700 mb-1.5" %>
+          <%= f.text_field :brand, placeholder: "BMW, Tesla, Porsche, Mercedes-Benz...", class: "w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 transition" %>
         </div>
 
         <div>
-          <%= f.label :model_name, "Model / Seri", class: "block text-xs font-semibold text-slate-300 mb-1" %>
-          <%= f.text_field :model_name, placeholder: "Örn: 320i Sedan M Sport", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" %>
+          <%= f.label :model_name, "Model / Seri", class: "block text-xs font-semibold text-slate-700 mb-1.5" %>
+          <%= f.text_field :model_name, placeholder: "Örn: 320i Sedan M Sport", class: "w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 transition" %>
         </div>
 
         <div>
-          <%= f.label :year, "Model Yılı", class: "block text-xs font-semibold text-slate-300 mb-1" %>
-          <%= f.number_field :year, placeholder: "2023", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" %>
+          <%= f.label :year, "Model Yılı", class: "block text-xs font-semibold text-slate-700 mb-1.5" %>
+          <%= f.number_field :year, placeholder: "2023", class: "w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 transition" %>
         </div>
 
         <div>
-          <%= f.label :price, "Fiyat (₺)", class: "block text-xs font-semibold text-slate-300 mb-1" %>
-          <%= f.number_field :price, placeholder: "2950000", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" %>
+          <%= f.label :price, "Fiyat (₺)", class: "block text-xs font-semibold text-slate-700 mb-1.5" %>
+          <%= f.number_field :price, placeholder: "2950000", class: "w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 transition" %>
         </div>
 
         <div>
-          <%= f.label :mileage, "Kilometre (km)", class: "block text-xs font-semibold text-slate-300 mb-1" %>
-          <%= f.number_field :mileage, placeholder: "18400", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" %>
+          <%= f.label :mileage, "Kilometre (km)", class: "block text-xs font-semibold text-slate-700 mb-1.5" %>
+          <%= f.number_field :mileage, placeholder: "18400", class: "w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 transition" %>
         </div>
 
         <div>
-          <%= f.label :fuel_type, "Yakıt Türü", class: "block text-xs font-semibold text-slate-300 mb-1" %>
-          <%= f.select :fuel_type, ["Benzin", "Elektrik", "Hibrit", "Dizel"], {}, class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" %>
+          <%= f.label :fuel_type, "Yakıt Türü", class: "block text-xs font-semibold text-slate-700 mb-1.5" %>
+          <%= f.select :fuel_type, ["Benzin", "Elektrik", "Hibrit", "Dizel"], {}, class: "w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 transition" %>
         </div>
 
         <div>
-          <%= f.label :transmission, "Vites Türü", class: "block text-xs font-semibold text-slate-300 mb-1" %>
-          <%= f.select :transmission, ["Otomatik", "Manuel", "Yarı Otomatik"], {}, class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" %>
+          <%= f.label :transmission, "Vites Türü", class: "block text-xs font-semibold text-slate-700 mb-1.5" %>
+          <%= f.select :transmission, ["Otomatik", "Manuel", "Yarı Otomatik"], {}, class: "w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 transition" %>
         </div>
 
         <div>
-          <%= f.label :color, "Renk", class: "block text-xs font-semibold text-slate-300 mb-1" %>
-          <%= f.text_field :color, placeholder: "Örn: Mineral Gri, İnci Beyazı...", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" %>
+          <%= f.label :color, "Renk", class: "block text-xs font-semibold text-slate-700 mb-1.5" %>
+          <%= f.text_field :color, placeholder: "Örn: Mineral Gri, İnci Beyazı...", class: "w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 transition" %>
         </div>
 
         <div>
-          <%= f.label :body_type, "Kasa Tipi", class: "block text-xs font-semibold text-slate-300 mb-1" %>
-          <%= f.select :body_type, ["Sedan", "SUV", "Hatchback", "Coupe", "Cabriolet"], {}, class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" %>
+          <%= f.label :body_type, "Kasa Tipi", class: "block text-xs font-semibold text-slate-700 mb-1.5" %>
+          <%= f.select :body_type, ["Sedan", "SUV", "Hatchback", "Coupe", "Cabriolet"], {}, class: "w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 transition" %>
         </div>
 
         <div>
-          <%= f.label :expertise, "Ekspertiz Durumu", class: "block text-xs font-semibold text-slate-300 mb-1" %>
-          <%= f.text_field :expertise, placeholder: "Hatasız / Boyasız / Değişensiz", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" %>
+          <%= f.label :expertise, "Ekspertiz Durumu", class: "block text-xs font-semibold text-slate-700 mb-1.5" %>
+          <%= f.text_field :expertise, placeholder: "Hatasız / Boyasız / Değişensiz", class: "w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 transition" %>
         </div>
 
         <div>
-          <%= f.label :tramer, "Tramer Durumu", class: "block text-xs font-semibold text-slate-300 mb-1" %>
-          <%= f.text_field :tramer, placeholder: "Hasar Kaydı Yok / 0 TL", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" %>
+          <%= f.label :tramer, "Tramer Durumu", class: "block text-xs font-semibold text-slate-700 mb-1.5" %>
+          <%= f.text_field :tramer, placeholder: "Hasar Kaydı Yok / 0 TL", class: "w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 transition" %>
         </div>
 
         <div>
-          <%= f.label :dealer_name, "Galeri / Satıcı Adı", class: "block text-xs font-semibold text-slate-300 mb-1" %>
-          <%= f.text_field :dealer_name, placeholder: "AutoAorta Premier Fleet", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" %>
+          <%= f.label :dealer_name, "Galeri / Satıcı Adı", class: "block text-xs font-semibold text-slate-700 mb-1.5" %>
+          <%= f.text_field :dealer_name, placeholder: "AutoAorta Premier Fleet", class: "w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 transition" %>
         </div>
 
         <div>
-          <%= f.label :dealer_phone, "Satıcı Telefonu / WhatsApp", class: "block text-xs font-semibold text-slate-300 mb-1" %>
-          <%= f.text_field :dealer_phone, placeholder: "+90 532 500 40 30", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" %>
+          <%= f.label :dealer_phone, "Satıcı Telefonu / WhatsApp", class: "block text-xs font-semibold text-slate-700 mb-1.5" %>
+          <%= f.text_field :dealer_phone, placeholder: "+90 532 500 40 30", class: "w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 transition" %>
         </div>
       </div>
 
       <div>
-        <%= f.label :description, "İlan Açıklaması", class: "block text-xs font-semibold text-slate-300 mb-1" %>
-        <%= f.text_area :description, rows: 4, placeholder: "Aracın durumu, opsiyonları, servis geçmişi ve donanım paketleri...", class: "w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" %>
+        <%= f.label :description, "İlan Açıklaması", class: "block text-xs font-semibold text-slate-700 mb-1.5" %>
+        <%= f.text_area :description, rows: 4, placeholder: "Aracın durumu, opsiyonları, servis geçmişi ve donanım paketleri...", class: "w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 transition" %>
       </div>
     </div>
 
     <!-- Card 2: AI Stüdyo & Toplu Fotoğraf Yükleme -->
-    <div class="bg-slate-900 rounded-3xl border border-slate-800 p-6 sm:p-8 space-y-6">
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 space-y-6 shadow-sm">
       <div class="flex items-start justify-between">
         <div>
-          <h2 class="text-lg font-bold text-white tracking-tight flex items-center space-x-2">
-            <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-black">2</span>
+          <h2 class="font-headline text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center text-xs font-black">2</span>
             <span>AI Studio Fotoğraf Yükleme (360° Açı & Vitrin Analizi)</span>
           </h2>
-          <p class="text-xs text-slate-400 mt-1">
+          <p class="text-xs text-slate-500 mt-1">
             Aracın etrafında çekilmiş dış fotoğraflarını ve iç mekan fotoğraflarını topluca seçiniz.
           </p>
         </div>
-        <span class="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold">
-          Otomatik 360 Sıralama
+        <span class="px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-[#1D4ED8] text-xs font-semibold">
+          Otomatik 360° Sıralama
         </span>
       </div>
 
       <!-- AI Feature Callout -->
-      <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex items-start space-x-3 text-xs text-slate-300">
-        <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
+      <div class="p-4 rounded-xl bg-blue-50/70 border border-blue-200 flex items-start gap-3 text-xs text-slate-700">
+        <span class="material-symbols-outlined text-[#1D4ED8] text-lg mt-0.5">auto_awesome</span>
         <div class="leading-relaxed">
-          <span class="font-bold text-white">Yapay Zeka Nasıl Çalışır?</span> Fotoğraflar yüklendiğinde, Multimodal Vision motorumuz açıları otomatik tanır (Ön 3/4, Ön, Yan, Arka 3/4, Arka, Kokpit). Stüdyo simetri puanıyla en kusursuz Ön 3/4 açılı kareyi <span class="text-blue-400 font-semibold">Hero Shot</span> olarak vitrine atar ve dış çekimleri 360° döner sekansa bağlar.
+          <span class="font-bold text-slate-900">Yapay Zeka Nasıl Çalışır?</span> Fotoğraflar yüklendiğinde, Multimodal Vision motorumuz açıları otomatik tanır (Ön 3/4, Ön, Yan, Arka 3/4, Arka, Kokpit). Stüdyo simetri puanıyla en kusursuz Ön 3/4 açılı kareyi <span class="text-[#1D4ED8] font-semibold">Hero Shot</span> olarak vitrine atar ve dış çekimleri 360° döner sekansa bağlar.
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-semibold text-slate-300 mb-2">Fotoğrafları Seçin (Birden Fazla Dosya Yüklenebilir)</label>
-        <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-slate-800 border-dashed rounded-2xl hover:border-blue-500/60 transition bg-slate-950/40">
+        <label class="block text-xs font-semibold text-slate-700 mb-2">Fotoğrafları Seçin (Birden Fazla Dosya Yüklenebilir)</label>
+        <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-slate-200 border-dashed rounded-2xl hover:border-[#1D4ED8] transition bg-slate-50/60">
           <div class="space-y-2 text-center">
-            <svg class="mx-auto h-12 w-12 text-slate-500" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-              <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <div class="text-sm text-slate-400">
-              <label for="listing_photos" class="relative cursor-pointer rounded-md font-semibold text-blue-400 hover:text-blue-300 focus-within:outline-none">
+            <span class="material-symbols-outlined text-4xl text-slate-400">cloud_upload</span>
+            <div class="text-sm text-slate-600">
+              <label for="listing_photos" class="relative cursor-pointer rounded-md font-semibold text-[#1D4ED8] hover:underline focus-within:outline-none">
                 <span>Fotoğrafları Seç</span>
                 <%= f.file_field :photos, multiple: true, accept: "image/*", class: "sr-only", id: "listing_photos" %>
               </label>
               <span class="pl-1">veya sürükleyip bırakın</span>
             </div>
-            <p class="text-[11px] text-slate-500">PNG, JPG, WEBP formatları desteklenir</p>
+            <p class="text-[11px] text-slate-400">PNG, JPG, WEBP formatları desteklenir</p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Submit Toolbar -->
-    <div class="flex items-center justify-end space-x-4 pt-4">
-      <%= link_to "İptal", root_path, class: "px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition" %>
-      <%= f.submit "İlanı Kaydet & AI Stüdyoyu Başlat", class: "px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-xl shadow-blue-600/30 transition cursor-pointer" %>
+    <div class="flex items-center justify-end gap-3 pt-2">
+      <%= link_to "İptal", root_path, class: "px-5 py-3 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition" %>
+      <%= f.submit "İlanı Kaydet & AI Stüdyoyu Başlat", class: "px-6 py-3 rounded-xl bg-[#1D4ED8] hover:bg-blue-800 text-white font-bold text-xs shadow-sm transition cursor-pointer" %>
     </div>
   <% end %>
 </div>

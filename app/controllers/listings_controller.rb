@@ -53,18 +53,12 @@ class ListingsController < ApplicationController
   end
 
   def simulate_time_lapse
-    if @listing.optimized?
-      # Simulate that 25 hours passed since optimization
-      @listing.update_columns(optimized_at: 25.hours.ago)
-      if @listing.auto_publish_if_expired!
-        redirect_to @listing, notice: "⏱️ SLA Zaman Kuralı Tetiklendi: 24 saatlik süre aşımı simüle edildi ve araç otomatik olarak YAYINA ALINDI (Auto-Published)!"
-      else
-        redirect_to @listing, alert: "Otomatik yayınlama koşulu sağlanamadı."
-      end
-    elsif @listing.published?
-      redirect_to @listing, alert: "İlan zaten yayında."
+    @listing.start_ai_optimization! if @listing.draft? || @listing.analyzing?
+    @listing.update_columns(status: Listing.statuses[:optimized], optimized_at: 25.hours.ago)
+    if @listing.auto_publish_if_expired!
+      redirect_to @listing, notice: "⏱️ SLA Zaman Kuralı Tetiklendi: 24 saatlik süre aşımı simüle edildi ve araç otomatik olarak YAYINA ALINDI (Auto-Published)!"
     else
-      redirect_to @listing, alert: "SLA kuralı sadece 'Optimize Edildi' durumundaki ilanlar için geçerlidir. Lütfen önce AI Optimizasyonunu başlatın."
+      redirect_to @listing, alert: "Otomatik yayınlama koşulu sağlanamadı."
     end
   end
 

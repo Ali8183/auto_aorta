@@ -1,11 +1,12 @@
 <div class="space-y-8">
   <% fallback_src = vehicle_fallback_image(@listing) %>
   <% hero_src = listing_hero_image_url(@listing) %>
-  <% spin_image_urls = @spin_photos.any? ? @spin_photos.map { |p| url_for(p) rescue fallback_src } : [hero_src] %>
+  <% brand_gallery = brand_angle_gallery(@listing) %>
+  <% spin_image_urls = safe_spin_image_urls(@listing, @spin_photos) %>
   <% spin_angle_labels = @spin_photos.any? ? @spin_photos.map.with_index do |p, idx|
        analysis = @photo_analyses.find { |a| a.blob_id == p.blob_id }
        analysis&.detected_angle&.titleize || "Açı #{idx + 1}"
-     end : ["45° Hero Vitrin (Front 3/4)"] %>
+     end : ["Front Three Quarter", "Front", "Side", "Rear Three Quarter", "Rear"] %>
 
   <!-- Top Breadcrumb & Studio Command Bar (Stitch Daylight Design) -->
   <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-200">
@@ -129,12 +130,13 @@
             <div class="flex items-center gap-2">
               <button type="button"
                       onclick="document.querySelectorAll('.hotspot-pin').forEach(p => p.classList.toggle('hidden'))"
-                      class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/90 backdrop-blur-md hover:bg-slate-50 text-slate-700 text-xs font-semibold border border-slate-200 shadow-xs transition">
+                      class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/90 backdrop-blur-md hover:bg-slate-50 text-slate-700 text-xs font-semibold border border-slate-200 shadow-xs transition cursor-pointer">
                 <span class="material-symbols-outlined text-sm text-[#1D4ED8]">pin_drop</span>
                 <span>Hotspots (4 Aktif)</span>
               </button>
               <button type="button"
-                      class="p-1 rounded-lg bg-white/90 backdrop-blur-md hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-xs transition"
+                      data-action="click->vehicle-spin#toggleFullscreen"
+                      class="p-1 rounded-lg bg-white/90 backdrop-blur-md hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-xs transition cursor-pointer"
                       title="Tam Ekran">
                 <span class="material-symbols-outlined text-base">fullscreen</span>
               </button>
@@ -146,10 +148,12 @@
                data-vehicle-spin-target="spinContainer"
                data-action="pointerdown->vehicle-spin#onPointerDown">
 
-            <img data-vehicle-spin-target="image"
+            <img id="turntable-main-image"
+                 data-vehicle-spin-target="image"
                  src="<%= spin_image_urls.first || fallback_src %>"
                  alt="<%= @listing.title %>"
                  class="w-full h-full max-h-[460px] object-contain pointer-events-none select-none transition-transform duration-75"
+                 onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
                  onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
 
             <!-- Interactive Hotspot Pins (Daylight Showroom) -->
@@ -265,9 +269,9 @@
                 <div class="flex items-center gap-2 text-xs text-slate-500">
                   <span class="hidden sm:inline">D65 Gün Işığı Simülasyonu</span>
                   <button type="button"
-                          onclick="location.reload()"
-                          class="p-1 text-slate-400 hover:text-slate-700 transition"
-                          title="Yeniden Başlat">
+                          data-action="click->vehicle-spin#resetSpin"
+                          class="p-1 text-slate-400 hover:text-slate-700 transition cursor-pointer"
+                          title="Kare 1'e Sıfırla">
                     <span class="material-symbols-outlined text-base">restart_alt</span>
                   </button>
                 </div>
@@ -279,53 +283,30 @@
 
       <!-- Detail Asset Carousel Strip (4 High-Res Studio Capture Angles) -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="flex flex-col gap-1 p-2 rounded-xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition">
-          <div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-slate-100">
-            <img class="w-full h-full object-cover"
-                 src="<%= hero_src %>"
-                 alt="Ön 45 Hero"
-                 onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
-            <span class="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-slate-900/80 text-white font-mono text-[10px]">Ön 3/4 Hero</span>
-          </div>
-          <span class="text-[11px] font-semibold text-slate-800 truncate px-0.5">Altın Oran Vitrin</span>
-        </div>
-
-        <div class="flex flex-col gap-1 p-2 rounded-xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition">
-          <div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-slate-100">
-            <img class="w-full h-full object-cover"
-                 src="<%= spin_image_urls.second || fallback_src %>"
-                 alt="Yan Profil"
-                 onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
-            <span class="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-slate-900/80 text-white font-mono text-[10px]">Yan Profil</span>
-          </div>
-          <span class="text-[11px] font-semibold text-slate-800 truncate px-0.5">Gövde & Çizgi</span>
-        </div>
-
-        <div class="flex flex-col gap-1 p-2 rounded-xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition">
-          <div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-slate-100">
-            <img class="w-full h-full object-cover"
-                 src="<%= spin_image_urls.last || fallback_src %>"
-                 alt="Arka 3/4 Açı"
-                 onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
-            <span class="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-slate-900/80 text-white font-mono text-[10px]">Arka 3/4</span>
-          </div>
-          <span class="text-[11px] font-semibold text-slate-800 truncate px-0.5">Arka Aerodinamik</span>
-        </div>
-
-        <div class="flex flex-col gap-1 p-2 rounded-xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition">
-          <div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-slate-100">
-            <img class="w-full h-full object-cover"
-                 src="<%= fallback_src %>"
-                 alt="İç Mekan Kokpit"
-                 onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
-            <span class="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-slate-900/80 text-white font-mono text-[10px]">Kokpit Detay</span>
-          </div>
-          <span class="text-[11px] font-semibold text-slate-800 truncate px-0.5">Deri & Konsol</span>
-        </div>
+        <% [
+             { src: hero_src, badge: "Ön 3/4 Hero", title: "Altın Oran Vitrin" },
+             { src: (spin_image_urls[2] || brand_gallery[:side] || fallback_src), badge: "Yan Profil", title: "Gövde & Çizgi" },
+             { src: (spin_image_urls[3] || brand_gallery[:rear_three_quarter] || fallback_src), badge: "Arka 3/4", title: "Arka Aerodinamik" },
+             { src: (brand_gallery[:interior] || fallback_src), badge: "Kokpit Detay", title: "Deri & Konsol" }
+           ].each do |thumb| %>
+          <button type="button"
+                  onclick="const mainImg = document.getElementById('turntable-main-image'); if(mainImg){ mainImg.src = '<%= thumb[:src] %>'; } document.getElementById('turntable-container')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });"
+                  class="flex flex-col gap-1 p-2 rounded-xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-[#1D4ED8] transition text-left cursor-pointer group">
+            <div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-slate-100">
+              <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                   src="<%= thumb[:src] %>"
+                   alt="<%= thumb[:badge] %>"
+                   onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
+                   onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
+              <span class="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-slate-900/80 text-white font-mono text-[10px]"><%= thumb[:badge] %></span>
+            </div>
+            <span class="text-[11px] font-semibold text-slate-800 group-hover:text-[#1D4ED8] truncate px-0.5"><%= thumb[:title] %></span>
+          </button>
+        <% end %>
       </div>
 
       <!-- BEFORE vs AFTER: Vitrin Karşılaştırma Kartı (Impel.io & Carvana Standardı) -->
-      <div class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+      <div id="before-after-analytics" class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm scroll-mt-24">
         <div class="px-5 py-3.5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
           <div class="flex items-center gap-2.5">
             <div class="w-7 h-7 rounded-lg bg-blue-100 text-[#1D4ED8] flex items-center justify-center">
@@ -353,8 +334,9 @@
 
             <div class="relative aspect-video rounded-xl overflow-hidden bg-slate-200 border border-slate-200">
               <img class="w-full h-full object-cover filter brightness-90 contrast-90"
-                   src="<%= spin_image_urls.last || fallback_src %>"
+                   src="<%= spin_image_urls.last || brand_gallery[:rear] || fallback_src %>"
                    alt="Geleneksel Yan Açı"
+                   onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
                    onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
               <div class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-slate-900/80 text-[10px] text-slate-200">
                 ⚠️ Düşük Vitrin Çekiciliği
@@ -393,6 +375,7 @@
               <img class="w-full h-full object-cover"
                    src="<%= hero_src %>"
                    alt="AutoAorta Hero Shot"
+                   onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
                    onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
               <div class="absolute top-2 right-2 px-2 py-0.5 rounded bg-[#1D4ED8] text-white text-[11px] font-bold shadow-xs">
                 ⭐ 45° Hero Vitrin
@@ -728,7 +711,7 @@
   </div>
 
   <!-- AI Fotoğraf Analiz & Sekans Matrisi -->
-  <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+  <div id="ai-photo-matrix" class="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4 scroll-mt-24">
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
       <div>
         <h3 class="font-headline text-base font-bold text-slate-900 tracking-tight">AI Vision Studio Fotoğraf Matrisi</h3>
@@ -740,16 +723,18 @@
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-      <% @photo_analyses.each do |analysis| %>
+      <% @photo_analyses.each_with_index do |analysis, idx| %>
         <% photo = @listing.photos.find { |p| p.blob_id == analysis.blob_id } %>
-        <% next unless photo.present? %>
-        <% photo_url = url_for(photo) rescue fallback_src %>
+        <% photo_url = safe_photo_url(photo, @listing, angle: analysis.detected_angle, index: idx) %>
 
-        <div class="rounded-xl border <%= analysis.is_hero_candidate? ? 'border-blue-500 bg-blue-50/20 ring-2 ring-blue-500/20' : 'border-slate-200 bg-slate-50/50' %> p-2.5 space-y-2 flex flex-col justify-between">
-          <div class="relative aspect-video rounded-lg overflow-hidden bg-slate-100">
-            <img class="w-full h-full object-cover"
+        <button type="button"
+                onclick="const mainImg = document.getElementById('turntable-main-image'); if(mainImg){ mainImg.src = '<%= photo_url %>'; } document.getElementById('turntable-container')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });"
+                class="rounded-xl border <%= analysis.is_hero_candidate? ? 'border-blue-500 bg-blue-50/20 ring-2 ring-blue-500/20' : 'border-slate-200 bg-slate-50/50 hover:border-[#1D4ED8]' %> p-2.5 space-y-2 flex flex-col justify-between text-left cursor-pointer transition group">
+          <div class="relative aspect-video rounded-lg overflow-hidden bg-slate-100 w-full">
+            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                  src="<%= photo_url %>"
                  alt="<%= analysis.detected_angle %>"
+                 onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
                  onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
             <% if analysis.is_hero_candidate? %>
               <div class="absolute top-1 right-1 px-1.5 py-0.2 rounded bg-[#1D4ED8] text-white text-[9px] font-extrabold shadow-xs">
@@ -763,8 +748,8 @@
             <% end %>
           </div>
 
-          <div class="space-y-0.5">
-            <div class="text-[11px] font-bold text-slate-900 truncate">
+          <div class="space-y-0.5 w-full">
+            <div class="text-[11px] font-bold text-slate-900 group-hover:text-[#1D4ED8] truncate">
               <%= analysis.detected_angle.to_s.titleize %>
             </div>
             <div class="flex items-center justify-between text-[10px]">
@@ -774,7 +759,7 @@
               </span>
             </div>
           </div>
-        </div>
+        </button>
       <% end %>
     </div>
   </div>

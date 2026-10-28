@@ -119,8 +119,8 @@ export default class extends Controller {
     this.stopAutoSpin()
     if (this.hasAutoPlayBtnTarget) {
       this.autoPlayBtnTarget.innerHTML = `
-        <svg class="w-4 h-4 inline-block mr-1 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-        Durdur
+        <span class="material-symbols-outlined text-sm">pause</span>
+        <span>Durdur</span>
       `
     }
     this.autoSpinInterval = setInterval(() => {
@@ -138,10 +138,50 @@ export default class extends Controller {
     }
     if (this.hasAutoPlayBtnTarget) {
       this.autoPlayBtnTarget.innerHTML = `
-        <svg class="w-4 h-4 inline-block mr-1 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        360° Otomatik Döndür
+        <span class="material-symbols-outlined text-sm">play_arrow</span>
+        <span>360° Otomatik Döndür</span>
       `
     }
+  }
+
+  selectFrame(event) {
+    this.stopAutoSpin()
+    const indexAttr = event.currentTarget.dataset.frameIndex
+    if (indexAttr !== undefined) {
+      const idx = parseInt(indexAttr, 10)
+      if (!isNaN(idx) && idx >= 0 && idx < this.imagesValue.length) {
+        this.currentIndexValue = idx
+        this.updateDisplay()
+        return
+      }
+    }
+    const urlAttr = event.currentTarget.dataset.photoUrl
+    const angleAttr = event.currentTarget.dataset.photoAngle
+    if (urlAttr && this.hasImageTarget) {
+      this.imageTarget.src = urlAttr
+      if (angleAttr && this.hasAngleLabelTarget) {
+        this.angleLabelTarget.textContent = angleAttr
+      }
+    }
+  }
+
+  toggleFullscreen() {
+    const container = document.getElementById("turntable-container") || this.element
+    if (!document.fullscreenElement) {
+      if (container.requestFullscreen) {
+        container.requestFullscreen().catch(() => {})
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {})
+      }
+    }
+  }
+
+  resetSpin() {
+    this.stopAutoSpin()
+    this.currentIndexValue = 0
+    this.updateDisplay()
   }
 
   updateDisplay() {

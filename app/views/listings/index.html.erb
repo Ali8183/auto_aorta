@@ -1,6 +1,6 @@
 <div class="space-y-8">
   <!-- Top Telemetry & Fleet Performance Health Ribbon (Stitch Daylight Bento) -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  <div id="telemetry-analytics" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 scroll-mt-24">
     <!-- Metric 1: Active Inventory -->
     <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between gap-3 relative overflow-hidden group hover:shadow-md transition-shadow">
       <div class="flex items-center justify-between">
@@ -83,26 +83,27 @@
       <!-- Search Input -->
       <div class="relative flex-1">
         <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none">search</span>
-        <input type="text"
+        <input id="fleet-search-input"
+               type="text"
                placeholder="VIN, Stok No, Marka, Model veya Renk Koduna göre ara..."
                class="w-full h-11 pl-11 pr-4 bg-slate-50 border border-slate-200 text-slate-800 rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#1D4ED8]/20 focus:border-[#1D4ED8] transition" />
       </div>
 
       <!-- Merchandising Status Segment Pills -->
-      <div class="flex items-center bg-slate-100 p-1 rounded-xl gap-1 overflow-x-auto text-xs font-semibold">
-        <button type="button" class="px-3.5 py-1.5 rounded-lg bg-white text-[#1D4ED8] shadow-xs flex items-center gap-1.5">
+      <div class="flex items-center bg-slate-100 p-1 rounded-xl gap-1 overflow-x-auto text-xs font-semibold" id="status-filter-pills">
+        <button type="button" data-filter-status="all" class="status-pill px-3.5 py-1.5 rounded-lg bg-white text-[#1D4ED8] shadow-xs flex items-center gap-1.5 cursor-pointer transition">
           <span>Tüm Filo</span>
           <span class="px-1.5 py-0.2 bg-blue-50 text-[#1D4ED8] text-[10px] font-bold rounded-full"><%= @listings.size %></span>
         </button>
-        <button type="button" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/60 transition flex items-center gap-1.5">
+        <button type="button" data-filter-status="published" class="status-pill px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/60 transition flex items-center gap-1.5 cursor-pointer">
           <span>Yayında / Web</span>
           <span class="px-1.5 py-0.2 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full"><%= @listings.where(status: :published).size %></span>
         </button>
-        <button type="button" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/60 transition flex items-center gap-1.5">
-          <span>360° Bekleyen</span>
-          <span class="px-1.5 py-0.2 bg-amber-50 text-amber-700 text-[10px] font-bold rounded-full">0</span>
+        <button type="button" data-filter-status="optimized" class="status-pill px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/60 transition flex items-center gap-1.5 cursor-pointer">
+          <span>Optimize / 360° Hazır</span>
+          <span class="px-1.5 py-0.2 bg-amber-50 text-amber-700 text-[10px] font-bold rounded-full"><%= @listings.where(status: :optimized).size %></span>
         </button>
-        <button type="button" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/60 transition flex items-center gap-1.5">
+        <button type="button" data-filter-status="draft" class="status-pill px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/60 transition flex items-center gap-1.5 cursor-pointer">
           <span>Taslak / Staging</span>
           <span class="px-1.5 py-0.2 bg-slate-200 text-slate-600 text-[10px] font-bold rounded-full"><%= @listings.where(status: :draft).size %></span>
         </button>
@@ -111,11 +112,11 @@
       <!-- Right Sort & Ingest CTA -->
       <div class="flex items-center gap-2">
         <div class="relative">
-          <select class="h-11 pl-3.5 pr-8 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 focus:border-[#1D4ED8] appearance-none">
-            <option>Sırala: En Yüksek CTR Artışı</option>
-            <option>Sırala: Fiyat (Yüksekten Düşüğe)</option>
-            <option>Sırala: Fiyat (Düşükten Yükseğe)</option>
-            <option>Sırala: Stok Günü (En Yeni)</option>
+          <select id="fleet-sort-select" class="h-11 pl-3.5 pr-8 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 focus:border-[#1D4ED8] appearance-none">
+            <option value="ctr">Sırala: En Yüksek CTR Artışı</option>
+            <option value="price_desc">Sırala: Fiyat (Yüksekten Düşüğe)</option>
+            <option value="price_asc">Sırala: Fiyat (Düşükten Yükseğe)</option>
+            <option value="newest">Sırala: Stok Günü (En Yeni)</option>
           </select>
           <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-base">expand_more</span>
         </div>
@@ -130,54 +131,54 @@
     <!-- Secondary Faceted Filters Row -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 pt-2 border-t border-slate-100 text-xs">
       <div class="relative">
-        <select class="w-full h-9 pl-3 pr-7 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 appearance-none cursor-pointer focus:outline-none">
-          <option>Marka: Tümü (<%= @listings.map(&:brand).uniq.join(', ') %>)</option>
+        <select id="filter-brand" class="w-full h-9 pl-3 pr-7 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 appearance-none cursor-pointer focus:outline-none">
+          <option value="all">Marka: Tümü (<%= @listings.map(&:brand).uniq.join(', ') %>)</option>
           <% @listings.map(&:brand).uniq.each do |brand| %>
-            <option><%= brand %></option>
+            <option value="<%= brand.downcase %>"><%= brand %></option>
           <% end %>
         </select>
         <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm">expand_more</span>
       </div>
 
       <div class="relative">
-        <select class="w-full h-9 pl-3 pr-7 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 appearance-none cursor-pointer focus:outline-none">
-          <option>Yıl: 2021 – 2024</option>
-          <option>2024 Model</option>
-          <option>2023 Model</option>
+        <select id="filter-year" class="w-full h-9 pl-3 pr-7 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 appearance-none cursor-pointer focus:outline-none">
+          <option value="all">Yıl: Tümü (2021 – 2024)</option>
+          <option value="2024">2024 Model</option>
+          <option value="2023">2023 Model</option>
         </select>
         <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm">expand_more</span>
       </div>
 
       <div class="relative">
-        <select class="w-full h-9 pl-3 pr-7 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 appearance-none cursor-pointer focus:outline-none">
-          <option>Yakıt: Benzin, Elektrik, Hibrit</option>
-          <option>Benzin</option>
-          <option>Elektrik (BEV)</option>
-          <option>Dizel</option>
+        <select id="filter-fuel" class="w-full h-9 pl-3 pr-7 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 appearance-none cursor-pointer focus:outline-none">
+          <option value="all">Yakıt: Tümü</option>
+          <option value="benzin">Benzin</option>
+          <option value="elektrik">Elektrik (BEV)</option>
+          <option value="dizel">Dizel</option>
         </select>
         <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm">expand_more</span>
       </div>
 
       <div class="relative">
-        <select class="w-full h-9 pl-3 pr-7 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 appearance-none cursor-pointer focus:outline-none">
-          <option>Vites: Otomatik, Manuel</option>
-          <option>Otomatik / Steptronic / PDK</option>
-          <option>Tek Vites EV</option>
+        <select id="filter-transmission" class="w-full h-9 pl-3 pr-7 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 appearance-none cursor-pointer focus:outline-none">
+          <option value="all">Vites: Tümü</option>
+          <option value="otomatik">Otomatik / Steptronic / PDK</option>
+          <option value="tek vites">Tek Vites EV</option>
         </select>
         <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm">expand_more</span>
       </div>
 
       <div class="flex items-center gap-2">
         <div class="relative flex-1">
-          <select class="w-full h-9 pl-3 pr-7 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 appearance-none cursor-pointer focus:outline-none">
-            <option>Fiyat: Tümü</option>
-            <option>₺2.000.000 altı</option>
-            <option>₺2.000.000 – ₺3.500.000</option>
-            <option>₺3.500.000 üstü</option>
+          <select id="filter-price" class="w-full h-9 pl-3 pr-7 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 appearance-none cursor-pointer focus:outline-none">
+            <option value="all">Fiyat: Tümü</option>
+            <option value="under_2m">₺2.000.000 altı</option>
+            <option value="2m_to_35m">₺2.000.000 – ₺3.500.000</option>
+            <option value="over_35m">₺3.500.000 üstü</option>
           </select>
           <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm">expand_more</span>
         </div>
-        <button type="button" class="h-9 px-2.5 rounded-lg bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition" title="Filtreleri Sıfırla">
+        <button id="reset-fleet-filters" type="button" class="h-9 px-2.5 rounded-lg bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition cursor-pointer" title="Filtreleri Sıfırla">
           <span class="material-symbols-outlined text-sm">restart_alt</span>
         </button>
       </div>
@@ -195,7 +196,7 @@
       </p>
     </div>
     <div class="flex items-center gap-2">
-      <span class="px-3 py-1 rounded-lg bg-white border border-slate-200 text-xs font-mono font-medium text-slate-600 shadow-xs">
+      <span id="fleet-visible-count" class="px-3 py-1 rounded-lg bg-white border border-slate-200 text-xs font-mono font-medium text-slate-600 shadow-xs">
         <%= @listings.size %> Birim Listeleniyor
       </span>
     </div>
@@ -203,24 +204,35 @@
 
   <!-- Vehicle Listing Grid: Stitch Luxury Daylight Architecture -->
   <% if @listings.any? %>
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div id="vehicle-listings-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       <% @listings.each do |listing| %>
         <% hero_analysis = listing.hero_photo_analysis %>
         <% hero_src = listing_hero_image_url(listing) %>
         <% fallback_src = vehicle_fallback_image(listing) %>
         <% quality_score = hero_analysis&.quality_score || 96 %>
+        <% vin_code = "#{listing.brand[0..2].upcase}#{listing.id.to_s.rjust(8, '0')}" %>
 
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden group">
+        <div class="vehicle-card bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden group"
+             data-brand="<%= listing.brand.to_s.downcase %>"
+             data-year="<%= listing.year %>"
+             data-fuel="<%= listing.fuel_type.to_s.downcase %>"
+             data-transmission="<%= listing.transmission.to_s.downcase %>"
+             data-price="<%= listing.price.to_i %>"
+             data-status="<%= listing.status %>"
+             data-ctr="<%= quality_score %>"
+             data-created="<%= listing.created_at.to_i %>"
+             data-search="<%= [listing.title, listing.brand, listing.model_name, listing.color, vin_code, listing.fuel_type].join(' ').downcase %>">
           <!-- Turntable Daylight Stage Viewport -->
           <div class="relative aspect-[16/10] bg-slate-100 overflow-hidden">
             <!-- Studio Ambient Glow Overlay -->
             <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent z-10 pointer-events-none"></div>
 
-            <!-- Bulletproof Vehicle Image with Resilient CDN Fallback -->
+            <!-- Bulletproof Vehicle Image with Resilient CDN Fallback & 1x1 Pixel Guard -->
             <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                  src="<%= hero_src %>"
                  alt="<%= listing.title %>"
                  loading="lazy"
+                 onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
                  onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
 
             <!-- Floating Studio Overlay Badges (Top Left) -->
@@ -262,7 +274,7 @@
                 Daylight Bay 04 • Dome 96 CRI
               </span>
               <span class="px-2 py-0.5 rounded bg-white/90 text-slate-800 font-mono font-semibold backdrop-blur-sm">
-                VIN: <%= listing.brand[0..2].upcase %><%= listing.id.to_s.rjust(8, '0') %>
+                VIN: <%= vin_code %>
               </span>
             </div>
           </div>
@@ -332,7 +344,7 @@
                 <span>Open 360 Studio</span>
               <% end %>
 
-              <%= link_to listing_path(listing), class: "p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition", title: "Stüdyo Ayarları" do %>
+              <%= link_to listing_path(listing, anchor: "ai-photo-matrix"), class: "p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition", title: "AI Stüdyo & Açı Matrisi" do %>
                 <span class="material-symbols-outlined text-base">tune</span>
               <% end %>
 
@@ -343,6 +355,19 @@
           </div>
         </div>
       <% end %>
+    </div>
+
+    <!-- Dynamic No Results State (Hidden by default) -->
+    <div id="fleet-no-results" class="hidden rounded-2xl border border-slate-200 bg-white p-10 text-center space-y-3 shadow-xs">
+      <div class="w-12 h-12 rounded-xl bg-blue-50 text-[#1D4ED8] flex items-center justify-center mx-auto">
+        <span class="material-symbols-outlined text-2xl">filter_alt_off</span>
+      </div>
+      <h3 class="text-base font-bold text-slate-900">Seçilen Filtrelere Uygun Araç Bulunamadı</h3>
+      <p class="text-xs text-slate-500 max-w-md mx-auto">Arama kriterlerinizi veya filtre seçimlerinizi sıfırlayarak tüm aktif araç filosunu görüntüleyebilirsiniz.</p>
+      <button type="button" onclick="document.getElementById('reset-fleet-filters').click()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1D4ED8] text-white text-xs font-bold hover:bg-blue-800 transition cursor-pointer">
+        <span class="material-symbols-outlined text-sm">restart_alt</span>
+        <span>Tüm Filtreleri Sıfırla</span>
+      </button>
     </div>
   <% else %>
     <!-- Empty State -->
@@ -362,3 +387,127 @@
   <% end %>
 </div>
 
+<script>
+  document.addEventListener("turbo:load", initFleetFilters);
+  document.addEventListener("DOMContentLoaded", initFleetFilters);
+
+  function initFleetFilters() {
+    const grid = document.getElementById("vehicle-listings-grid");
+    if (!grid || grid.dataset.initialized === "true") return;
+    grid.dataset.initialized = "true";
+
+    const searchInput = document.getElementById("fleet-search-input");
+    const sortSelect = document.getElementById("fleet-sort-select");
+    const brandSelect = document.getElementById("filter-brand");
+    const yearSelect = document.getElementById("filter-year");
+    const fuelSelect = document.getElementById("filter-fuel");
+    const transSelect = document.getElementById("filter-transmission");
+    const priceSelect = document.getElementById("filter-price");
+    const resetBtn = document.getElementById("reset-fleet-filters");
+    const statusPills = document.querySelectorAll(".status-pill");
+    const visibleCountEl = document.getElementById("fleet-visible-count");
+    const noResultsEl = document.getElementById("fleet-no-results");
+
+    let activeStatus = "all";
+
+    function applyFiltersAndSort() {
+      const cards = Array.from(grid.querySelectorAll(".vehicle-card"));
+      const q = (searchInput?.value || "").trim().toLowerCase();
+      const brand = brandSelect?.value || "all";
+      const year = yearSelect?.value || "all";
+      const fuel = fuelSelect?.value || "all";
+      const trans = transSelect?.value || "all";
+      const price = priceSelect?.value || "all";
+      const sortBy = sortSelect?.value || "ctr";
+
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const cardSearch = card.dataset.search || "";
+        const cardBrand = card.dataset.brand || "";
+        const cardYear = card.dataset.year || "";
+        const cardFuel = card.dataset.fuel || "";
+        const cardTrans = card.dataset.transmission || "";
+        const cardPrice = parseInt(card.dataset.price || "0", 10);
+        const cardStatus = card.dataset.status || "";
+
+        let match = true;
+        if (q && !cardSearch.includes(q)) match = false;
+        if (activeStatus !== "all" && cardStatus !== activeStatus) match = false;
+        if (brand !== "all" && !cardBrand.includes(brand)) match = false;
+        if (year !== "all" && cardYear !== year) match = false;
+        if (fuel !== "all" && !cardFuel.includes(fuel)) match = false;
+        if (trans !== "all") {
+          if (trans === "otomatik" && !(cardTrans.includes("otomatik") || cardTrans.includes("pdk") || cardTrans.includes("steptronic"))) match = false;
+          if (trans === "tek vites" && !cardTrans.includes("tek vites")) match = false;
+        }
+        if (price !== "all") {
+          if (price === "under_2m" && cardPrice >= 2000000) match = false;
+          if (price === "2m_to_35m" && (cardPrice < 2000000 || cardPrice > 3500000)) match = false;
+          if (price === "over_35m" && cardPrice <= 3500000) match = false;
+        }
+
+        if (match) {
+          card.classList.remove("hidden");
+          visibleCount++;
+        } else {
+          card.classList.add("hidden");
+        }
+      });
+
+      // Sort cards
+      cards.sort((a, b) => {
+        if (sortBy === "price_desc") {
+          return parseInt(b.dataset.price || "0", 10) - parseInt(a.dataset.price || "0", 10);
+        } else if (sortBy === "price_asc") {
+          return parseInt(a.dataset.price || "0", 10) - parseInt(b.dataset.price || "0", 10);
+        } else if (sortBy === "newest") {
+          return parseInt(b.dataset.created || "0", 10) - parseInt(a.dataset.created || "0", 10);
+        } else {
+          return parseInt(b.dataset.ctr || "0", 10) - parseInt(a.dataset.ctr || "0", 10);
+        }
+      });
+
+      cards.forEach((card) => grid.appendChild(card));
+
+      if (visibleCountEl) {
+        visibleCountEl.textContent = `${visibleCount} Birim Listeleniyor`;
+      }
+      if (noResultsEl) {
+        noResultsEl.classList.toggle("hidden", visibleCount > 0);
+      }
+    }
+
+    statusPills.forEach((pill) => {
+      pill.addEventListener("click", () => {
+        activeStatus = pill.dataset.filterStatus || "all";
+        statusPills.forEach((p) => {
+          p.className = "status-pill px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/60 transition flex items-center gap-1.5 cursor-pointer";
+        });
+        pill.className = "status-pill px-3.5 py-1.5 rounded-lg bg-white text-[#1D4ED8] shadow-xs flex items-center gap-1.5 cursor-pointer transition";
+        applyFiltersAndSort();
+      });
+    });
+
+    [searchInput, sortSelect, brandSelect, yearSelect, fuelSelect, transSelect, priceSelect].forEach((el) => {
+      if (!el) return;
+      el.addEventListener("input", applyFiltersAndSort);
+      el.addEventListener("change", applyFiltersAndSort);
+    });
+
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        if (searchInput) searchInput.value = "";
+        if (sortSelect) sortSelect.value = "ctr";
+        if (brandSelect) brandSelect.value = "all";
+        if (yearSelect) yearSelect.value = "all";
+        if (fuelSelect) fuelSelect.value = "all";
+        if (transSelect) transSelect.value = "all";
+        if (priceSelect) priceSelect.value = "all";
+        activeStatus = "all";
+        if (statusPills.length > 0) statusPills[0].click();
+        else applyFiltersAndSort();
+      });
+    }
+  }
+</script>
