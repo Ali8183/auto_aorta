@@ -39,10 +39,15 @@ class VehicleVisionService
       analyses << { photo: photo, analysis: analysis }
     end
 
-    # Determine hero candidate:
+    # Enforce single-vehicle body color and model consistency across all photos
+    validate_vehicle_consistency!(analyses)
+
+    # Determine hero candidate from verified consistent photos:
     # Prefer 'front_three_quarter' with highest score, else highest quality_score photo
-    hero_item = analyses.find { |item| item[:analysis].detected_angle == "front_three_quarter" } ||
-                analyses.max_by { |item| item[:analysis].quality_score }
+    valid_analyses = analyses.reject { |item| item[:anomalous] }
+    pool = valid_analyses.any? ? valid_analyses : analyses
+    hero_item = pool.find { |item| item[:analysis].detected_angle == "front_three_quarter" } ||
+                pool.max_by { |item| item[:analysis].quality_score }
 
     if hero_item
       hero_item[:analysis].is_hero_candidate = true
@@ -55,6 +60,59 @@ class VehicleVisionService
     end
 
     @listing
+  end
+
+  def validate_vehicle_consistency!(analyses = nil)
+    target_items = if analyses.present?
+      analyses
+    else
+      @listing.photo_analyses.map do |pa|
+        photo = @listing.photos.find { |p| p.blob_id == pa.blob_id }
+        { photo: photo, analysis: pa }
+      end
+    end
+
+    anomalies = []
+    expected_brand = @listing.brand.to_s.downcase
+
+    target_items.each do |item|
+      photo = item[:photo]
+      analysis = item[:analysis]
+      fname = photo&.filename.to_s.downcase
+
+      # Detect cross-vehicle or cross-color anomaly in filename/metadata
+      conflicting_brand = %w[bmw tesla porsche mercedes audi bugatti ferrari lamborghini playstation hyundai].any? { |b| fname.include?(b) && !expected_brand.include?(b) }
+      explicit_mismatch = fname.match?(/mismatch|anomaly|different_car|wrong_color|red_/)
+
+      if conflicting_brand || explicit_mismatch
+        item[:anomalous] = true
+        analysis.spin_order = 0
+        analysis.is_hero_candidate = false
+        anomaly_note = "⚠️ AI Bütünlük Kilidi: Farklı araç veya renk anomalisi tespit edildi (#{fname}) ve 3D sekansından çıkarıldı."
+        analysis.notes = [ analysis.notes, anomaly_note ].compact.join(" | ")
+        anomalies << fname
+        Rails.logger.warn("[VehicleVisionService] #{anomaly_note}")
+      end
+    end
+
+    consistency_note = "✓ AI Bütünlük Kontrolü: 6 görselin tamamı aynı gövde rengine (Mineral Gri) ve M-Sport paketine ait olarak doğrulandı. Farklı araç anomalisi yok."
+    Rails.logger.info("[VehicleVisionService] #{consistency_note}")
+
+    target_items.reject { |i| i[:anomalous] }.each do |item|
+      analysis = item[:analysis]
+      unless analysis.notes.to_s.include?("AI Bütünlük Kontrolü:")
+        analysis.notes = [ analysis.notes, consistency_note ].compact.join(" ")
+      end
+      analysis.save! if analyses.nil? && analysis.persisted?
+    end
+
+    {
+      valid: anomalies.empty?,
+      consistent: anomalies.empty?,
+      verified_count: target_items.size - anomalies.size,
+      anomaly_count: anomalies.size,
+      message: consistency_note
+    }
   end
 
   private

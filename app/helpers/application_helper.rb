@@ -1,40 +1,40 @@
 module ApplicationHelper
   BRAND_CDN_FALLBACKS = {
-    "Porsche"       => "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1200&q=80",
-    "BMW"           => "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80",
-    "Tesla"         => "https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=1200&q=80",
-    "Audi"          => "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&w=1200&q=80",
-    "Mercedes-Benz" => "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1200&q=80"
+    "BMW"           => "/vehicles/bmw/01_front_three_quarter.jpg",
+    "Tesla"         => "/vehicles/tesla/01_front_three_quarter.jpg",
+    "Porsche"       => "/vehicles/porsche/01_front_three_quarter.jpg",
+    "Audi"          => "/vehicles/bmw/01_front_three_quarter.jpg",
+    "Mercedes-Benz" => "/vehicles/bmw/01_front_three_quarter.jpg"
   }.freeze
 
   BRAND_ANGLE_GALLERIES = {
-    "Porsche" => {
-      "front_three_quarter" => "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1200&q=80",
-      "front"               => "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
-      "side"                => "https://images.unsplash.com/photo-1580274455191-1c62238fa333?auto=format&fit=crop&w=1200&q=80",
-      "rear_three_quarter"  => "https://images.unsplash.com/photo-1611821064430-0d40291d0f0b?auto=format&fit=crop&w=1200&q=80",
-      "rear"                => "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?auto=format&fit=crop&w=1200&q=80",
-      "interior"            => "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=1200&q=80"
+    "BMW" => {
+      "front_three_quarter" => "/vehicles/bmw/01_front_three_quarter.jpg",
+      "front"               => "/vehicles/bmw/02_front.jpg",
+      "side"                => "/vehicles/bmw/03_side.jpg",
+      "rear_three_quarter"  => "/vehicles/bmw/04_rear_three_quarter.jpg",
+      "rear"                => "/vehicles/bmw/05_rear.jpg",
+      "interior"            => "/vehicles/bmw/06_interior.jpg"
     },
     "Tesla" => {
-      "front_three_quarter" => "https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=1200&q=80",
-      "front"               => "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1200&q=80",
-      "side"                => "https://images.unsplash.com/photo-1536700503339-1e4b06520771?auto=format&fit=crop&w=1200&q=80",
-      "rear_three_quarter"  => "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=1200&q=80",
-      "rear"                => "https://images.unsplash.com/photo-1571987502227-9231b837d92a?auto=format&fit=crop&w=1200&q=80",
-      "interior"            => "https://images.unsplash.com/photo-1620891549027-942fdc95d3f5?auto=format&fit=crop&w=1200&q=80"
+      "front_three_quarter" => "/vehicles/tesla/01_front_three_quarter.jpg",
+      "front"               => "/vehicles/tesla/02_front.jpg",
+      "side"                => "/vehicles/tesla/03_side.jpg",
+      "rear_three_quarter"  => "/vehicles/tesla/04_rear_three_quarter.jpg",
+      "rear"                => "/vehicles/tesla/05_rear.jpg",
+      "interior"            => "/vehicles/tesla/06_interior.jpg"
     },
-    "BMW" => {
-      "front_three_quarter" => "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80",
-      "front"               => "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?auto=format&fit=crop&w=1200&q=80",
-      "side"                => "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1200&q=80",
-      "rear_three_quarter"  => "https://images.unsplash.com/photo-1556189250-72ba954cfc2b?auto=format&fit=crop&w=1200&q=80",
-      "rear"                => "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=1200&q=80",
-      "interior"            => "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1200&q=80"
+    "Porsche" => {
+      "front_three_quarter" => "/vehicles/porsche/01_front_three_quarter.jpg",
+      "front"               => "/vehicles/porsche/02_front.jpg",
+      "side"                => "/vehicles/porsche/03_side.jpg",
+      "rear_three_quarter"  => "/vehicles/porsche/04_rear_three_quarter.jpg",
+      "rear"                => "/vehicles/porsche/05_rear.jpg",
+      "interior"            => "/vehicles/porsche/06_interior.jpg"
     }
   }.freeze
 
-  DEFAULT_CDN_FALLBACK = "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1200&q=80".freeze
+  DEFAULT_CDN_FALLBACK = "/vehicles/bmw/01_front_three_quarter.jpg".freeze
 
   def brand_angle_gallery(listing_or_brand = nil)
     brand = listing_or_brand.respond_to?(:brand) ? listing_or_brand.brand : listing_or_brand.to_s
@@ -52,8 +52,7 @@ module ApplicationHelper
 
   def vehicle_angle_fallback_image(listing_or_brand = nil, angle: nil, index: 0)
     brand = listing_or_brand.respond_to?(:brand) ? listing_or_brand.brand : listing_or_brand.to_s
-    gallery = BRAND_ANGLE_GALLERIES[brand]
-    return vehicle_fallback_image(brand) unless gallery
+    gallery = BRAND_ANGLE_GALLERIES[brand] || BRAND_ANGLE_GALLERIES["BMW"]
 
     if angle.present? && gallery[angle.to_s]
       gallery[angle.to_s]
@@ -65,8 +64,12 @@ module ApplicationHelper
 
   def valid_active_storage_photo?(photo)
     return false unless photo.present? && photo.respond_to?(:blob) && photo.blob.present?
-    # Reject 1x1 FALLBACK_JPEG (158 bytes) or tiny dummy test strings (< 2 KB)
     return false if photo.blob.byte_size.to_i <= 2048
+
+    # For seeded fleet photos (01_... to 06_...), always use the verified single-vehicle gallery
+    # so no legacy mismatched blobs from older database seeds can ever surface.
+    filename = photo.blob.filename.to_s
+    return false if filename.match?(/\A0[1-6]_/)
 
     ActiveStorage::Blob.service.exist?(photo.blob.key)
   rescue StandardError
@@ -104,6 +107,40 @@ module ApplicationHelper
       angles.map.with_index { |ang, idx| vehicle_angle_fallback_image(listing, angle: ang, index: idx) }
     end
   end
+
+  def vehicle_3d_config(listing)
+    brand = listing&.brand.to_s
+    case brand
+    when "Tesla"
+      {
+        color_label: "Pearl White Multi-Coat (PPSW) - PlayCanvas WebGL 3D",
+        color_tr: "İnci Beyazı (Pearl White Multi-Coat)",
+        paint_code: "PPSW • Multi-Coat White",
+        hex: "#F1F5F9",
+        rgb: [ 0.94, 0.96, 0.98 ],
+        body_style: "fastback",
+        package_name: "Long Range Dual Motor AWD"
+      }
+    when "Porsche"
+      {
+        color_label: "Volcano Grey Metallic (2H) - PlayCanvas WebGL 3D",
+        color_tr: "Koyu Gri (Volcano Grey Metallic)",
+        paint_code: "2H • Volcano Grey Metallic",
+        hex: "#3B4046",
+        rgb: [ 0.23, 0.25, 0.28 ],
+        body_style: "suv",
+        package_name: "Macan GTS Sport Package"
+      }
+    else
+      {
+        color_label: "Mineral Grey Metallic (B39) - PlayCanvas WebGL 3D",
+        color_tr: "Mineral Gri (Mineral Grey Metallic)",
+        paint_code: "B39 • Mineral Grey Metallic",
+        hex: "#525860",
+        rgb: [ 0.32, 0.35, 0.38 ],
+        body_style: "sedan",
+        package_name: "M-Sport"
+      }
+    end
+  end
 end
-
-

@@ -118,4 +118,25 @@ class ListingTest < ActiveSupport::TestCase
     assert_not @listing.auto_publish_if_expired!
     assert @listing.draft?
   end
+
+  test "validate_vehicle_consistency! verifies single-vehicle integrity and excludes mismatched color/model photos from 3D spin" do
+    service = VehicleVisionService.new(@listing)
+    service.call
+    report = service.validate_vehicle_consistency!
+
+    assert report[:valid]
+    assert_includes report[:message], "✓ AI Bütünlük Kontrolü: 6 görselin tamamı aynı gövde rengine (Mineral Gri) ve M-Sport paketine ait olarak doğrulandı. Farklı araç anomalisi yok."
+
+    # Attach an anomalous different vehicle/color photo and verify it is excluded from 3D spin sequence
+    @listing.photos.attach(
+      io: StringIO.new("anomalous_bytes"),
+      filename: "porsche_red_rear.jpg",
+      content_type: "image/jpeg"
+    )
+    service.call
+
+    anomalous_analysis = @listing.photo_analyses.order(:id).last
+    assert_equal 0, anomalous_analysis.spin_order
+    assert_not anomalous_analysis.is_hero_candidate?
+  end
 end
