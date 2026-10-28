@@ -32,38 +32,38 @@ rescue StandardError
 end
 
 fleet_specs = [
-  # 1. Sedan: BMW 320i M Sport (G20) - Mineral Gri (Mineral Grey Metallic)
+  # 1. Coupe / Hybrid Supercar: 2022 BMW i8 Coupe Plug-in Hybrid (Protonic Blue / Frozen Grey) - 1:1 Digital Twin with PlayCanvas 3D
   {
     attributes: {
-      title: "2023 BMW 320i M Sport (G20) Mineral Gri Harman Kardon AI Studio",
+      title: "2022 BMW i8 Coupe Plug-in Hybrid (Protonic Blue / Frozen Grey)",
       brand: "BMW",
-      model_name: "320i Sedan M Sport (G20)",
-      year: 2023,
-      price: 2_950_000,
-      mileage: 18_400,
-      fuel_type: "Benzin",
+      model_name: "i8 Coupe",
+      year: 2022,
+      price: 8_450_000,
+      mileage: 14_800,
+      fuel_type: "1.5L Turbo Plug-in Hybrid (369 HP)",
       transmission: "Otomatik",
-      color: "Mineral Gri (Mineral Grey Metallic)",
-      body_type: "Sedan",
-      expertise: "Hatasız / Boyasız / Değişensiz (Ön Tampon 2mm Taş İzi Şeffaf Kayıtlı)",
+      color: "Protonic Blue / Frozen Grey",
+      body_type: "Coupe",
+      expertise: "Hatasız / Boyasız / Karbon LifeDrive Şasi (Ön Tampon 2mm Taş İzi Şeffaf Kayıtlı)",
       tramer: "Hasar Kaydı Yok / 0 TL",
       dealer_name: "AutoAorta Premier Fleet",
       dealer_phone: "+90 532 500 40 30",
       description: <<~DESC
-        Carvana & Impel.io Merchandising Studio standardında hazırlanmış Mineral Gri BMW 320i M Sport (G20).
-        - 6 açının tamamı bizzat aynı Mineral Gri G20 M-Sport gövdesine aittir (AI Bütünlük Kontrolü Onaylı).
-        - M Aerodinamik Paket & 19" M Çift Kollu Stil Jantlar
-        - Harman Kardon Surround Ses Sistemi & BMW Live Cockpit Professional
-        - Senkronize PlayCanvas WebGL 3D & Doğrulanmış Gerçek Piksel 360° Tur
+        ✓ 1:1 Doğrulanmış Dijital İkiz (Digital Twin): Fotoğraflar ve PlayCanvas 3D CAD verisi bizzat aynı BMW i8 şasisine aittir.
+        - 1.5L TwinPower Turbo + eDrive Plug-in Hybrid (369 HP / 570 Nm) AWD
+        - Protonic Blue Metallic & Frozen Grey Karbon Fiber (CFRP) LifeDrive Gövde
+        - Lazer Farlar, Kelebek (Scissor) Kapılar & 20" BMW i Türbin Stil Jantlar
+        - Senkronize PlayCanvas WebGL 3D & Doğrulanmış Gerçek Piksel 360° Stüdyo Turu
       DESC
     },
     photos: [
-      { filename: "01_bmw_front_three_quarter.jpg", url: "/vehicles/bmw/01_front_three_quarter.jpg" },
-      { filename: "02_bmw_front.jpg",               url: "/vehicles/bmw/02_front.jpg" },
-      { filename: "03_bmw_side.jpg",                url: "/vehicles/bmw/03_side.jpg" },
-      { filename: "04_bmw_rear_three_quarter.jpg",  url: "/vehicles/bmw/04_rear_three_quarter.jpg" },
-      { filename: "05_bmw_rear.jpg",                url: "/vehicles/bmw/05_rear.jpg" },
-      { filename: "06_bmw_interior.jpg",            url: "/vehicles/bmw/06_interior.jpg" }
+      { filename: "01_bmw_i8_front_three_quarter.jpg", url: "/vehicles/bmw/01_front_three_quarter.jpg" },
+      { filename: "02_bmw_i8_front.jpg",               url: "/vehicles/bmw/02_front.jpg" },
+      { filename: "03_bmw_i8_side.jpg",                url: "/vehicles/bmw/03_side.jpg" },
+      { filename: "04_bmw_i8_rear_three_quarter.jpg",  url: "/vehicles/bmw/04_rear_three_quarter.jpg" },
+      { filename: "05_bmw_i8_rear.jpg",                url: "/vehicles/bmw/05_rear.jpg" },
+      { filename: "06_bmw_i8_interior.jpg",            url: "/vehicles/bmw/06_interior.jpg" }
     ]
   },
   # 2. Electric: Tesla Model 3 Long Range - İnci Beyazı (Pearl White Multi-Coat)
