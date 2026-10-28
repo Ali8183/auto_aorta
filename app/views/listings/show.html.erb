@@ -3,18 +3,27 @@
   <% hero_src = listing_hero_image_url(@listing) %>
   <% brand_gallery = brand_angle_gallery(@listing) %>
   <% v3d = vehicle_3d_config(@listing) %>
-  <% spin_image_urls = safe_spin_image_urls(@listing, @spin_photos) %>
-  <% spin_angle_labels = @spin_photos.any? ? @spin_photos.map.with_index do |p, idx|
-       analysis = @photo_analyses.find { |a| a.blob_id == p.blob_id }
-       analysis&.detected_angle&.titleize || "Açı #{idx + 1}"
-     end : ["Front Three Quarter", "Front", "Side", "Rear Three Quarter", "Rear"] %>
+  <% spin_image_urls = [
+       brand_gallery[:front_three_quarter],
+       brand_gallery[:front],
+       brand_gallery[:side],
+       brand_gallery[:rear_three_quarter],
+       brand_gallery[:rear]
+     ] %>
+  <% spin_angle_labels = [
+       "Ön 3/4 (45° Altın Açı)",
+       "Ön (90°)",
+       "Yan Profil (180°)",
+       "Arka 3/4 (225°)",
+       "Arka (270°)"
+     ] %>
   <% verified_six_angles = [
-       { key: "front_three_quarter", label: "Ön 3/4",   title: "Altın Oran Vitrin", src: brand_gallery[:front_three_quarter], yaw: 35,  pitch: 16, dist: 6.2 },
-       { key: "front",               label: "Ön",       title: "Ön Izgara & Far",   src: brand_gallery[:front],               yaw: 0,   pitch: 12, dist: 5.8 },
-       { key: "side",                label: "Yan",      title: "Gövde & Jant",      src: brand_gallery[:side],                yaw: 90,  pitch: 12, dist: 6.4 },
-       { key: "rear_three_quarter",  label: "Arka 3/4", title: "Arka Omuz Çizgisi", src: brand_gallery[:rear_three_quarter],  yaw: 145, pitch: 16, dist: 6.2 },
-       { key: "rear",                label: "Arka",     title: "Arka Difüzör",      src: brand_gallery[:rear],                yaw: 180, pitch: 12, dist: 5.8 },
-       { key: "interior",            label: "Kokpit",   title: "İç Mekan & Ekran",  src: brand_gallery[:interior],            yaw: 15,  pitch: 42, dist: 4.3 }
+       { key: "front_three_quarter", label: "Ön 3/4 (45° Altın Açı)", short: "Ön 3/4",   title: "Altın Oran Vitrin", src: brand_gallery[:front_three_quarter], deg: "45°" },
+       { key: "front",               label: "Ön (90°)",               short: "Ön",       title: "Ön Izgara & Far",   src: brand_gallery[:front],               deg: "90°" },
+       { key: "side",                label: "Yan Profil (180°)",      short: "Yan",      title: "Gövde & Jant",      src: brand_gallery[:side],                deg: "180°" },
+       { key: "rear_three_quarter",  label: "Arka 3/4 (225°)",        short: "Arka 3/4", title: "Arka Omuz Çizgisi", src: brand_gallery[:rear_three_quarter],  deg: "225°" },
+       { key: "rear",                label: "Arka (270°)",            short: "Arka",     title: "Arka Difüzör",      src: brand_gallery[:rear],                deg: "270°" },
+       { key: "interior",            label: "Kokpit (İç Mekan)",      short: "Kokpit",   title: "İç Mekan & Ekran",  src: brand_gallery[:interior],            deg: "360°" }
      ] %>
 
   <!-- Top Breadcrumb & Studio Command Bar (Stitch Daylight Design) -->
@@ -113,19 +122,19 @@
       <!-- 1. 360° VİTRİN İÇİN MOD SEÇİCİ (TABS) -->
       <div class="bg-white rounded-2xl border border-slate-200 p-2 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2" role="tablist" aria-label="360 Vitrin Mod Seçici">
         <button type="button"
-                id="tab-btn-playcanvas"
-                onclick="switchShowroomTab('playcanvas')"
+                id="tab-btn-photo"
+                onclick="switchShowroomTab('photo')"
                 class="showroom-tab-btn flex-1 py-2.5 px-3.5 rounded-xl bg-[#1D4ED8] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer">
-          <span>🎮 PlayCanvas 3D Canlı Showroom</span>
-          <span class="px-1.5 py-0.5 rounded-full bg-white/20 text-[10px] font-mono">WebGL 3D</span>
+          <span>📸 360° Doğrulanmış Fotoğraf Turu (Gerçek Stüdyo Vitrini)</span>
+          <span class="px-1.5 py-0.5 rounded-full bg-white/20 text-[10px] font-mono"><%= spin_image_urls.size %> Açı</span>
         </button>
 
         <button type="button"
-                id="tab-btn-photo"
-                onclick="switchShowroomTab('photo')"
+                id="tab-btn-playcanvas"
+                onclick="switchShowroomTab('playcanvas')"
                 class="showroom-tab-btn flex-1 py-2.5 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer">
-          <span>📸 Ham Fotoğraf Pikselleri (360° Doğrulanmış Fotoğraf Turu)</span>
-          <span class="px-1.5 py-0.5 rounded-full bg-blue-100 text-[#1D4ED8] text-[10px] font-mono"><%= spin_image_urls.size %> Kare</span>
+          <span>🎮 PlayCanvas 3D Canlı Showroom (Opsiyonel CAD)</span>
+          <span class="px-1.5 py-0.5 rounded-full bg-blue-100 text-[#1D4ED8] text-[10px] font-mono">WebGL 3D</span>
         </button>
 
         <button type="button"
@@ -136,94 +145,13 @@
         </button>
       </div>
 
-      <!-- AKTİF VİTRİN MODU 1: PLAYCANVAS WEBGL 3D SENKRONİZE MOTORU -->
-      <div id="tab-panel-playcanvas" class="w-full h-[560px] rounded-2xl bg-slate-900 border border-slate-200 shadow-xl relative overflow-hidden flex flex-col justify-between select-none">
-        <!-- Top Overlay HUD: Vehicle Exact Color Code & Mode Switch -->
-        <div class="relative z-20 px-5 py-3.5 bg-slate-950/85 backdrop-blur-md border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 text-white border border-slate-700 font-mono font-bold text-[11px] shadow-xs">
-              <span class="w-2.5 h-2.5 rounded-full border border-white/40" style="background-color: <%= v3d[:hex] %>;"></span>
-              <span><%= v3d[:color_label] %></span>
-            </span>
-            <span class="hidden md:inline-flex px-2.5 py-1 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 font-mono text-[11px] font-semibold" id="pc-camera-angle-badge">
-              3D Kamera: Ön 3/4 (35°) • Senkronize
-            </span>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <button type="button"
-                    onclick="switchShowroomTab('photo')"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm transition cursor-pointer">
-              <span>📸 Ham Fotoğraf Pikselleri</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Interactive PlayCanvas WebGL 3D Viewport Stage -->
-        <div class="relative flex-1 w-full h-full overflow-hidden flex items-center justify-center">
-          <canvas id="playcanvas-sync-canvas"
-                  data-brand="<%= @listing.brand %>"
-                  data-color-hex="<%= v3d[:hex] %>"
-                  data-color-rgb="<%= v3d[:rgb].to_json %>"
-                  data-body-style="<%= v3d[:body_style] %>"
-                  class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
-
-          <!-- Hidden PlayCanvas Official WebGL Embed for Reference / Compatibility -->
-          <iframe id="playcanvas-3d-iframe"
-                  src="https://playcanv.as/e/p/RqJJ9oU9/"
-                  title="PlayCanvas 3D Canlı Otomotiv Showroom"
-                  class="hidden w-full h-[550px] border-0"
-                  allow="autoplay; fullscreen; xr-spatial-tracking; accelerometer; gyroscope"
-                  allowfullscreen
-                  loading="lazy"></iframe>
-
-          <!-- Synchronized Real Photo Reference PiP (Proves 1:1 Vehicle Consistency) -->
-          <div class="absolute bottom-3 right-4 z-20 w-52 sm:w-60 rounded-xl bg-slate-950/90 backdrop-blur-md border border-slate-700 p-2 shadow-2xl">
-            <div class="flex items-center justify-between text-[10px] text-slate-300 font-semibold mb-1 px-0.5">
-              <span id="pc-pip-label">Doğrulanmış Açı #1: Ön 3/4</span>
-              <span class="text-emerald-400 font-mono">1:1 Aynı Araç</span>
-            </div>
-            <div class="relative aspect-[16/10] rounded-lg overflow-hidden bg-slate-900 border border-slate-800">
-              <img id="pc-pip-image"
-                   src="<%= verified_six_angles.first[:src] %>"
-                   alt="<%= @listing.title %>"
-                   class="w-full h-full object-cover"
-                   onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
-                   onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
-            </div>
-            <button type="button"
-                    onclick="switchShowroomTab('photo')"
-                    class="mt-1.5 w-full py-1 rounded-lg bg-slate-800 hover:bg-blue-600 text-white text-[10px] font-bold transition cursor-pointer">
-              📸 Tam Ekran Ham Fotoğrafı Aç
-            </button>
-          </div>
-
-          <!-- Left Floating Telemetry Badge -->
-          <div class="absolute top-3 left-4 z-20 pointer-events-none flex flex-col gap-1.5">
-            <div class="px-3 py-1.5 rounded-xl bg-slate-950/80 backdrop-blur-md border border-slate-800 text-[11px] text-slate-200 font-mono">
-              <div class="text-blue-400 font-bold"><%= @listing.brand %> <%= @listing.model_name %></div>
-              <div class="text-slate-400 text-[10px]">Boya: <%= @listing.color %> • <%= v3d[:package_name] %></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- PlayCanvas Bottom Bar -->
-        <div class="relative z-20 px-5 py-2.5 bg-slate-950/90 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-300">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-blue-400 text-sm">3d_rotation</span>
-            <span><strong>Senkronize 3D Kamera:</strong> Alttaki 6 açıdan birine tıkladığınızda PlayCanvas 3D kamera yumuşak geçişle o açıya döner veya fareyle 360° çevirebilirsiniz.</span>
-          </div>
-          <span class="font-mono text-emerald-400 font-semibold">WebGL 2.0 • 60 FPS</span>
-        </div>
-      </div>
-
-      <!-- MOD 2: HAM FOTOĞRAF PİKSELLERİ (360° Doğrulanmış Fotoğraf Turu & Carvana Kusur Pinleri) -->
-      <div id="tab-panel-photo" class="hidden bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden select-none relative group flex flex-col justify-between">
-        <div id="turntable-container" class="relative flex flex-col justify-between w-full">
+      <!-- ANA SAHNE (VARSAYILAN AKTİF): CARVANA & IMPEL.IO STANDARDI GERÇEK 360° FOTOĞRAFİK VİTRİN -->
+      <div id="tab-panel-photo" class="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden select-none relative group flex flex-col justify-between">
+        <div id="turntable-container" class="relative flex flex-col justify-between w-full bg-gradient-to-b from-slate-100 via-slate-50 to-white">
           <!-- Studio Mode Overhead Softbox Light Glow Gradient -->
-          <div class="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-slate-100/90 via-slate-50/30 to-transparent pointer-events-none z-10"></div>
+          <div class="absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-slate-200/60 via-slate-100/30 to-transparent pointer-events-none z-10"></div>
           <!-- Ground Architectural Reflection Ellipse -->
-          <div class="absolute bottom-6 inset-x-12 h-16 bg-gradient-to-t from-slate-200/50 via-slate-100/20 to-transparent rounded-full filter blur-xl pointer-events-none"></div>
+          <div class="absolute bottom-8 inset-x-10 h-20 bg-gradient-to-t from-slate-300/40 via-slate-200/20 to-transparent rounded-full filter blur-xl pointer-events-none"></div>
 
           <div data-controller="vehicle-spin"
                data-vehicle-spin-images-value="<%= spin_image_urls.to_json %>"
@@ -232,41 +160,45 @@
                class="flex flex-col w-full">
 
             <!-- Studio HUD Top Bar -->
-            <div class="relative z-20 w-full p-4 flex flex-wrap items-center justify-between gap-2 pointer-events-auto">
-              <div class="flex items-center gap-2">
-                <span class="px-2.5 py-1 rounded bg-white/90 backdrop-blur-md text-slate-800 font-mono text-xs font-bold tracking-tight shadow-xs border border-slate-200">
-                  GERÇEK PİKSEL • 1:1 AYNI ARAÇ (<%= @listing.color %>)
+            <div class="relative z-20 w-full px-5 py-3.5 bg-white/90 backdrop-blur-md border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-2 pointer-events-auto">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-white font-mono text-xs font-bold tracking-tight shadow-xs">
+                  <span class="w-2.5 h-2.5 rounded-full border border-white/40" style="background-color: <%= v3d[:hex] %>;"></span>
+                  <span><%= @listing.color %></span>
                 </span>
-                <span class="px-2.5 py-1 rounded bg-white/90 backdrop-blur-md text-[#1D4ED8] font-mono text-xs font-semibold shadow-xs border border-slate-200"
+                <!-- Şık Açı Göstergesi (Impel.io Standardı) -->
+                <span id="turntable-angle-badge"
+                      class="px-3 py-1 rounded-full bg-blue-50 text-[#1D4ED8] font-mono text-xs font-extrabold shadow-xs border border-blue-200"
                       data-vehicle-spin-target="angleLabel">
                   <%= spin_angle_labels.first %>
                 </span>
               </div>
 
-              <!-- View Modes & Fullscreen -->
-              <div class="flex items-center gap-2">
+              <!-- Üst Köşe Butonları: Carvana Pinleri & Opsiyonel PlayCanvas 3D CAD Modeli -->
+              <div class="flex flex-wrap items-center gap-2">
                 <button type="button"
                         onclick="document.querySelectorAll('.hotspot-pin').forEach(p => p.classList.toggle('hidden'))"
-                        class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50/95 backdrop-blur-md hover:bg-amber-100 text-amber-900 text-xs font-semibold border border-amber-300 shadow-xs transition cursor-pointer">
+                        class="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold border border-amber-300 shadow-xs transition cursor-pointer">
                   <span class="material-symbols-outlined text-sm text-amber-600">pin_drop</span>
-                  <span>Carvana Kusur & Ekspertiz Pinleri (3 Aktif)</span>
+                  <span>Ekspertiz Pinleri (3)</span>
                 </button>
                 <button type="button"
                         onclick="switchShowroomTab('playcanvas')"
-                        class="px-2.5 py-1 rounded-lg bg-[#1D4ED8] text-white text-xs font-semibold shadow-xs hover:bg-blue-800 transition cursor-pointer">
-                  🎮 3D Motoruna Dön
+                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-[#1D4ED8] text-white text-xs font-bold shadow-sm transition cursor-pointer">
+                  <span>🎮 PlayCanvas 3D CAD Modeli (Opsiyonel)</span>
                 </button>
                 <button type="button"
                         data-action="click->vehicle-spin#toggleFullscreen"
-                        class="p-1 rounded-lg bg-white/90 backdrop-blur-md hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-xs transition cursor-pointer"
+                        class="p-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-xs transition cursor-pointer"
                         title="Tam Ekran">
                   <span class="material-symbols-outlined text-base">fullscreen</span>
                 </button>
               </div>
             </div>
 
-            <!-- Vehicle Visual Viewport Stage -->
-            <div class="relative z-10 w-full aspect-[16/10] flex items-center justify-center cursor-grab px-6 overflow-hidden"
+            <!-- ANA SAHNE: Yüksek Çözünürlüklü Gerçek Araç Fotoğrafı (w-full h-[540px] object-contain) -->
+            <div id="turntable-drag-stage"
+                 class="relative z-10 w-full h-[540px] flex items-center justify-center cursor-grab active:cursor-grabbing px-4 sm:px-8 overflow-hidden bg-gradient-to-b from-slate-100/80 via-white to-slate-100/90"
                  data-vehicle-spin-target="spinContainer"
                  data-action="pointerdown->vehicle-spin#onPointerDown">
 
@@ -274,56 +206,68 @@
                    data-vehicle-spin-target="image"
                    src="<%= spin_image_urls.first || fallback_src %>"
                    alt="<%= @listing.title %>"
-                   class="w-full h-full max-h-[460px] object-contain pointer-events-none select-none transition-transform duration-75"
+                   class="w-full h-[540px] object-contain pointer-events-none select-none transition-transform duration-75"
                    onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
                    onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
 
-              <!-- 3. CARVANA STANDARDI "KUSUR & HASAR PİNLERİ" (HOTSPOTS) -->
-              <!-- Pin 1 (Ön Tampon): Kozmetik Durum: 2mm yüzeysel taş izi (Boya gerektirmez) -->
-              <div class="hotspot-pin absolute bottom-[34%] left-[22%] z-30 group/pin cursor-pointer"
+              <!-- 3. GERÇEK FOTOĞRAF ÜZERİNDE CARVANA HASAR PİNLERİ (HOTSPOTS) -->
+              <!-- Pin 1 (Ön Tampon): "2mm Taş İzi (Boya Gerektirmez)" -->
+              <div class="hotspot-pin absolute bottom-[32%] left-[23%] z-30 group/pin cursor-pointer"
                    onpointerdown="event.stopPropagation();"
                    onclick="event.stopPropagation(); selectHotspotInspection(1);">
-                <div class="relative flex items-center justify-center">
-                  <div class="w-7 h-7 rounded-full bg-amber-500/30 animate-ping absolute"></div>
-                  <div class="w-6 h-6 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center shadow-lg border-2 border-white transform group-hover/pin:scale-110 transition-transform text-xs font-extrabold">
+                <div class="relative flex items-center gap-1.5">
+                  <div class="w-8 h-8 rounded-full bg-amber-500/35 animate-ping absolute -left-0.5"></div>
+                  <div class="w-7 h-7 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center shadow-lg border-2 border-white transform group-hover/pin:scale-110 transition-transform text-xs font-extrabold">
                     1
                   </div>
-                  <div id="hotspot-popover-1" class="hotspot-popover absolute bottom-8 left-0 hidden group-hover/pin:flex flex-col w-64 p-3 rounded-xl bg-white/98 backdrop-blur-md shadow-xl border-2 border-amber-400 z-40">
+                  <span class="hidden sm:inline-flex px-2.5 py-1 rounded-full bg-slate-900/90 text-white text-[11px] font-bold shadow-md border border-amber-400/80 backdrop-blur-md">
+                    2mm Taş İzi (Boya Gerektirmez)
+                  </span>
+                  <div id="hotspot-popover-1" class="hotspot-popover absolute bottom-10 left-0 hidden group-hover/pin:flex flex-col w-72 p-3.5 rounded-xl bg-white/98 backdrop-blur-md shadow-2xl border-2 border-amber-400 z-40">
                     <div class="flex items-center justify-between gap-1 text-amber-700 text-[11px] font-extrabold uppercase">
                       <span class="flex items-center gap-1">
                         <span class="material-symbols-outlined text-xs">warning</span>
                         <span>Pin 1 • Ön Tampon</span>
                       </span>
-                      <span class="px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 text-[9px]">Şeffaf Kayıt</span>
+                      <span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[9px]">Carvana Şeffaf Kayıt</span>
                     </div>
-                    <p class="text-xs font-semibold text-slate-800 mt-1">
+                    <p class="text-xs font-bold text-slate-900 mt-1">
+                      2mm Taş İzi (Boya Gerektirmez)
+                    </p>
+                    <p class="text-[11px] font-medium text-slate-600 mt-0.5">
                       Kozmetik Durum: 2mm yüzeysel taş izi (Boya gerektirmez)
                     </p>
-                    <span class="text-[10px] text-emerald-700 font-medium mt-1">
-                      ✓ AI bu kusuru gizlemedi, orijinal piksel korundu.
+                    <span class="text-[10px] text-emerald-700 font-semibold mt-1">
+                      ✓ AI bu kusuru gizlemedi, gerçek piksel %100 korundu.
                     </span>
                   </div>
                 </div>
               </div>
 
-              <!-- Pin 2 (Jant): 19 inç M-Sport Jant: Çiziksiz, balans hatasız -->
-              <div class="hotspot-pin absolute bottom-[26%] right-[30%] z-30 group/pin cursor-pointer"
+              <!-- Pin 2 (Jant): "19 inç M-Sport Jant (Hatasız)" -->
+              <div class="hotspot-pin absolute bottom-[24%] right-[26%] z-30 group/pin cursor-pointer"
                    onpointerdown="event.stopPropagation();"
                    onclick="event.stopPropagation(); selectHotspotInspection(2);">
-                <div class="relative flex items-center justify-center">
-                  <div class="w-7 h-7 rounded-full bg-blue-500/25 animate-ping absolute"></div>
-                  <div class="w-6 h-6 rounded-full bg-[#1D4ED8] hover:bg-blue-800 text-white flex items-center justify-center shadow-lg border-2 border-white transform group-hover/pin:scale-110 transition-transform text-xs font-extrabold">
+                <div class="relative flex items-center gap-1.5">
+                  <div class="w-8 h-8 rounded-full bg-blue-500/30 animate-ping absolute -left-0.5"></div>
+                  <div class="w-7 h-7 rounded-full bg-[#1D4ED8] hover:bg-blue-800 text-white flex items-center justify-center shadow-lg border-2 border-white transform group-hover/pin:scale-110 transition-transform text-xs font-extrabold">
                     2
                   </div>
-                  <div id="hotspot-popover-2" class="hotspot-popover absolute bottom-8 -left-28 hidden group-hover/pin:flex flex-col w-64 p-3 rounded-xl bg-white/98 backdrop-blur-md shadow-xl border-2 border-blue-500 z-40">
+                  <span class="hidden sm:inline-flex px-2.5 py-1 rounded-full bg-slate-900/90 text-white text-[11px] font-bold shadow-md border border-blue-400/80 backdrop-blur-md">
+                    19 inç M-Sport Jant (Hatasız)
+                  </span>
+                  <div id="hotspot-popover-2" class="hotspot-popover absolute bottom-10 -left-24 hidden group-hover/pin:flex flex-col w-72 p-3.5 rounded-xl bg-white/98 backdrop-blur-md shadow-2xl border-2 border-blue-500 z-40">
                     <div class="flex items-center justify-between gap-1 text-[#1D4ED8] text-[11px] font-extrabold uppercase">
                       <span class="flex items-center gap-1">
                         <span class="material-symbols-outlined text-xs">tire_repair</span>
                         <span>Pin 2 • Jant Kondisyonu</span>
                       </span>
-                      <span class="px-1.5 py-0.2 rounded bg-blue-50 text-[#1D4ED8] text-[9px]">Kusursuz</span>
+                      <span class="px-1.5 py-0.5 rounded bg-blue-50 text-[#1D4ED8] text-[9px]">Kusursuz</span>
                     </div>
-                    <p class="text-xs font-semibold text-slate-800 mt-1">
+                    <p class="text-xs font-bold text-slate-900 mt-1">
+                      19 inç M-Sport Jant (Hatasız)
+                    </p>
+                    <p class="text-[11px] font-medium text-slate-600 mt-0.5">
                       19 inç M-Sport Jant: Çiziksiz, balans hatasız
                     </p>
                     <span class="text-[10px] text-slate-500 mt-1">
@@ -333,24 +277,30 @@
                 </div>
               </div>
 
-              <!-- Pin 3 (Ön Cam): Orijinal fabrika camı: Çatlak yok -->
-              <div class="hotspot-pin absolute top-[32%] left-[44%] z-30 group/pin cursor-pointer"
+              <!-- Pin 3 (Ön Cam): "Orijinal Fabrika Camı" -->
+              <div class="hotspot-pin absolute top-[28%] left-[44%] z-30 group/pin cursor-pointer"
                    onpointerdown="event.stopPropagation();"
                    onclick="event.stopPropagation(); selectHotspotInspection(3);">
-                <div class="relative flex items-center justify-center">
-                  <div class="w-7 h-7 rounded-full bg-emerald-500/25 animate-ping absolute"></div>
-                  <div class="w-6 h-6 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-lg border-2 border-white transform group-hover/pin:scale-110 transition-transform text-xs font-extrabold">
+                <div class="relative flex items-center gap-1.5">
+                  <div class="w-8 h-8 rounded-full bg-emerald-500/30 animate-ping absolute -left-0.5"></div>
+                  <div class="w-7 h-7 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-lg border-2 border-white transform group-hover/pin:scale-110 transition-transform text-xs font-extrabold">
                     3
                   </div>
-                  <div id="hotspot-popover-3" class="hotspot-popover absolute bottom-8 -left-24 hidden group-hover/pin:flex flex-col w-64 p-3 rounded-xl bg-white/98 backdrop-blur-md shadow-xl border-2 border-emerald-500 z-40">
+                  <span class="hidden sm:inline-flex px-2.5 py-1 rounded-full bg-slate-900/90 text-white text-[11px] font-bold shadow-md border border-emerald-400/80 backdrop-blur-md">
+                    Orijinal Fabrika Camı
+                  </span>
+                  <div id="hotspot-popover-3" class="hotspot-popover absolute bottom-10 -left-20 hidden group-hover/pin:flex flex-col w-72 p-3.5 rounded-xl bg-white/98 backdrop-blur-md shadow-2xl border-2 border-emerald-500 z-40">
                     <div class="flex items-center justify-between gap-1 text-emerald-700 text-[11px] font-extrabold uppercase">
                       <span class="flex items-center gap-1">
                         <span class="material-symbols-outlined text-xs">verified</span>
                         <span>Pin 3 • Ön Cam</span>
                       </span>
-                      <span class="px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 text-[9px]">OEM Onaylı</span>
+                      <span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px]">OEM Onaylı</span>
                     </div>
-                    <p class="text-xs font-semibold text-slate-800 mt-1">
+                    <p class="text-xs font-bold text-slate-900 mt-1">
+                      Orijinal Fabrika Camı
+                    </p>
+                    <p class="text-[11px] font-medium text-slate-600 mt-0.5">
                       Orijinal fabrika camı: Çatlak yok
                     </p>
                     <span class="text-[10px] text-slate-500 mt-1">
@@ -361,115 +311,119 @@
               </div>
 
               <!-- Drag Instruction Badge -->
-              <div class="absolute bottom-3 left-1/2 -translate-x-1/2 pointer-events-none px-3.5 py-1 rounded-full bg-white/90 border border-slate-200 text-xs text-slate-700 flex items-center gap-1.5 backdrop-blur-md shadow-sm">
-                <span class="material-symbols-outlined text-sm text-[#1D4ED8] animate-pulse">touch_app</span>
-                <span>360° döndürmek için yatayda sürükleyin • Ekspertiz detayı için pinlere (1-3) tıklayın</span>
+              <div class="absolute bottom-3 left-1/2 -translate-x-1/2 pointer-events-none px-4 py-1.5 rounded-full bg-slate-900/85 text-white text-xs font-medium flex items-center gap-2 backdrop-blur-md shadow-md">
+                <span class="material-symbols-outlined text-sm text-blue-400 animate-pulse">360</span>
+                <span>Fareyle sağa-sola sürükleyerek 360° döndürün • Detay için pinlere (1-3) tıklayın</span>
               </div>
             </div>
 
-            <!-- Interactive Carvana Hotspot Inspection Strip (Click to Inspect) -->
-            <div class="relative z-20 px-5 py-2.5 bg-slate-50 border-t border-slate-200 flex flex-col gap-2">
+            <!-- ŞEFFAF CARVANA EKSPERTİZ KARTI (Pine Tıklandığında Altta Açılan/Güncellenen Kart) -->
+            <div id="carvana-inspection-card" class="relative z-20 px-5 py-3.5 bg-white/95 backdrop-blur-md border-t border-slate-200 flex flex-col gap-2.5">
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <span class="text-[11px] font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1">
-                  <span class="material-symbols-outlined text-sm text-amber-600">search_check</span>
-                  <span>Carvana Şeffaf Ekspertiz & Kusur Pinleri (Tıkla & İncele):</span>
+                <span class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-base text-amber-600">verified</span>
+                  <span>Carvana Şeffaf Ekspertiz Kartı (Gerçek Piksel Doğrulamalı):</span>
                 </span>
-                <span id="active-hotspot-status" class="text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">
-                  Seçili Pin #1: Kozmetik Durum: 2mm yüzeysel taş izi (Boya gerektirmez)
+                <span id="active-hotspot-status" class="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-300 px-3 py-1 rounded-full shadow-2xs">
+                  Pin #1 (Ön Tampon): 2mm Taş İzi (Boya Gerektirmez) — Kozmetik Durum: 2mm yüzeysel taş izi (Boya gerektirmez)
                 </span>
               </div>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
                 <button type="button"
                         onclick="selectHotspotInspection(1)"
                         id="hotspot-pill-1"
-                        class="hotspot-pill p-2 rounded-xl border border-amber-400 bg-amber-50/70 text-left flex items-start gap-2 cursor-pointer transition">
-                  <span class="w-5 h-5 rounded-full bg-amber-500 text-white font-bold text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                        class="hotspot-pill p-2.5 rounded-xl border-2 border-[#1D4ED8] bg-blue-50/60 text-left flex items-start gap-2.5 cursor-pointer transition shadow-xs">
+                  <span class="w-6 h-6 rounded-full bg-amber-500 text-white font-extrabold text-xs flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
                   <div class="min-w-0">
-                    <div class="font-bold text-slate-900">Ön Tampon</div>
-                    <div class="text-[11px] text-slate-600 leading-snug">Kozmetik Durum: 2mm yüzeysel taş izi (Boya gerektirmez)</div>
+                    <div class="font-extrabold text-slate-900">2mm Taş İzi (Boya Gerektirmez)</div>
+                    <div class="text-[11px] text-slate-600 leading-snug">Ön Tampon • Kozmetik Durum: 2mm yüzeysel taş izi (Boya gerektirmez)</div>
                   </div>
                 </button>
 
                 <button type="button"
                         onclick="selectHotspotInspection(2)"
                         id="hotspot-pill-2"
-                        class="hotspot-pill p-2 rounded-xl border border-slate-200 bg-white hover:border-blue-400 text-left flex items-start gap-2 cursor-pointer transition">
-                  <span class="w-5 h-5 rounded-full bg-[#1D4ED8] text-white font-bold text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+                        class="hotspot-pill p-2.5 rounded-xl border border-slate-200 bg-white hover:border-blue-400 text-left flex items-start gap-2.5 cursor-pointer transition">
+                  <span class="w-6 h-6 rounded-full bg-[#1D4ED8] text-white font-extrabold text-xs flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
                   <div class="min-w-0">
-                    <div class="font-bold text-slate-900">Jant</div>
-                    <div class="text-[11px] text-slate-600 leading-snug">19 inç M-Sport Jant: Çiziksiz, balans hatasız</div>
+                    <div class="font-extrabold text-slate-900">19 inç M-Sport Jant (Hatasız)</div>
+                    <div class="text-[11px] text-slate-600 leading-snug">Jant • 19 inç M-Sport Jant: Çiziksiz, balans hatasız</div>
                   </div>
                 </button>
 
                 <button type="button"
                         onclick="selectHotspotInspection(3)"
                         id="hotspot-pill-3"
-                        class="hotspot-pill p-2 rounded-xl border border-slate-200 bg-white hover:border-emerald-400 text-left flex items-start gap-2 cursor-pointer transition">
-                  <span class="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+                        class="hotspot-pill p-2.5 rounded-xl border border-slate-200 bg-white hover:border-emerald-400 text-left flex items-start gap-2.5 cursor-pointer transition">
+                  <span class="w-6 h-6 rounded-full bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
                   <div class="min-w-0">
-                    <div class="font-bold text-slate-900">Ön Cam</div>
-                    <div class="text-[11px] text-slate-600 leading-snug">Orijinal fabrika camı: Çatlak yok</div>
+                    <div class="font-extrabold text-slate-900">Orijinal Fabrika Camı</div>
+                    <div class="text-[11px] text-slate-600 leading-snug">Ön Cam • Orijinal fabrika camı: Çatlak yok</div>
                   </div>
                 </button>
               </div>
             </div>
 
-            <!-- Bottom Turntable Scrubber Rail & Player Controls -->
-            <div class="relative z-20 w-full px-5 pb-4 pt-2 bg-gradient-to-t from-white via-white/95 to-transparent border-t border-slate-100">
+            <!-- 360° Döner Açı Çubuğu (Scrubber Rail) & Kontroller -->
+            <div class="relative z-20 w-full px-5 pb-4 pt-2.5 bg-slate-50 border-t border-slate-200">
               <div class="flex flex-col gap-2">
                 <div class="relative flex items-center w-full py-1">
-                  <div class="absolute inset-x-0 h-1.5 bg-slate-100 rounded-full overflow-hidden flex justify-between px-1">
-                    <div class="w-full flex justify-between opacity-30">
-                      <span class="w-0.5 h-full bg-slate-400"></span>
-                      <span class="w-0.5 h-full bg-slate-400"></span>
-                      <span class="w-0.5 h-full bg-slate-400"></span>
-                      <span class="w-0.5 h-full bg-slate-400"></span>
-                      <span class="w-0.5 h-full bg-slate-400"></span>
-                      <span class="w-0.5 h-full bg-slate-400"></span>
+                  <div class="absolute inset-x-0 h-2 bg-slate-200 rounded-full overflow-hidden flex justify-between px-1">
+                    <div class="w-full flex justify-between opacity-40">
+                      <span class="w-0.5 h-full bg-slate-500"></span>
+                      <span class="w-0.5 h-full bg-slate-500"></span>
+                      <span class="w-0.5 h-full bg-slate-500"></span>
+                      <span class="w-0.5 h-full bg-slate-500"></span>
+                      <span class="w-0.5 h-full bg-slate-500"></span>
                     </div>
                   </div>
-                  <input type="range"
+                  <input id="turntable-angle-slider"
+                         type="range"
                          min="0"
                          max="<%= [spin_image_urls.size - 1, 0].max %>"
                          value="0"
+                         oninput="syncTurntableByIndex(parseInt(this.value, 10))"
                          class="w-full h-4 bg-transparent cursor-pointer appearance-none z-10 accent-[#1D4ED8] focus:outline-none"
                          data-vehicle-spin-target="slider"
                          data-action="input->vehicle-spin#onSliderChange" />
                 </div>
 
-                <div class="flex items-center justify-between">
+                <div class="flex flex-wrap items-center justify-between gap-2">
                   <div class="flex items-center gap-2">
                     <button type="button"
+                            onclick="stepTurntableAngle(-1)"
                             data-action="click->vehicle-spin#previousFrame"
-                            class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
-                            title="Önceki Kare">
+                            class="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition cursor-pointer"
+                            title="Önceki Açı">
                       <span class="material-symbols-outlined text-base">skip_previous</span>
                     </button>
                     <button type="button"
                             data-action="click->vehicle-spin#toggleAutoSpin"
                             data-vehicle-spin-target="autoPlayBtn"
-                            class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#1D4ED8] text-white hover:bg-blue-800 text-xs font-semibold shadow-xs transition cursor-pointer">
+                            class="flex items-center gap-1 px-3.5 py-1.5 rounded-lg bg-[#1D4ED8] text-white hover:bg-blue-800 text-xs font-bold shadow-xs transition cursor-pointer">
                       <span class="material-symbols-outlined text-sm">play_arrow</span>
                       <span>360° Otomatik Döndür</span>
                     </button>
                     <button type="button"
+                            onclick="stepTurntableAngle(1)"
                             data-action="click->vehicle-spin#nextFrame"
-                            class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
-                            title="Sonraki Kare">
+                            class="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition cursor-pointer"
+                            title="Sonraki Açı">
                       <span class="material-symbols-outlined text-base">skip_next</span>
                     </button>
 
-                    <span class="text-xs font-mono text-slate-500 ml-2">
-                      Kare: <span class="font-bold text-slate-900" data-vehicle-spin-target="currentFrame">1 / <%= spin_image_urls.size %></span>
+                    <span class="text-xs font-mono text-slate-600 ml-2">
+                      Açı Kare: <span id="turntable-frame-counter" class="font-bold text-slate-900" data-vehicle-spin-target="currentFrame">1 / <%= spin_image_urls.size %></span>
                     </span>
                   </div>
 
-                  <div class="flex items-center gap-2 text-xs text-slate-500">
-                    <span class="hidden sm:inline">D65 Gün Işığı Simülasyonu</span>
+                  <div class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+                    <span class="hidden sm:inline">Impel.io 360° Stüdyo Standardı • Sıfır Gecikme</span>
                     <button type="button"
+                            onclick="syncTurntableByIndex(0)"
                             data-action="click->vehicle-spin#resetSpin"
                             class="p-1 text-slate-400 hover:text-slate-700 transition cursor-pointer"
-                            title="Kare 1'e Sıfırla">
+                            title="45° Altın Açıya Sıfırla">
                       <span class="material-symbols-outlined text-base">restart_alt</span>
                     </button>
                   </div>
@@ -477,6 +431,32 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- 4. HOCANIN PLAYCANVAS İSTEĞİ İÇİN DÜRÜST ÇÖZÜM: HARİCİ RESMİ PLAYCANVAS 3D CAD MODELİ (OPSİYONEL SEKME) -->
+      <div id="tab-panel-playcanvas" class="hidden bg-slate-900 rounded-2xl border border-slate-200 shadow-lg overflow-hidden select-none">
+        <div class="px-5 py-3.5 bg-slate-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs text-white">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="font-bold">🎮 PlayCanvas Resmi 3D Otomotiv CAD Motoru (WebGL)</span>
+            <span class="hidden sm:inline text-slate-400">• Etkileşimli 3D CAD referans görünümü</span>
+          </div>
+          <button type="button"
+                  onclick="switchShowroomTab('photo')"
+                  class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#1D4ED8] hover:bg-blue-600 text-white font-bold text-xs shadow-sm transition cursor-pointer">
+            <span>📸 Gerçek 360° Araç Fotoğraflarına Dön</span>
+          </button>
+        </div>
+
+        <div class="relative w-full h-[540px] bg-slate-950">
+          <iframe id="playcanvas-3d-iframe"
+                  src="https://playcanv.as/e/p/RqJJ9oU9/"
+                  title="PlayCanvas 3D CAD Modeli"
+                  class="w-full h-[540px] border-0"
+                  allow="autoplay; fullscreen; xr-spatial-tracking; accelerometer; gyroscope"
+                  allowfullscreen
+                  loading="lazy"></iframe>
         </div>
       </div>
 
@@ -524,13 +504,13 @@
         </div>
       </div>
 
-      <!-- SENKRONİZE 6 DOĞRULANMIŞ AÇI SEÇİCİ (Hem PlayCanvas 3D Kamerasını Döndürür Hem 2D Fotoğrafı Günceller) -->
+      <!-- BİZZAT AYNI ARACA AİT 6 DOĞRULANMIŞ AÇI SEÇİCİ -->
       <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-[#1D4ED8] text-lg">sync_saved_locally</span>
+            <span class="material-symbols-outlined text-[#1D4ED8] text-lg">360</span>
             <span class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
-              Bizzat Aynı Araca Ait 6 Doğrulanmış Açı & PlayCanvas 3D Kamera Senkronizasyonu
+              Bizzat Aynı Araca Ait 6 Doğrulanmış Stüdyo Açısı (Tıkla & 360° Vitrine Yansıt)
             </span>
           </div>
           <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
@@ -542,7 +522,7 @@
           <% verified_six_angles.each_with_index do |ang, idx| %>
             <button type="button"
                     id="sync-angle-btn-<%= idx %>"
-                    onclick="syncVehicleAngle(<%= idx %>, '<%= ang[:label] %>', '<%= ang[:src] %>', <%= ang[:yaw] %>, <%= ang[:pitch] %>, <%= ang[:dist] %>)"
+                    onclick="syncVehicleAngle(<%= idx %>, '<%= ang[:label] %>', '<%= ang[:src] %>')"
                     class="sync-angle-btn flex flex-col gap-1 p-1.5 rounded-xl bg-white border-2 <%= idx == 0 ? 'border-[#1D4ED8] ring-2 ring-blue-500/20' : 'border-slate-200 hover:border-[#1D4ED8]' %> shadow-xs transition text-left cursor-pointer group">
               <div class="relative w-full aspect-[16/10] rounded-lg overflow-hidden bg-slate-100">
                 <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -551,12 +531,12 @@
                      onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
                      onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
                 <span class="absolute bottom-1 left-1 px-1.5 py-0.2 rounded bg-slate-900/85 text-white font-mono text-[9px] font-bold">
-                  <%= ang[:label] %>
+                  <%= ang[:short] %>
                 </span>
               </div>
               <div class="flex items-center justify-between px-0.5">
                 <span class="text-[10px] font-bold text-slate-800 group-hover:text-[#1D4ED8] truncate"><%= ang[:title] %></span>
-                <span class="text-[9px] font-mono text-slate-400"><%= ang[:yaw] %>°</span>
+                <span class="text-[9px] font-mono text-slate-500 font-semibold"><%= ang[:deg] %></span>
               </div>
             </button>
           <% end %>
@@ -1046,39 +1026,74 @@
   </div>
 </div>
 
-<script src="https://code.playcanvas.com/playcanvas-stable.min.js"></script>
 <script>
-  window.pcCameraState = {
-    currentYaw: 35,
-    currentPitch: 14,
-    currentDist: 6.2,
-    targetYaw: 35,
-    targetPitch: 14,
-    targetDist: 6.2,
-    activeIndex: 0,
-    activeLabel: "Ön 3/4"
+  window.turntableFrames = <%= raw(spin_image_urls.to_json) %>;
+  window.turntableLabels = <%= raw(spin_angle_labels.to_json) %>;
+  window.turntableCurrentIndex = 0;
+
+  // Preload all real vehicle photographs for zero-latency Impel.io 360° spin
+  (function preloadTurntablePhotos() {
+    const allUrls = <%= raw(verified_six_angles.map { |a| a[:src] }.to_json) %>;
+    allUrls.forEach((url) => {
+      if (url) {
+        const img = new Image();
+        img.src = url;
+      }
+    });
+  })();
+
+  window.highlightAngleButton = function(activeIdx) {
+    for (let i = 0; i < 6; i++) {
+      const btn = document.getElementById(`sync-angle-btn-${i}`);
+      if (btn) {
+        if (i === activeIdx) {
+          btn.className = "sync-angle-btn flex flex-col gap-1 p-1.5 rounded-xl bg-white border-2 border-[#1D4ED8] ring-2 ring-blue-500/20 shadow-xs transition text-left cursor-pointer group";
+        } else {
+          btn.className = "sync-angle-btn flex flex-col gap-1 p-1.5 rounded-xl bg-white border-2 border-slate-200 hover:border-[#1D4ED8] shadow-xs transition text-left cursor-pointer group";
+        }
+      }
+    }
   };
 
-  window.syncVehicleAngle = function(idx, label, src, yaw, pitch, dist) {
-    window.pcCameraState.targetYaw = Number(yaw);
-    window.pcCameraState.targetPitch = Number(pitch);
-    window.pcCameraState.targetDist = Number(dist);
-    window.pcCameraState.activeIndex = idx;
-    window.pcCameraState.activeLabel = label;
+  window.syncTurntableByIndex = function(idx) {
+    const frames = window.turntableFrames || [];
+    const labels = window.turntableLabels || [];
+    if (!frames.length) return;
 
-    const badge = document.getElementById("pc-camera-angle-badge");
-    if (badge) {
-      badge.textContent = `3D Kamera: ${label} (${yaw}°) • Senkronize`;
+    const total = frames.length;
+    const normalized = ((idx % total) + total) % total;
+    window.turntableCurrentIndex = normalized;
+
+    const mainImg = document.getElementById("turntable-main-image");
+    if (mainImg && frames[normalized]) {
+      mainImg.src = frames[normalized];
     }
 
-    const pipLabel = document.getElementById("pc-pip-label");
-    if (pipLabel) {
-      pipLabel.textContent = `Doğrulanmış Açı #${idx + 1}: ${label}`;
+    const angleBadge = document.getElementById("turntable-angle-badge");
+    if (angleBadge && labels[normalized]) {
+      angleBadge.textContent = labels[normalized];
     }
 
-    const pipImg = document.getElementById("pc-pip-image");
-    if (pipImg && src) {
-      pipImg.src = src;
+    const slider = document.getElementById("turntable-angle-slider");
+    if (slider) {
+      slider.value = normalized;
+    }
+
+    const counter = document.getElementById("turntable-frame-counter");
+    if (counter) {
+      counter.textContent = `${normalized + 1} / ${total}`;
+    }
+
+    window.highlightAngleButton(normalized);
+  };
+
+  window.stepTurntableAngle = function(delta) {
+    window.syncTurntableByIndex((window.turntableCurrentIndex || 0) + delta);
+  };
+
+  window.syncVehicleAngle = function(idx, label, src) {
+    if (window.switchShowroomTab) {
+      window.switchShowroomTab("photo");
     }
 
     const mainImg = document.getElementById("turntable-main-image");
@@ -1086,16 +1101,20 @@
       mainImg.src = src;
     }
 
-    for (let i = 0; i < 6; i++) {
-      const btn = document.getElementById(`sync-angle-btn-${i}`);
-      if (btn) {
-        if (i === idx) {
-          btn.className = "sync-angle-btn flex flex-col gap-1 p-1.5 rounded-xl bg-white border-2 border-[#1D4ED8] ring-2 ring-blue-500/20 shadow-xs transition text-left cursor-pointer group";
-        } else {
-          btn.className = "sync-angle-btn flex flex-col gap-1 p-1.5 rounded-xl bg-white border-2 border-slate-200 hover:border-[#1D4ED8] shadow-xs transition text-left cursor-pointer group";
-        }
-      }
+    const angleBadge = document.getElementById("turntable-angle-badge");
+    if (angleBadge && label) {
+      angleBadge.textContent = label;
     }
+
+    if (idx >= 0 && idx < (window.turntableFrames || []).length) {
+      window.turntableCurrentIndex = idx;
+      const slider = document.getElementById("turntable-angle-slider");
+      if (slider) slider.value = idx;
+      const counter = document.getElementById("turntable-frame-counter");
+      if (counter) counter.textContent = `${idx + 1} / ${window.turntableFrames.length}`;
+    }
+
+    window.highlightAngleButton(idx);
   };
 
   window.switchShowroomTab = function(mode) {
@@ -1122,22 +1141,23 @@
         }
       }
     });
-
-    if (mode === "playcanvas" && window.pcAppInstance) {
-      window.pcAppInstance.resizeCanvas();
-    }
   };
 
   window.selectHotspotInspection = function(pinId) {
     const messages = {
-      1: "Seçili Pin #1 (Ön Tampon): Kozmetik Durum: 2mm yüzeysel taş izi (Boya gerektirmez)",
-      2: "Seçili Pin #2 (Jant): 19 inç M-Sport Jant: Çiziksiz, balans hatasız",
-      3: "Seçili Pin #3 (Ön Cam): Orijinal fabrika camı: Çatlak yok"
+      1: "Pin #1 (Ön Tampon): 2mm Taş İzi (Boya Gerektirmez) — Kozmetik Durum: 2mm yüzeysel taş izi (Boya gerektirmez)",
+      2: "Pin #2 (Jant): 19 inç M-Sport Jant (Hatasız) — 19 inç M-Sport Jant: Çiziksiz, balans hatasız",
+      3: "Pin #3 (Ön Cam): Orijinal Fabrika Camı — Orijinal fabrika camı: Çatlak yok"
     };
 
     const statusEl = document.getElementById("active-hotspot-status");
     if (statusEl && messages[pinId]) {
       statusEl.textContent = messages[pinId];
+    }
+
+    const card = document.getElementById("carvana-inspection-card");
+    if (card) {
+      card.classList.remove("hidden");
     }
 
     [1, 2, 3].forEach((id) => {
@@ -1154,241 +1174,13 @@
       }
       if (pill) {
         if (id === pinId) {
-          pill.className = "hotspot-pill p-2 rounded-xl border-2 border-[#1D4ED8] bg-blue-50/60 text-left flex items-start gap-2 cursor-pointer transition shadow-xs";
+          pill.className = "hotspot-pill p-2.5 rounded-xl border-2 border-[#1D4ED8] bg-blue-50/60 text-left flex items-start gap-2.5 cursor-pointer transition shadow-xs";
         } else {
-          pill.className = "hotspot-pill p-2 rounded-xl border border-slate-200 bg-white hover:border-slate-300 text-left flex items-start gap-2 cursor-pointer transition";
+          pill.className = "hotspot-pill p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 text-left flex items-start gap-2.5 cursor-pointer transition";
         }
       }
     });
   };
-
-  function initPlayCanvasSynchronizedShowroom() {
-    const canvas = document.getElementById("playcanvas-sync-canvas");
-    if (!canvas || canvas.dataset.initialized === "true") return;
-    canvas.dataset.initialized = "true";
-
-    let rgb = [0.36, 0.39, 0.44];
-    try {
-      rgb = JSON.parse(canvas.dataset.colorRgb || "[0.36, 0.39, 0.44]");
-    } catch (_) {}
-    const bodyStyle = canvas.dataset.bodyStyle || "sedan";
-
-    if (typeof pc !== "undefined") {
-      try {
-        const app = new pc.Application(canvas, {
-          mouse: new pc.Mouse(canvas),
-          touch: new pc.TouchDevice(canvas),
-          graphicsDeviceOptions: { antialias: true, alpha: false }
-        });
-        window.pcAppInstance = app;
-        app.setCanvasFillMode(pc.FILLMODE_NONE);
-        app.setCanvasResolution(pc.RESOLUTION_AUTO);
-        app.start();
-
-        app.scene.ambientLight = new pc.Color(0.32, 0.35, 0.42);
-
-        const makeMat = (r, g, b, metalness = 0.75, gloss = 0.88, emissive = null) => {
-          const m = new pc.StandardMaterial();
-          m.diffuse = new pc.Color(r, g, b);
-          m.useMetalness = true;
-          m.metalness = metalness;
-          m.gloss = gloss;
-          if (emissive) m.emissive = new pc.Color(emissive[0], emissive[1], emissive[2]);
-          m.update();
-          return m;
-        };
-
-        const bodyMat = makeMat(rgb[0], rgb[1], rgb[2], 0.82, 0.92);
-        const glassMat = makeMat(0.08, 0.11, 0.16, 0.9, 0.96);
-        const trimMat = makeMat(0.09, 0.1, 0.12, 0.4, 0.5);
-        const tireMat = makeMat(0.06, 0.06, 0.07, 0.1, 0.25);
-        const rimMat = makeMat(0.65, 0.68, 0.73, 0.9, 0.9);
-        const headLightMat = makeMat(0.95, 0.98, 1.0, 0.2, 0.9, [0.85, 0.92, 1.0]);
-        const tailLightMat = makeMat(0.9, 0.1, 0.15, 0.2, 0.9, [0.9, 0.08, 0.12]);
-        const floorMat = makeMat(0.11, 0.14, 0.19, 0.3, 0.65);
-        const ringMat = makeMat(0.15, 0.42, 0.92, 0.5, 0.85, [0.11, 0.32, 0.85]);
-
-        // Studio Turntable Platform
-        const floor = new pc.Entity("turntable");
-        floor.addComponent("render", { type: "cylinder", material: floorMat });
-        floor.setLocalScale(7.2, 0.14, 7.2);
-        floor.setLocalPosition(0, -0.07, 0);
-        app.root.addChild(floor);
-
-        const ring = new pc.Entity("turntable-ring");
-        ring.addComponent("render", { type: "cylinder", material: ringMat });
-        ring.setLocalScale(7.35, 0.04, 7.35);
-        ring.setLocalPosition(0, -0.08, 0);
-        app.root.addChild(ring);
-
-        // Vehicle Root Group
-        const car = new pc.Entity("vehicle");
-        app.root.addChild(car);
-
-        const isSuv = bodyStyle === "suv";
-        const bodyHeight = isSuv ? 0.68 : 0.52;
-        const cabinHeight = isSuv ? 0.56 : 0.44;
-        const cabinLength = isSuv ? 2.25 : 1.95;
-
-        // Lower Chassis
-        const lowerBody = new pc.Entity("lower-body");
-        lowerBody.addComponent("render", { type: "box", material: bodyMat });
-        lowerBody.setLocalScale(1.92, bodyHeight, 4.45);
-        lowerBody.setLocalPosition(0, 0.42 + bodyHeight * 0.3, 0);
-        car.addChild(lowerBody);
-
-        // Sculpted Hood & Side Shoulders
-        const shoulder = new pc.Entity("shoulder");
-        shoulder.addComponent("render", { type: "box", material: bodyMat });
-        shoulder.setLocalScale(1.98, bodyHeight * 0.65, 4.32);
-        shoulder.setLocalPosition(0, 0.48 + bodyHeight * 0.2, 0);
-        car.addChild(shoulder);
-
-        // Cabin / Greenhouse
-        const cabin = new pc.Entity("cabin");
-        cabin.addComponent("render", { type: "box", material: glassMat });
-        cabin.setLocalScale(1.62, cabinHeight, cabinLength);
-        cabin.setLocalPosition(0, 0.68 + bodyHeight * 0.5, isSuv ? -0.18 : -0.12);
-        car.addChild(cabin);
-
-        // Roof Panel in Vehicle Body Paint
-        const roof = new pc.Entity("roof");
-        roof.addComponent("render", { type: "box", material: bodyMat });
-        roof.setLocalScale(1.56, 0.08, cabinLength - 0.25);
-        roof.setLocalPosition(0, 0.68 + bodyHeight * 0.5 + cabinHeight * 0.5, isSuv ? -0.18 : -0.12);
-        car.addChild(roof);
-
-        // Front Grille
-        const grille = new pc.Entity("grille");
-        grille.addComponent("render", { type: "box", material: trimMat });
-        grille.setLocalScale(1.18, 0.28, 0.08);
-        grille.setLocalPosition(0, 0.48, 2.21);
-        car.addChild(grille);
-
-        // LED Headlights (Left & Right)
-        [-0.68, 0.68].forEach((xPos) => {
-          const hl = new pc.Entity("headlight");
-          hl.addComponent("render", { type: "box", material: headLightMat });
-          hl.setLocalScale(0.36, 0.11, 0.1);
-          hl.setLocalPosition(xPos, 0.58, 2.2);
-          car.addChild(hl);
-
-          const tl = new pc.Entity("taillight");
-          tl.addComponent("render", { type: "box", material: tailLightMat });
-          tl.setLocalScale(0.42, 0.11, 0.09);
-          tl.setLocalPosition(xPos, 0.62, -2.21);
-          car.addChild(tl);
-        });
-
-        // 4 Sport Alloy Wheels
-        const wheelCoords = [
-          [-0.96, 0.36, 1.38],
-          [0.96, 0.36, 1.38],
-          [-0.96, 0.36, -1.38],
-          [0.96, 0.36, -1.38]
-        ];
-        wheelCoords.forEach(([wx, wy, wz]) => {
-          const tire = new pc.Entity("tire");
-          tire.addComponent("render", { type: "cylinder", material: tireMat });
-          tire.setLocalEulerAngles(0, 0, 90);
-          tire.setLocalScale(0.72, 0.26, 0.72);
-          tire.setLocalPosition(wx, wy, wz);
-          car.addChild(tire);
-
-          const rim = new pc.Entity("rim");
-          rim.addComponent("render", { type: "cylinder", material: rimMat });
-          rim.setLocalEulerAngles(0, 0, 90);
-          rim.setLocalScale(0.5, 0.28, 0.5);
-          rim.setLocalPosition(wx, wy, wz);
-          car.addChild(rim);
-        });
-
-        // Studio 3-Point D65 Lighting
-        const keyLight = new pc.Entity("key-light");
-        keyLight.addComponent("light", {
-          type: "directional",
-          color: new pc.Color(1, 0.99, 0.96),
-          intensity: 1.45
-        });
-        keyLight.setLocalEulerAngles(45, 35, 0);
-        app.root.addChild(keyLight);
-
-        const fillLight = new pc.Entity("fill-light");
-        fillLight.addComponent("light", {
-          type: "directional",
-          color: new pc.Color(0.65, 0.78, 1.0),
-          intensity: 0.75
-        });
-        fillLight.setLocalEulerAngles(35, -135, 0);
-        app.root.addChild(fillLight);
-
-        // Camera
-        const camera = new pc.Entity("camera");
-        camera.addComponent("camera", {
-          clearColor: new pc.Color(0.06, 0.09, 0.16),
-          fov: 40
-        });
-        app.root.addChild(camera);
-
-        // Mouse Drag & Wheel Controls
-        let isDragging = false;
-        let lastX = 0;
-        let lastY = 0;
-
-        canvas.addEventListener("pointerdown", (e) => {
-          isDragging = true;
-          lastX = e.clientX;
-          lastY = e.clientY;
-        });
-        window.addEventListener("pointerup", () => { isDragging = false; });
-        window.addEventListener("pointermove", (e) => {
-          if (!isDragging) return;
-          const dx = e.clientX - lastX;
-          const dy = e.clientY - lastY;
-          lastX = e.clientX;
-          lastY = e.clientY;
-          window.pcCameraState.targetYaw = (window.pcCameraState.targetYaw - dx * 0.45 + 360) % 360;
-          window.pcCameraState.targetPitch = Math.max(4, Math.min(48, window.pcCameraState.targetPitch + dy * 0.25));
-        });
-        canvas.addEventListener("wheel", (e) => {
-          e.preventDefault();
-          window.pcCameraState.targetDist = Math.max(3.6, Math.min(9.0, window.pcCameraState.targetDist + e.deltaY * 0.003));
-        }, { passive: false });
-
-        app.on("update", (dt) => {
-          const st = window.pcCameraState;
-          let diffYaw = st.targetYaw - st.currentYaw;
-          if (diffYaw > 180) diffYaw -= 360;
-          if (diffYaw < -180) diffYaw += 360;
-
-          const speed = Math.min(1, dt * 6.5);
-          st.currentYaw = (st.currentYaw + diffYaw * speed + 360) % 360;
-          st.currentPitch += (st.targetPitch - st.currentPitch) * speed;
-          st.currentDist += (st.targetDist - st.currentDist) * speed;
-
-          const radYaw = st.currentYaw * (Math.PI / 180);
-          const radPitch = st.currentPitch * (Math.PI / 180);
-
-          const cx = Math.sin(radYaw) * Math.cos(radPitch) * st.currentDist;
-          const cy = Math.sin(radPitch) * st.currentDist + 0.55;
-          const cz = Math.cos(radYaw) * Math.cos(radPitch) * st.currentDist;
-
-          camera.setLocalPosition(cx, cy, cz);
-          camera.lookAt(0, 0.55, 0);
-        });
-
-        window.addEventListener("resize", () => app.resizeCanvas());
-        setTimeout(() => app.resizeCanvas(), 60);
-        return;
-      } catch (err) {
-        console.warn("PlayCanvas WebGL fallback activated:", err);
-      }
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", initPlayCanvasSynchronizedShowroom);
-  document.addEventListener("turbo:load", initPlayCanvasSynchronizedShowroom);
-  initPlayCanvasSynchronizedShowroom();
 </script>
 
 

@@ -205,5 +205,10 @@ export default class extends Controller {
     if (this.hasAngleLabelTarget && this.hasAnglesValue && this.anglesValue[index]) {
       this.angleLabelTarget.textContent = this.anglesValue[index]
     }
+
+    window.turntableCurrentIndex = index
+    if (typeof window.highlightAngleButton === "function") {
+      window.highlightAngleButton(index)
+    }
   }
 }
