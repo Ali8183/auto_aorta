@@ -133,13 +133,13 @@ module ApplicationHelper
       }
     else
       {
-        color_label: "Protonic Blue / Frozen Grey (W97) - PlayCanvas WebGL 3D",
-        color_tr: "Protonic Blue / Frozen Grey",
-        paint_code: "W97 • Protonic Blue Metallic",
-        hex: "#0284C7",
-        rgb: [ 0.01, 0.52, 0.78 ],
-        body_style: "coupe",
-        package_name: "i8 Coupe Plug-in Hybrid (369 HP)"
+        color_label: "Mineral Grey Metallic (B39) - PlayCanvas WebGL 3D",
+        color_tr: "Mineral Gri (Mineral Grey Metallic)",
+        paint_code: "B39 • Mineral Grey Metallic",
+        hex: "#525860",
+        rgb: [ 0.32, 0.35, 0.38 ],
+        body_style: "sedan",
+        package_name: "M-Sport"
       }
     end
   end
