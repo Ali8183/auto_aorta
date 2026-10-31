@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr" class="h-full bg-[#F8FAFC] text-[#0F172A] antialiased">
+<html lang="tr" class="h-full bg-[#080B11] text-slate-100 antialiased">
   <head>
     <title><%= content_for(:title) || "AutoAorta | Sertifikalı 360° & 3D Otomobil Showroomu" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -11,7 +11,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
@@ -21,6 +21,8 @@
     <style>
       body {
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background-color: #080B11;
+        color: #F1F5F9;
       }
       h1, h2, h3, h4, .font-display, .font-headline {
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
@@ -31,117 +33,138 @@
       .material-symbols-outlined {
         font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
       }
+      /* Custom luxury scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #080B11;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1E293B;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #334155;
+      }
     </style>
   </head>
 
-  <body class="min-h-full flex flex-col bg-[#F8FAFC] text-[#0F172A] selection:bg-[#1D4ED8] selection:text-white">
-    <!-- Top Trust & Customer Assistance Bar -->
-    <div class="bg-slate-900 text-slate-300 text-xs py-2 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
+  <body class="min-h-full flex flex-col bg-[#080B11] text-slate-100 selection:bg-blue-600 selection:text-white relative overflow-x-hidden">
+    <!-- Top Ambient Lighting Cones -->
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[400px] bg-gradient-to-b from-blue-600/12 via-indigo-600/5 to-transparent blur-[140px] pointer-events-none z-0"></div>
+    <div class="fixed top-1/3 -left-[200px] w-[500px] h-[500px] bg-blue-500/5 blur-[160px] pointer-events-none z-0"></div>
+    <div class="fixed top-1/2 -right-[200px] w-[500px] h-[500px] bg-indigo-500/5 blur-[160px] pointer-events-none z-0"></div>
+
+    <!-- Top VIP Customer Hotline & Trust Bar -->
+    <div class="relative z-50 bg-[#0B0F17]/90 text-slate-400 text-xs py-2 px-4 sm:px-6 lg:px-8 border-b border-white/[0.06] backdrop-blur-md">
       <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
         <div class="flex items-center gap-4 text-[11px] sm:text-xs">
-          <span class="flex items-center gap-1.5 text-emerald-400 font-semibold">
-            <span class="material-symbols-outlined text-sm">verified</span>
+          <span class="inline-flex items-center gap-1.5 text-emerald-400 font-medium">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Maslak Showroom Açık (09:00 - 19:30)</span>
+          </span>
+          <span class="text-slate-700 hidden sm:inline">•</span>
+          <span class="flex items-center gap-1.5 text-slate-300">
+            <span class="material-symbols-outlined text-sm text-blue-400">verified</span>
             <span>TSE Onaylı 160-Nokta Ekspertiz</span>
           </span>
-          <span class="text-slate-600 hidden sm:inline">•</span>
-          <span class="flex items-center gap-1.5 text-slate-300">
-            <span class="material-symbols-outlined text-sm text-blue-400">lock</span>
-            <span>7 Gün / 500 km Koşulsuz Para İadesi</span>
-          </span>
-          <span class="text-slate-600 hidden md:inline">•</span>
+          <span class="text-slate-700 hidden md:inline">•</span>
           <span class="hidden md:flex items-center gap-1.5 text-slate-300">
-            <span class="material-symbols-outlined text-sm text-amber-400">shield</span>
-            <span>12 Ay / 20.000 km Mekanik Garanti</span>
+            <span class="material-symbols-outlined text-sm text-amber-400">lock</span>
+            <span>7 Gün / 500 km Koşulsuz Para İadesi</span>
           </span>
         </div>
 
         <div class="flex items-center gap-4 text-[11px] sm:text-xs text-slate-300">
-          <a href="tel:08503008090" class="flex items-center gap-1 hover:text-white transition">
-            <span class="material-symbols-outlined text-sm text-[#1D4ED8]">phone_in_talk</span>
-            <span>Müşteri Hattı: <strong class="text-white">0850 300 80 90</strong></span>
+          <a href="tel:08503008090" class="flex items-center gap-1.5 hover:text-white transition">
+            <span class="material-symbols-outlined text-sm text-blue-400">phone_in_talk</span>
+            <span>VIP Satış Hattı: <strong class="text-white font-semibold">0850 300 80 90</strong></span>
           </a>
           <span class="text-slate-700">|</span>
-          <a href="https://wa.me/905325004030?text=Merhaba,%20araçlar%20hakkında%20bilgi%20almak%20istiyorum." target="_blank" class="flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition font-medium">
+          <a href="https://wa.me/905325004030?text=Merhaba,%20araçlar%20hakkında%20bilgi%20almak%20istiyorum." target="_blank" class="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition font-medium">
             <span class="material-symbols-outlined text-sm">chat</span>
-            <span>WhatsApp Canlı Destek</span>
+            <span>WhatsApp Concierge</span>
           </a>
         </div>
       </div>
     </div>
 
-    <!-- Main Navigation Header -->
-    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+    <!-- Main Navigation Header (Floating Glassmorphism) -->
+    <header class="sticky top-0 z-40 bg-[#080B11]/80 backdrop-blur-xl border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-        <!-- Logo -->
-        <div class="flex items-center gap-6">
-          <%= link_to root_path, class: "flex items-center gap-3 group" do %>
-            <div class="w-11 h-11 rounded-2xl bg-[#1D4ED8] flex items-center justify-center shadow-lg shadow-blue-600/25 group-hover:bg-blue-700 transition">
+        <!-- Brand Logo -->
+        <div class="flex items-center gap-8">
+          <%= link_to root_path, class: "flex items-center gap-3.5 group" do %>
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-600/30 ring-1 ring-white/20 group-hover:scale-105 transition-all duration-300">
               <span class="material-symbols-outlined text-white text-2xl">view_in_ar</span>
             </div>
             <div class="flex flex-col">
               <div class="flex items-center gap-2">
-                <span class="font-display font-black text-xl tracking-tight text-slate-900">AutoAorta</span>
-                <span class="px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase rounded-full bg-blue-50 text-[#1D4ED8] border border-blue-200">SHOWROOM</span>
+                <span class="font-display font-extrabold text-xl tracking-tight text-white group-hover:text-blue-400 transition">AutoAorta</span>
+                <span class="px-2 py-0.5 text-[9px] font-bold tracking-[0.2em] uppercase rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30">ATELIER</span>
               </div>
-              <span class="text-[11px] font-medium text-slate-500">Doğrulanmış 3D & 360° Araç Vitrini</span>
+              <span class="text-[10px] tracking-wider uppercase font-semibold text-slate-400">3D & 360° Showroom</span>
             </div>
           <% end %>
 
-          <div class="hidden lg:block h-6 w-px bg-slate-200"></div>
+          <div class="hidden lg:block h-6 w-px bg-white/10"></div>
 
-          <!-- Primary Customer Navigation Links -->
-          <nav class="hidden md:flex items-center gap-6 text-sm font-semibold">
-            <%= link_to root_path, class: "flex items-center gap-1.5 py-1.5 #{current_page?(root_path) ? 'text-[#1D4ED8] font-bold' : 'text-slate-700 hover:text-[#1D4ED8]'} transition" do %>
-              <span class="material-symbols-outlined text-lg">directions_car</span>
+          <!-- Primary Navigation Links -->
+          <nav class="hidden md:flex items-center gap-6 text-xs uppercase tracking-wider font-semibold">
+            <%= link_to root_path, class: "flex items-center gap-2 py-2 #{current_page?(root_path) ? 'text-white border-b-2 border-blue-500' : 'text-slate-400 hover:text-white'} transition" do %>
+              <span class="material-symbols-outlined text-base text-blue-400">directions_car</span>
               <span>Araç Filosu</span>
             <% end %>
 
             <% sample_car = Listing.first %>
             <% if sample_car %>
-              <%= link_to listing_path(sample_car), class: "flex items-center gap-1.5 py-1.5 #{defined?(@listing) && @listing&.persisted? ? 'text-[#1D4ED8] font-bold' : 'text-slate-700 hover:text-[#1D4ED8]'} transition" do %>
-                <span class="material-symbols-outlined text-lg text-[#1D4ED8]">360</span>
+              <%= link_to listing_path(sample_car), class: "flex items-center gap-2 py-2 #{defined?(@listing) && @listing&.persisted? ? 'text-white border-b-2 border-blue-500' : 'text-slate-400 hover:text-white'} transition" do %>
+                <span class="material-symbols-outlined text-base text-indigo-400">360</span>
                 <span>360° Showroom</span>
               <% end %>
             <% end %>
 
-            <%= link_to capture_path, class: "flex items-center gap-1.5 py-1.5 #{current_page?(capture_path) ? 'text-[#1D4ED8] font-bold' : 'text-slate-700 hover:text-[#1D4ED8]'} transition" do %>
-              <span class="material-symbols-outlined text-lg text-emerald-600">videocam</span>
+            <%= link_to capture_path, class: "flex items-center gap-2 py-2 #{current_page?(capture_path) ? 'text-white border-b-2 border-blue-500' : 'text-slate-400 hover:text-white'} transition" do %>
+              <span class="material-symbols-outlined text-base text-emerald-400">videocam</span>
               <span>108 Kare 3D Çekim</span>
             <% end %>
 
-            <a href="<%= root_path %>#customer-guarantees" class="flex items-center gap-1.5 py-1.5 text-slate-700 hover:text-[#1D4ED8] transition">
-              <span class="material-symbols-outlined text-lg text-amber-500">verified_user</span>
+            <a href="<%= root_path %>#customer-guarantees" class="flex items-center gap-2 py-2 text-slate-400 hover:text-white transition">
+              <span class="material-symbols-outlined text-base text-amber-400">verified_user</span>
               <span>Ekspertiz Standartları</span>
             </a>
           </nav>
         </div>
 
         <!-- Right Action Center -->
-        <div class="flex items-center gap-3">
-          <!-- Quick Search -->
-          <div class="relative hidden xl:block w-64">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+        <div class="flex items-center gap-4">
+          <!-- Search Bar -->
+          <div class="relative hidden xl:block w-72">
+            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-lg pointer-events-none">search</span>
             <input id="nav-search-input"
                    type="text"
-                   placeholder="Araç ara (Marka, model...)"
+                   placeholder="Araç ara (BMW, Tesla, Porsche...)"
                    onclick="const s = document.getElementById('fleet-search-input'); if (s) { s.focus(); s.scrollIntoView({ behavior: 'smooth', block: 'center' }); } else { window.location.href = '<%= root_path(anchor: 'fleet-search-input') %>'; }"
-                   class="w-full h-10 pl-9 pr-3 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#1D4ED8]/20 transition cursor-pointer" />
+                   class="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-900/80 border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition cursor-pointer" />
+            <kbd class="absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-slate-400 border border-white/5">⌘K</kbd>
           </div>
 
-          <!-- Add Listing CTA -->
-          <%= link_to new_listing_path, class: "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1D4ED8] hover:bg-blue-800 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition active:scale-[0.98]" do %>
+          <!-- Add Listing CTA Button -->
+          <%= link_to new_listing_path, class: "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-blue-600/30 ring-1 ring-white/20 transition active:scale-95" do %>
             <span class="material-symbols-outlined text-base">add_circle</span>
-            <span>İlan Ver / Araç Ekle</span>
+            <span class="hidden sm:inline">Yeni İlan Ekle</span>
           <% end %>
         </div>
       </div>
     </header>
 
-    <!-- Flash Messages -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-4">
+    <!-- Flash Messages Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-4 relative z-30">
       <% if notice %>
-        <div class="rounded-2xl border border-emerald-200 bg-emerald-50/90 backdrop-blur-sm p-4 text-emerald-900 flex items-start gap-3 shadow-sm mb-4">
-          <span class="material-symbols-outlined text-emerald-600 text-xl mt-0.5">check_circle</span>
+        <div class="rounded-2xl border border-emerald-500/30 bg-emerald-950/60 backdrop-blur-md p-4 text-emerald-300 flex items-start gap-3 shadow-xl mb-4">
+          <span class="material-symbols-outlined text-emerald-400 text-xl mt-0.5">check_circle</span>
           <div class="text-sm font-medium leading-relaxed">
             <%= notice %>
           </div>
@@ -149,8 +172,8 @@
       <% end %>
 
       <% if alert %>
-        <div class="rounded-2xl border border-amber-200 bg-amber-50/90 backdrop-blur-sm p-4 text-amber-900 flex items-start gap-3 shadow-sm mb-4">
-          <span class="material-symbols-outlined text-amber-600 text-xl mt-0.5">warning</span>
+        <div class="rounded-2xl border border-amber-500/30 bg-amber-950/60 backdrop-blur-md p-4 text-amber-300 flex items-start gap-3 shadow-xl mb-4">
+          <span class="material-symbols-outlined text-amber-400 text-xl mt-0.5">warning</span>
           <div class="text-sm font-medium leading-relaxed">
             <%= alert %>
           </div>
@@ -159,128 +182,133 @@
     </div>
 
     <!-- Main Content Canvas -->
-    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full relative z-10">
       <%= yield %>
     </main>
 
     <!-- Real Customer-Facing Luxury Automotive Footer -->
-    <footer class="border-t border-slate-200 bg-white mt-20 text-slate-600 text-xs">
-      <!-- 4 Pillars Ribbon -->
-      <div class="border-b border-slate-100 bg-slate-50/70 py-8">
+    <footer class="border-t border-white/[0.08] bg-[#06080D] mt-24 text-slate-400 text-xs relative z-10">
+      <!-- 4 Pillars Ribbon (Luxury Bento Row) -->
+      <div class="border-b border-white/[0.06] bg-slate-900/30 py-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div class="flex items-start gap-3.5">
-            <div class="w-10 h-10 rounded-xl bg-blue-100 text-[#1D4ED8] flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-xl">view_in_ar</span>
+          <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05] flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-2xl">view_in_ar</span>
             </div>
             <div>
-              <span class="font-bold text-slate-900 text-sm block">Gerçek 3D & 360° Vitrin</span>
-              <p class="text-slate-500 text-xs mt-0.5 leading-snug">Fotoğraf esnetme veya sahte çizim yok; aracın gerçek piksel verisiyle 3D inceleyin.</p>
+              <span class="font-bold text-white text-sm block">Gerçek 3D & 360° Vitrin</span>
+              <p class="text-slate-400 text-xs mt-1 leading-relaxed">Fotoğraf esnetme veya sahte çizim yok; aracın gerçek piksel verisiyle 3D inceleyin.</p>
             </div>
           </div>
 
-          <div class="flex items-start gap-3.5">
-            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-xl">verified</span>
+          <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05] flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-2xl">verified</span>
             </div>
             <div>
-              <span class="font-bold text-slate-900 text-sm block">160-Nokta TSE Ekspertiz</span>
-              <p class="text-slate-500 text-xs mt-0.5 leading-snug">Kaporta, motor, şasi, mekanik ve elektronik aksam bağımsız teknisyenlerce incelenir.</p>
+              <span class="font-bold text-white text-sm block">160-Nokta TSE Ekspertiz</span>
+              <p class="text-slate-400 text-xs mt-1 leading-relaxed">Kaporta, motor, şasi, mekanik ve elektronik aksam bağımsız teknisyenlerce incelenir.</p>
             </div>
           </div>
 
-          <div class="flex items-start gap-3.5">
-            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-xl">lock</span>
+          <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05] flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-2xl">lock</span>
             </div>
             <div>
-              <span class="font-bold text-slate-900 text-sm block">7 Gün İade Garantisi</span>
-              <p class="text-slate-500 text-xs mt-0.5 leading-snug">Satın aldığınız aracı 7 gün veya 500 km boyunca deneyin, memnun kalmazsanız iade edin.</p>
+              <span class="font-bold text-white text-sm block">7 Gün İade Garantisi</span>
+              <p class="text-slate-400 text-xs mt-1 leading-relaxed">Satın aldığınız aracı 7 gün veya 500 km boyunca test edin, memnun kalmazsanız iade edin.</p>
             </div>
           </div>
 
-          <div class="flex items-start gap-3.5">
-            <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-xl">local_shipping</span>
+          <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05] flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-2xl">local_shipping</span>
             </div>
             <div>
-              <span class="font-bold text-slate-900 text-sm block">81 İle Kapıda Teslimat</span>
-              <p class="text-slate-500 text-xs mt-0.5 leading-snug">Türkiye'nin her yerine özel kapalı kasa çekici ile aracınızı kapınıza teslim ediyoruz.</p>
+              <span class="font-bold text-white text-sm block">81 İle Kapıda Teslimat</span>
+              <p class="text-slate-400 text-xs mt-1 leading-relaxed">Türkiye'nin her yerine özel kapalı kasa çekici ile aracınızı kapınıza teslim ediyoruz.</p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Main Footer Columns -->
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
         <!-- Col 1: Brand Info -->
-        <div class="lg:col-span-2 space-y-4">
+        <div class="lg:col-span-2 space-y-5">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-[#1D4ED8] flex items-center justify-center text-white">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white ring-1 ring-white/20">
               <span class="material-symbols-outlined text-xl">view_in_ar</span>
             </div>
-            <span class="font-display font-black text-lg text-slate-900">AutoAorta Showroom</span>
+            <div>
+              <span class="font-display font-extrabold text-lg text-white">AutoAorta Atelier</span>
+              <p class="text-[10px] text-slate-500 tracking-wider uppercase font-semibold">Luxury Automotive Showcase</p>
+            </div>
           </div>
-          <p class="text-slate-500 text-xs leading-relaxed max-w-sm">
+          <p class="text-slate-400 text-xs leading-relaxed max-w-sm">
             AutoAorta, ikinci el otomotiv perakendeciliğinde güven, şeffaflık ve ileri görsel teknolojiyi buluşturan yeni nesil otomobil platformudur. Araçların tüm kusurları ve ekspertiz kayıtları şeffaf bir şekilde sergilenir.
           </p>
-          <div class="flex items-center gap-3 text-slate-400">
-            <span class="text-xs">Bizi Takip Edin:</span>
-            <span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold text-[11px]">Instagram</span>
-            <span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold text-[11px]">YouTube</span>
-            <span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold text-[11px]">LinkedIn</span>
+          <div class="flex items-center gap-3 pt-2">
+            <span class="px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/10 text-white font-semibold text-[11px] hover:bg-white/10 transition cursor-pointer">Instagram</span>
+            <span class="px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/10 text-white font-semibold text-[11px] hover:bg-white/10 transition cursor-pointer">YouTube</span>
+            <span class="px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/10 text-white font-semibold text-[11px] hover:bg-white/10 transition cursor-pointer">LinkedIn</span>
           </div>
         </div>
 
         <!-- Col 2: Araçlar -->
-        <div class="space-y-3">
-          <span class="font-bold text-slate-900 text-xs uppercase tracking-wider block">Araç Filosu</span>
-          <ul class="space-y-2 text-xs">
-            <li><%= link_to "Tüm İkinci El Araçlar", root_path, class: "hover:text-[#1D4ED8] transition" %></li>
-            <li><a href="<%= root_path %>?fuel=elektrik" class="hover:text-[#1D4ED8] transition">Elektrikli Araçlar (EV)</a></li>
-            <li><a href="<%= root_path %>?body=suv" class="hover:text-[#1D4ED8] transition">Premium SUV Modeller</a></li>
-            <li><a href="<%= root_path %>?brand=bmw" class="hover:text-[#1D4ED8] transition">BMW 3 Serisi</a></li>
-            <li><a href="<%= root_path %>?brand=tesla" class="hover:text-[#1D4ED8] transition">Tesla Model 3</a></li>
-            <li><a href="<%= root_path %>?brand=porsche" class="hover:text-[#1D4ED8] transition">Porsche Macan GTS</a></li>
+        <div class="space-y-4">
+          <span class="font-bold text-white text-xs uppercase tracking-widest block">Araç Filosu</span>
+          <ul class="space-y-2.5 text-xs">
+            <li><%= link_to "Tüm İkinci El Araçlar", root_path, class: "hover:text-blue-400 transition" %></li>
+            <li><a href="<%= root_path %>?fuel=elektrik" class="hover:text-blue-400 transition">Elektrikli Araçlar (EV)</a></li>
+            <li><a href="<%= root_path %>?body=suv" class="hover:text-blue-400 transition">Premium SUV Modeller</a></li>
+            <li><a href="<%= root_path %>?brand=bmw" class="hover:text-blue-400 transition">BMW M & Spor Serisi</a></li>
+            <li><a href="<%= root_path %>?brand=tesla" class="hover:text-blue-400 transition">Tesla Model 3 & Y</a></li>
+            <li><a href="<%= root_path %>?brand=porsche" class="hover:text-blue-400 transition">Porsche Macan & Taycan</a></li>
           </ul>
         </div>
 
         <!-- Col 3: Hizmetler & Güvenceler -->
-        <div class="space-y-3">
-          <span class="font-bold text-slate-900 text-xs uppercase tracking-wider block">Müşteri Güvenceleri</span>
-          <ul class="space-y-2 text-xs">
-            <li><a href="#" class="hover:text-[#1D4ED8] transition">160-Nokta Ekspertiz Standardı</a></li>
-            <li><a href="#" class="hover:text-[#1D4ED8] transition">7 Gün Koşulsuz Para İadesi</a></li>
-            <li><a href="#" class="hover:text-[#1D4ED8] transition">12 Ay Kapsamlı Mekanik Garanti</a></li>
-            <li><a href="#" class="hover:text-[#1D4ED8] transition">Taşıt Kredisi & Finansman</a></li>
-            <li><a href="#" class="hover:text-[#1D4ED8] transition">Takas Değerleme Sistemi</a></li>
-            <li><%= link_to "108 Kare 3D Çekim ile Aracını Sat", capture_path, class: "hover:text-[#1D4ED8] transition" %></li>
+        <div class="space-y-4">
+          <span class="font-bold text-white text-xs uppercase tracking-widest block">Müşteri Güvenceleri</span>
+          <ul class="space-y-2.5 text-xs">
+            <li><a href="#customer-guarantees" class="hover:text-blue-400 transition">160-Nokta Ekspertiz Standardı</a></li>
+            <li><a href="#customer-guarantees" class="hover:text-blue-400 transition">7 Gün Koşulsuz Para İadesi</a></li>
+            <li><a href="#customer-guarantees" class="hover:text-blue-400 transition">12 Ay Kapsamlı Mekanik Garanti</a></li>
+            <li><a href="#" class="hover:text-blue-400 transition">Taşıt Kredisi & Finansman Simülatörü</a></li>
+            <li><a href="#" class="hover:text-blue-400 transition">Hızlı Takas Değerleme</a></li>
+            <li><%= link_to "108 Kare 3D Çekim ile Aracını Sat", capture_path, class: "hover:text-blue-400 transition" %></li>
           </ul>
         </div>
 
         <!-- Col 4: İletişim & Showroom -->
-        <div class="space-y-3">
-          <span class="font-bold text-slate-900 text-xs uppercase tracking-wider block">Showroom & İletişim</span>
-          <div class="space-y-2 text-xs text-slate-500">
-            <p class="text-slate-800 font-semibold">AutoAorta Maslak Showroom</p>
+        <div class="space-y-4">
+          <span class="font-bold text-white text-xs uppercase tracking-widest block">Atelier Showroom</span>
+          <div class="space-y-2.5 text-xs text-slate-400">
+            <p class="text-white font-semibold">AutoAorta Maslak Showroom</p>
             <p>Büyükdere Cad. No: 142, Maslak / Sarıyer / İstanbul</p>
-            <p><strong>Telefon:</strong> 0850 300 80 90</p>
-            <p><strong>E-posta:</strong> info@autoaorta.com</p>
-            <p><strong>Çalışma Saatleri:</strong><br>Pazartesi – Cumartesi: 09:00 – 19:00<br>Pazar: 11:00 – 18:00</p>
+            <p><strong class="text-slate-300">Telefon:</strong> 0850 300 80 90</p>
+            <p><strong class="text-slate-300">E-posta:</strong> atelier@autoaorta.com</p>
+            <div class="pt-2 text-[11px] text-slate-500">
+              <p>Pazartesi – Cumartesi: 09:00 – 19:30</p>
+              <p>Pazar: 11:00 – 18:00</p>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Bottom Bar -->
-      <div class="border-t border-slate-200 py-6 text-[11px] text-slate-500">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="border-t border-white/[0.06] py-6 text-[11px] text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             &copy; <%= Time.current.year %> AutoAorta Otomotiv Tic. A.Ş. Tüm hakları saklıdır.
           </div>
-          <div class="flex items-center gap-4">
-            <a href="#" class="hover:underline">Gizlilik Politikası</a>
-            <a href="#" class="hover:underline">Kullanım Koşulları</a>
-            <a href="#" class="hover:underline">KVKK Aydınlatma Metni</a>
-            <a href="#" class="hover:underline">Çerez Tercihleri</a>
+          <div class="flex items-center gap-6">
+            <a href="#" class="hover:text-slate-300 transition">Gizlilik Politikası</a>
+            <a href="#" class="hover:text-slate-300 transition">Kullanım Koşulları</a>
+            <a href="#" class="hover:text-slate-300 transition">KVKK Aydınlatma Metni</a>
+            <a href="#" class="hover:text-slate-300 transition">Çerez Tercihleri</a>
           </div>
         </div>
       </div>

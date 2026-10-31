@@ -1,45 +1,45 @@
-<div class="max-w-7xl mx-auto space-y-6"
+<div class="max-w-7xl mx-auto space-y-8"
      data-controller="vehicle-capture"
      data-vehicle-capture-listing-id-value="<%= @listing&.id %>"
      data-vehicle-capture-download-url-value="<%= @listing&.persisted? ? download_capture_zip_listing_path(@listing) : capture_download_zip_path %>">
 
   <!-- Top Breadcrumb & Header Command Bar -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-    <div class="space-y-1">
-      <div class="flex items-center gap-2 text-xs text-slate-500 font-medium">
-        <%= link_to "Araç Filosu", root_path, class: "hover:text-[#1D4ED8] transition" %>
-        <span class="material-symbols-outlined text-xs text-slate-300">chevron_right</span>
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.08]">
+    <div class="space-y-2">
+      <div class="flex items-center gap-2 text-xs text-slate-400 font-medium">
+        <%= link_to "Araç Filosu", root_path, class: "hover:text-blue-400 transition" %>
+        <span class="material-symbols-outlined text-xs text-slate-600">chevron_right</span>
         <% if @listing&.persisted? %>
-          <%= link_to @listing.title, listing_path(@listing), class: "hover:text-[#1D4ED8] transition" %>
-          <span class="material-symbols-outlined text-xs text-slate-300">chevron_right</span>
+          <%= link_to @listing.title, listing_path(@listing), class: "hover:text-blue-400 transition" %>
+          <span class="material-symbols-outlined text-xs text-slate-600">chevron_right</span>
         <% end %>
-        <span class="text-slate-800 font-semibold">108 Kare 3D Çekim Stüdyosu</span>
+        <span class="text-white font-semibold">108 Kare 3D Çekim Stüdyosu</span>
       </div>
-      <h1 class="font-headline text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+      <h1 class="font-display text-2xl sm:text-4xl font-extrabold text-white tracking-tight flex items-center gap-3">
         <span>3D Fotogrametri Çekim Stüdyosu</span>
-        <span data-vehicle-capture-target="statusBadge" class="px-3 py-1 rounded-full bg-blue-50 text-[#1D4ED8] border border-blue-200 text-xs font-bold">
+        <span data-vehicle-capture-target="statusBadge" class="px-3.5 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30 text-xs font-bold">
           3 Halka • 108 Kare Hedefi
         </span>
       </h1>
-      <p class="text-xs text-slate-500">
+      <p class="text-xs text-slate-400">
         <%= @listing&.title || "Yeni Araç" %> için 3 farklı kamera yüksekliğinde (Düşük, Orta, Yüksek) 36'şar sektörlük dairesel çekim yapın.
       </p>
     </div>
 
     <!-- Right Header Actions -->
-    <div class="flex items-center gap-2">
-      <!-- Kareleri ZIP İndir Butonu (Başta da kullanılabilir, çekim bitince öne çıkar) -->
+    <div class="flex items-center gap-3">
+      <!-- Kareleri ZIP İndir Butonu -->
       <button type="button"
               id="btn-download-capture-zip"
               data-vehicle-capture-target="downloadBtn"
               data-action="click->vehicle-capture#downloadZip"
-              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition cursor-pointer">
+              class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg shadow-emerald-600/25 transition cursor-pointer active:scale-95">
         <span class="material-symbols-outlined text-base">archive</span>
         <span>Kareleri ZIP indir</span>
       </button>
 
       <% if @listing&.persisted? %>
-        <%= link_to listing_path(@listing), class: "px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition" do %>
+        <%= link_to listing_path(@listing), class: "px-4 py-3 rounded-2xl bg-white/[0.05] border border-white/10 hover:bg-white/10 text-slate-300 hover:text-white font-semibold text-xs transition" do %>
           İlana Dön
         <% end %>
       <% end %>
@@ -49,59 +49,59 @@
   <!-- Telemetry Bar: 3 Halka (Düşük, Orta, Yüksek) & İlerleme -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
     <!-- Halka 1: Düşük -->
-    <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+    <div class="p-5 rounded-3xl bg-slate-900/80 border border-white/[0.08] backdrop-blur-xl shadow-xl space-y-3">
       <div class="flex items-center justify-between text-xs">
         <div class="flex items-center gap-2">
-          <span class="w-6 h-6 rounded-lg bg-blue-50 text-[#1D4ED8] font-black text-xs flex items-center justify-center">1</span>
-          <span class="font-bold text-slate-900">Düşük Kamera Seviyesi</span>
+          <span class="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-400 font-black text-xs flex items-center justify-center">1</span>
+          <span class="font-bold text-white">Düşük Kamera Seviyesi</span>
         </div>
-        <span class="text-[11px] font-mono text-slate-500">36 Sektör</span>
+        <span class="text-[11px] font-mono text-slate-400">36 Sektör</span>
       </div>
-      <p class="text-[11px] text-slate-500">Tampon, difüzör ve jant hizası (~0.5 metre)</p>
-      <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-        <div class="bg-[#1D4ED8] h-full rounded-full transition-all duration-300" style="width: 33%;"></div>
+      <p class="text-[11px] text-slate-400">Tampon, difüzör ve jant hizası (~0.5 metre)</p>
+      <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+        <div class="bg-blue-500 h-full rounded-full transition-all duration-300" style="width: 33%;"></div>
       </div>
     </div>
 
     <!-- Halka 2: Orta -->
-    <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+    <div class="p-5 rounded-3xl bg-slate-900/80 border border-white/[0.08] backdrop-blur-xl shadow-xl space-y-3">
       <div class="flex items-center justify-between text-xs">
         <div class="flex items-center gap-2">
-          <span class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-700 font-black text-xs flex items-center justify-center">2</span>
-          <span class="font-bold text-slate-900">Orta Kamera Seviyesi</span>
+          <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 font-black text-xs flex items-center justify-center">2</span>
+          <span class="font-bold text-white">Orta Kamera Seviyesi</span>
         </div>
-        <span class="text-[11px] font-mono text-slate-500">36 Sektör</span>
+        <span class="text-[11px] font-mono text-slate-400">36 Sektör</span>
       </div>
-      <p class="text-[11px] text-slate-500">Far, ızgara ve kapı kolu hizası (~1.2 metre)</p>
-      <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-        <div class="bg-emerald-600 h-full rounded-full transition-all duration-300" style="width: 66%;"></div>
+      <p class="text-[11px] text-slate-400">Far, ızgara ve kapı kolu hizası (~1.2 metre)</p>
+      <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+        <div class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 66%;"></div>
       </div>
     </div>
 
     <!-- Halka 3: Yüksek -->
-    <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+    <div class="p-5 rounded-3xl bg-slate-900/80 border border-white/[0.08] backdrop-blur-xl shadow-xl space-y-3">
       <div class="flex items-center justify-between text-xs">
         <div class="flex items-center gap-2">
-          <span class="w-6 h-6 rounded-lg bg-amber-50 text-amber-700 font-black text-xs flex items-center justify-center">3</span>
-          <span class="font-bold text-slate-900">Yüksek Kamera Seviyesi</span>
+          <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 font-black text-xs flex items-center justify-center">3</span>
+          <span class="font-bold text-white">Yüksek Kamera Seviyesi</span>
         </div>
-        <span class="text-[11px] font-mono text-slate-500">36 Sektör</span>
+        <span class="text-[11px] font-mono text-slate-400">36 Sektör</span>
       </div>
-      <p class="text-[11px] text-slate-500">Tavan, cam ve kaput üstü açısı (~1.8 metre)</p>
-      <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-        <div class="bg-amber-600 h-full rounded-full transition-all duration-300" style="width: 100%;"></div>
+      <p class="text-[11px] text-slate-400">Tavan, cam ve kaput üstü açısı (~1.8 metre)</p>
+      <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+        <div class="bg-amber-500 h-full rounded-full transition-all duration-300" style="width: 100%;"></div>
       </div>
     </div>
   </div>
 
   <!-- Main Grid: Live Camera / Capture Console + İpuçları Paneli -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
     <!-- SOL 8 KOLON: Canlı Kamera Kadrajı & Çekim Kontrolleri -->
-    <div class="lg:col-span-8 space-y-4">
-      <div class="bg-slate-950 rounded-2xl border border-slate-800 shadow-xl overflow-hidden relative select-none">
+    <div class="lg:col-span-8 space-y-5">
+      <div class="bg-slate-950 rounded-3xl border border-white/10 shadow-2xl overflow-hidden relative select-none">
         <!-- Kamera Üst Bilgi Barı -->
-        <div class="px-4 py-3 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
-          <div class="flex items-center gap-2">
+        <div class="px-5 py-3.5 bg-slate-900/90 backdrop-blur-md border-b border-white/[0.08] flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div class="flex items-center gap-2.5">
             <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
             <span data-vehicle-capture-target="ringName" class="font-bold text-white">
               Halka 1: Düşük Seviye (Tampon / Tekerlek Hizası ~0.5m)
@@ -121,8 +121,8 @@
 
           <!-- Vizör & Kılavuz Çemberi -->
           <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
-            <div class="w-72 h-44 border-2 border-dashed border-blue-400/50 rounded-3xl flex items-center justify-center relative">
-              <span class="text-[10px] font-mono text-blue-300/80 bg-slate-950/60 px-2 py-0.5 rounded">
+            <div class="w-80 h-48 border-2 border-dashed border-blue-400/50 rounded-3xl flex items-center justify-center relative">
+              <span class="text-[10px] font-mono text-blue-300/80 bg-slate-950/80 px-2.5 py-1 rounded-md border border-white/10">
                 Aracı Kadraja Hizalayın (1.5 - 2 m)
               </span>
               <div class="absolute -top-3 w-6 h-6 border-t-2 border-l-2 border-blue-400"></div>
@@ -134,34 +134,34 @@
 
           <!-- HALKA GEÇİŞ MODAL / BİLDİRİMİ (HER HALKA BİTİNCE ÇIKAR) -->
           <div data-vehicle-capture-target="ringAlert"
-               class="hidden absolute inset-0 z-40 bg-slate-950/90 backdrop-blur-md flex-col items-center justify-center p-6 text-center animate-fade-in">
-            <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-3">
+               class="hidden absolute inset-0 z-40 bg-slate-950/95 backdrop-blur-xl flex-col items-center justify-center p-8 text-center animate-fade-in">
+            <div class="w-20 h-20 rounded-3xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center mb-4">
               <span class="material-symbols-outlined text-4xl">swap_vert</span>
             </div>
             <h3 class="text-xl font-bold text-white mb-2">Halka Tamamlandı (36/36 Sektör)</h3>
-            <p class="text-lg font-extrabold text-amber-300 max-w-md mb-6 leading-relaxed">
+            <p class="text-xl font-extrabold text-amber-300 max-w-md mb-8 leading-relaxed">
               Şimdi telefonu bir seviye alçalt/yükselt ve tekrar dön
             </p>
             <button type="button"
                     data-action="click->vehicle-capture#resumeNextRing"
-                    class="px-6 py-3.5 rounded-xl bg-[#1D4ED8] hover:bg-blue-800 text-white font-extrabold text-sm shadow-xl transition cursor-pointer">
+                    class="px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-sm shadow-2xl transition cursor-pointer active:scale-95">
               Sonraki Seviyeye Başla
             </button>
           </div>
 
           <!-- 108 KARE TAMAMLANDI BİLDİRİMİ -->
           <div data-vehicle-capture-target="completionAlert"
-               class="hidden absolute inset-0 z-40 bg-slate-950/95 backdrop-blur-md flex-col items-center justify-center p-6 text-center">
-            <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-3">
+               class="hidden absolute inset-0 z-40 bg-slate-950/95 backdrop-blur-xl flex-col items-center justify-center p-8 text-center">
+            <div class="w-20 h-20 rounded-3xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mb-4">
               <span class="material-symbols-outlined text-4xl">check_circle</span>
             </div>
-            <h3 class="text-2xl font-black text-white mb-1">108 Kare Çekim Başarıyla Tamamlandı!</h3>
-            <p class="text-xs text-slate-300 max-w-md mb-6 leading-relaxed">
+            <h3 class="text-2xl font-black text-white mb-2">108 Kare Çekim Başarıyla Tamamlandı!</h3>
+            <p class="text-sm text-slate-300 max-w-md mb-8 leading-relaxed">
               3 halkadan 36'şar sektör olmak üzere toplam 108 kare kaydedildi. Kareler ve metadata hazırlandı.
             </p>
             <button type="button"
                     data-action="click->vehicle-capture#downloadZip"
-                    class="px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-2xl flex items-center gap-2 transition cursor-pointer">
+                    class="px-8 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm shadow-2xl flex items-center gap-2 transition cursor-pointer active:scale-95">
               <span class="material-symbols-outlined">archive</span>
               <span>Kareleri ZIP indir</span>
             </button>
@@ -169,27 +169,27 @@
         </div>
 
         <!-- Kamera Alt Kontrol Paneli -->
-        <div class="px-5 py-4 bg-slate-900 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        <div class="px-6 py-4 bg-slate-900 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-4">
           <div class="flex items-center gap-3">
             <button type="button"
                     data-vehicle-capture-target="recordBtn"
                     data-action="click->vehicle-capture#toggleRecording"
-                    class="px-6 py-3 rounded-xl bg-[#1D4ED8] hover:bg-blue-800 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition cursor-pointer">
+                    class="px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-blue-600/30 transition cursor-pointer active:scale-95">
               <span data-vehicle-capture-target="recordBtnIcon" class="material-symbols-outlined text-sm">play_arrow</span>
               <span data-vehicle-capture-target="recordBtnText">Çekimi Başlat</span>
             </button>
 
             <button type="button"
                     data-action="click->vehicle-capture#captureStep"
-                    class="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs flex items-center gap-1.5 border border-slate-700 transition cursor-pointer"
+                    class="px-4 py-3 rounded-2xl bg-white/[0.05] hover:bg-white/10 text-slate-200 font-semibold text-xs flex items-center gap-2 border border-white/10 transition cursor-pointer"
                     title="Tek bir sektör karesi yakala">
-              <span class="material-symbols-outlined text-sm">photo_camera</span>
+              <span class="material-symbols-outlined text-sm text-blue-400">photo_camera</span>
               <span>Manuel Kare Al</span>
             </button>
 
             <button type="button"
                     data-action="click->vehicle-capture#resetCapture"
-                    class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700 transition cursor-pointer"
+                    class="p-3 rounded-2xl bg-white/[0.05] hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 transition cursor-pointer"
                     title="Çekimi Sıfırla">
               <span class="material-symbols-outlined text-base">restart_alt</span>
             </button>
@@ -197,7 +197,7 @@
 
           <div class="text-right">
             <div class="text-[10px] text-slate-400">Hedef: 3 Halka × 36 Sektör = 108 Kare</div>
-            <div class="w-48 bg-slate-800 rounded-full h-2 mt-1 overflow-hidden">
+            <div class="w-48 bg-slate-800 rounded-full h-2 mt-1.5 overflow-hidden">
               <div data-vehicle-capture-target="totalProgressBar" class="bg-emerald-500 h-full rounded-full transition-all duration-200" style="width: 0%;"></div>
             </div>
           </div>
@@ -205,16 +205,16 @@
       </div>
 
       <!-- Kaydedilen Karelerin Hızlı Önizleme Şeridi -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2">
+      <div class="bg-slate-900/80 rounded-3xl border border-white/[0.08] p-5 shadow-xl space-y-3 backdrop-blur-xl">
         <div class="flex items-center justify-between text-xs">
-          <span class="font-bold text-slate-800 flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-sm text-[#1D4ED8]">photo_library</span>
+          <span class="font-bold text-white flex items-center gap-2">
+            <span class="material-symbols-outlined text-base text-blue-400">photo_library</span>
             <span>Yakalanan Kareler Galerisi (Halka ve Sektör Bilgili)</span>
           </span>
-          <span class="text-[11px] text-slate-500">Her karenin metadata'sı (ring/sector) saklanır</span>
+          <span class="text-[11px] text-slate-400">Her karenin metadata'sı (ring/sector) saklanır</span>
         </div>
-        <div data-vehicle-capture-target="frameGallery" class="flex items-center gap-2 overflow-x-auto py-1 min-h-[58px]">
-          <span class="text-xs text-slate-400 italic">Çekim başladığında kareler burada listelenecektir...</span>
+        <div data-vehicle-capture-target="frameGallery" class="flex items-center gap-2 overflow-x-auto py-1 min-h-[60px]">
+          <span class="text-xs text-slate-500 italic">Çekim başladığında kareler burada listelenecektir...</span>
         </div>
       </div>
     </div>
@@ -222,62 +222,62 @@
     <!-- SAĞ 4 KOLON: 4. İPUÇLARI PANELİ & ÇEKİM KILAVUZU -->
     <div class="lg:col-span-4 space-y-6">
       <!-- 4. İPUÇLARI PANELİ -->
-      <div id="capture-tips-panel" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-          <h3 class="font-headline text-base font-extrabold text-slate-900 flex items-center gap-2">
-            <span class="material-symbols-outlined text-amber-500">lightbulb</span>
+      <div id="capture-tips-panel" class="bg-slate-900/80 rounded-3xl border border-white/[0.08] p-6 shadow-2xl space-y-5 backdrop-blur-xl">
+        <div class="flex items-center justify-between border-b border-white/[0.08] pb-4">
+          <h3 class="font-display text-base font-extrabold text-white flex items-center gap-2.5">
+            <span class="material-symbols-outlined text-amber-400">lightbulb</span>
             <span>Çekim İpuçları Paneli</span>
           </h3>
-          <span class="px-2 py-0.5 rounded bg-amber-50 text-amber-800 text-[10px] font-bold border border-amber-200">
+          <span class="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 text-[10px] font-bold border border-amber-500/30">
             Kritik Rehber
           </span>
         </div>
 
-        <p class="text-xs text-slate-500 leading-relaxed">
+        <p class="text-xs text-slate-400 leading-relaxed">
           3D Gaussian Splatting ve fotogrametri motorunun en yüksek doğrulukta sonuç vermesi için aşağıdaki 4 altın kurala uyunuz:
         </p>
 
-        <div class="space-y-3 text-xs">
+        <div class="space-y-3.5 text-xs">
           <!-- İpucu 1: Bulutlu Hava -->
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-blue-300 transition space-y-1">
-            <div class="flex items-center gap-2 font-bold text-slate-900">
+          <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-blue-500/30 transition space-y-1">
+            <div class="flex items-center gap-2 font-bold text-white">
               <span class="text-base">⛅</span>
               <span>Bulutlu Hava</span>
             </div>
-            <p class="text-slate-600 text-[11px] leading-relaxed">
+            <p class="text-slate-400 text-[11px] leading-relaxed">
               Doğrudan sert güneş ışığı yerine bulutlu hava veya kapalı gölge ortamları tercih edin. Sert güneş ışığı boya üzerinde yansımalara ve parlamalara yol açarak nokta bulutu kalitesini düşürür.
             </p>
           </div>
 
           <!-- İpucu 2: Gölgesiz Alan -->
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-blue-300 transition space-y-1">
-            <div class="flex items-center gap-2 font-bold text-slate-900">
+          <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-blue-500/30 transition space-y-1">
+            <div class="flex items-center gap-2 font-bold text-white">
               <span class="text-base">🚫</span>
               <span>Gölgesiz Alan</span>
             </div>
-            <p class="text-slate-600 text-[11px] leading-relaxed">
+            <p class="text-slate-400 text-[11px] leading-relaxed">
               Zeminde, kaportada veya jantlarda ağaç, bina veya insan gölgesi bulunmayan homojen aydınlatılmış açık bir alan seçin. Sabit zemin aydınlatması 3D derinlik algısını güçlendirir.
             </p>
           </div>
 
           <!-- İpucu 3: Yavaş Hareket -->
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-blue-300 transition space-y-1">
-            <div class="flex items-center gap-2 font-bold text-slate-900">
+          <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-blue-500/30 transition space-y-1">
+            <div class="flex items-center gap-2 font-bold text-white">
               <span class="text-base">🚶</span>
               <span>Yavaş Hareket</span>
             </div>
-            <p class="text-slate-600 text-[11px] leading-relaxed">
+            <p class="text-slate-400 text-[11px] leading-relaxed">
               Kamerayı ani ivmelenme yapmadan, sabit hızda ve sarsıntısız adımlarla hareket ettirin. Hareket bulanıklığı (motion blur) piksellerin birbirine karışmasına sebep olur.
             </p>
           </div>
 
           <!-- İpucu 4: Aracın Etrafında 1.5-2 m Mesafe -->
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-blue-300 transition space-y-1">
-            <div class="flex items-center gap-2 font-bold text-slate-900">
+          <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-blue-500/30 transition space-y-1">
+            <div class="flex items-center gap-2 font-bold text-white">
               <span class="text-base">📐</span>
               <span>Aracın Etrafında 1.5-2 m Mesafe</span>
             </div>
-            <p class="text-slate-600 text-[11px] leading-relaxed">
+            <p class="text-slate-400 text-[11px] leading-relaxed">
               Aracın tüm gövde hatlarını kadrajda tutacak şekilde 1.5 ile 2.0 metre mesafeyi sabit koruyun. Aracın etrafında tam 360 derecelik dairesel bir yörüngede dönün.
             </p>
           </div>
@@ -285,22 +285,22 @@
       </div>
 
       <!-- Çekim Formatı & Metadata Özeti -->
-      <div class="bg-blue-50/70 rounded-2xl border border-blue-200 p-5 space-y-3 text-xs">
-        <div class="font-bold text-slate-900 flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-[#1D4ED8] text-base">folder_zip</span>
+      <div class="bg-blue-500/[0.05] rounded-3xl border border-blue-500/20 p-6 space-y-3 text-xs">
+        <div class="font-bold text-white flex items-center gap-2">
+          <span class="material-symbols-outlined text-blue-400 text-lg">folder_zip</span>
           <span>Çekim Paketi İçeriği</span>
         </div>
-        <ul class="space-y-1.5 text-slate-700 text-[11px]">
-          <li class="flex items-start gap-1.5">
-            <span class="text-emerald-600 font-bold">✓</span>
-            <span><strong>108 Adet JPEG:</strong> 3 halka (düşük, orta, yüksek) × 36 sektör</span>
+        <ul class="space-y-2 text-slate-400 text-[11px]">
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-400 font-bold">✓</span>
+            <span><strong class="text-slate-200">108 Adet JPEG:</strong> 3 halka (düşük, orta, yüksek) × 36 sektör</span>
           </li>
-          <li class="flex items-start gap-1.5">
-            <span class="text-emerald-600 font-bold">✓</span>
-            <span><strong>metadata.json:</strong> Her karenin halka, sektör, zaman ve açı bilgisi</span>
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-400 font-bold">✓</span>
+            <span><strong class="text-slate-200">metadata.json:</strong> Her karenin halka, sektör, zaman ve açı bilgisi</span>
           </li>
-          <li class="flex items-start gap-1.5">
-            <span class="text-emerald-600 font-bold">✓</span>
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-400 font-bold">✓</span>
             <span>Sunucuda ZIP arşivlenip doğrudan indirme imkanı</span>
           </li>
         </ul>
@@ -308,4 +308,3 @@
     </div>
   </div>
 </div>
-
