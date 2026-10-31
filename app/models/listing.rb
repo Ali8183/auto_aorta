@@ -36,6 +36,7 @@ class Listing < ApplicationRecord
 
   has_many_attached :photos
   has_many :photo_analyses, dependent: :destroy
+  has_many :defects, dependent: :destroy
   has_one_attached :splat
 
   def has_splat?

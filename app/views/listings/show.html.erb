@@ -1,15 +1,13 @@
-<div class="space-y-10">
+<div class="space-y-8"
+     data-controller="vehicle-360"
+     data-vehicle-360-images-value="<%= safe_spin_image_urls(@listing, @spin_photos).to_json %>"
+     data-vehicle-360-defects-value="<%= @listing.defects.map { |d| { id: d.id, part_name: d.part_name, title: d.title, micron_value: d.micron_value, defect_type: d.defect_type, description: d.description, position_x: d.position_x, position_y: d.position_y, frame_index: d.frame_index, severity: d.severity } }.to_json %>">
+
   <% fallback_src = vehicle_fallback_image(@listing) %>
   <% hero_src = listing_hero_image_url(@listing) %>
   <% brand_gallery = brand_angle_gallery(@listing) %>
   <% v3d = vehicle_3d_config(@listing) %>
-  <% spin_image_urls = [
-       brand_gallery[:front_three_quarter],
-       brand_gallery[:front],
-       brand_gallery[:side],
-       brand_gallery[:rear_three_quarter],
-       brand_gallery[:rear]
-     ] %>
+  <% spin_image_urls = safe_spin_image_urls(@listing, @spin_photos) %>
   <% spin_angle_labels = [
        "Ön 3/4 (45° Altın Açı)",
        "Ön (90°)",
@@ -18,887 +16,463 @@
        "Arka (270°)"
      ] %>
   <% verified_six_angles = [
-       { key: "front_three_quarter", label: "Ön 3/4 (45° Altın Açı)", short: "Ön 3/4",   title: "Altın Oran Vitrin", src: brand_gallery[:front_three_quarter], deg: "45°" },
-       { key: "front",               label: "Ön (90°)",               short: "Ön",       title: "Ön Izgara & Far",   src: brand_gallery[:front],               deg: "90°" },
-       { key: "side",                label: "Yan Profil (180°)",      short: "Yan",      title: "Gövde & Jant",      src: brand_gallery[:side],                deg: "180°" },
-       { key: "rear_three_quarter",  label: "Arka 3/4 (225°)",        short: "Arka 3/4", title: "Arka Omuz Çizgisi", src: brand_gallery[:rear_three_quarter],  deg: "225°" },
-       { key: "rear",                label: "Arka (270°)",            short: "Arka",     title: "Arka Difüzör",      src: brand_gallery[:rear],                deg: "270°" },
-       { key: "interior",            label: "Kokpit (İç Mekan)",      short: "Kokpit",   title: "İç Mekan & Ekran",  src: brand_gallery[:interior],            deg: "360°" }
+       { key: "front_three_quarter", label: "Ön 3/4 (45° Altın Açı)", short: "Ön 3/4",   title: "Ön 3/4 Görünüm",  src: brand_gallery[:front_three_quarter], deg: "45°" },
+       { key: "front",               label: "Ön (90°)",               short: "Ön",       title: "Ön Izgara & Far",  src: brand_gallery[:front],               deg: "90°" },
+       { key: "side",                label: "Yan Profil (180°)",      short: "Yan",      title: "Gövde Profili",    src: brand_gallery[:side],                deg: "180°" },
+       { key: "rear_three_quarter",  label: "Arka 3/4 (225°)",        short: "Arka 3/4", title: "Arka 3/4 Omuz",    src: brand_gallery[:rear_three_quarter],  deg: "225°" },
+       { key: "rear",                label: "Arka (270°)",            short: "Arka",     title: "Arka Difüzör",     src: brand_gallery[:rear],                deg: "270°" },
+       { key: "interior",            label: "Kokpit (İç Mekan)",      short: "Kokpit",   title: "Kokpit & Yaşam",   src: brand_gallery[:interior],            deg: "360°" }
      ] %>
   <% monthly_loan_estimate = ((@listing.price.to_f * 0.70) / 36).round %>
+  <% vin_code = "#{@listing.brand[0..2].upcase}#{@listing.id.to_s.rjust(8, '0')}" %>
 
-  <!-- Top Customer Breadcrumb & Vehicle Summary Header -->
-  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-white/[0.08]">
-    <div class="space-y-2">
-      <!-- Breadcrumb -->
+  <!-- Top Breadcrumb & Clean Header -->
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+    <div class="space-y-1.5">
+      <!-- Minimalist Breadcrumb -->
       <div class="flex items-center gap-2 text-xs text-slate-400 font-medium">
         <%= link_to "Araç Filosu", root_path, class: "hover:text-blue-400 transition" %>
-        <span class="material-symbols-outlined text-xs text-slate-600">chevron_right</span>
+        <span class="text-slate-600">/</span>
         <span class="text-slate-300"><%= @listing.brand %></span>
-        <span class="material-symbols-outlined text-xs text-slate-600">chevron_right</span>
+        <span class="text-slate-600">/</span>
         <span class="text-white font-semibold"><%= @listing.model_name %></span>
-        <span class="material-symbols-outlined text-xs text-slate-600">chevron_right</span>
-        <span class="px-2 py-0.5 rounded-md bg-white/[0.05] border border-white/10 text-slate-300 font-mono text-[11px] font-semibold">
-          VIN: <%= @listing.brand[0..2].upcase %><%= @listing.id.to_s.rjust(8, '0') %>
+        <span class="text-slate-600">/</span>
+        <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300 font-mono text-[11px]">
+          VIN: <%= vin_code %>
         </span>
       </div>
 
-      <!-- Main Vehicle Title -->
-      <div class="flex flex-wrap items-center gap-3 pt-1">
-        <h1 class="font-display text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+      <!-- Vehicle Title & Status -->
+      <div class="flex flex-wrap items-center gap-3 pt-0.5">
+        <h1 class="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
           <%= @listing.title %>
         </h1>
-
-        <!-- Trust Badges Row -->
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-semibold shadow-sm">
-            <span class="material-symbols-outlined text-sm text-emerald-400">verified</span>
-            <span>160-Nokta Sertifikalı</span>
-            <span id="inspection-demo-badge" class="ml-1 px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-bold uppercase">Örnek / Demo Veri</span>
-          </span>
-          <span class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30 text-xs font-semibold shadow-sm">
-            <span class="material-symbols-outlined text-sm">360</span>
-            <span>360° Stüdyo Turu Hazır</span>
-          </span>
-          <span class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 text-xs font-semibold shadow-sm">
-            <span class="material-symbols-outlined text-xs text-amber-400">lock</span>
-            <span>7 Gün İade Garantili</span>
-          </span>
-        </div>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span><%= @listing.expertise.presence || "Hatasız / Boyasız" %></span>
+        </span>
       </div>
     </div>
 
-    <!-- Quick Actions & Management Toolbar -->
-    <div class="flex flex-wrap items-center gap-2.5">
-      <!-- 108 Kare 3D Çekim -->
-      <%= link_to capture_listing_path(@listing), class: "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 font-semibold text-xs shadow-sm transition cursor-pointer", title: "108 Kare 3D Fotogrametri Çekim Stüdyosu" do %>
-        <span class="material-symbols-outlined text-base">videocam</span>
-        <span>108 Kare 3D Çekim</span>
+    <!-- Quick Action Bar -->
+    <div class="flex items-center gap-2">
+      <%= link_to capture_listing_path(@listing), class: "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 text-xs font-medium transition cursor-pointer" do %>
+        <span class="material-symbols-outlined text-sm text-blue-400">videocam</span>
+        <span>108 Kare Çekim</span>
       <% end %>
 
-      <!-- Paylaş / Embed Önizle -->
-      <%= link_to embed_listing_url(@listing), target: "_blank", class: "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 hover:bg-white/10 text-slate-300 hover:text-white font-semibold text-xs shadow-sm transition cursor-pointer", title: "İlanı Paylaş veya Harici Sitede Önizle" do %>
-        <span class="material-symbols-outlined text-base text-blue-400">ios_share</span>
+      <%= link_to embed_listing_url(@listing), target: "_blank", class: "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 text-xs font-medium transition cursor-pointer" do %>
+        <span class="material-symbols-outlined text-sm text-slate-400">share</span>
         <span>Paylaş</span>
       <% end %>
 
-      <!-- Yetkili Yönetim Dropdown (Publish) -->
-      <% unless @listing.published? %>
-        <%= button_to publish_listing_path(@listing), method: :post, class: "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-blue-600/30 transition cursor-pointer active:scale-95" do %>
-          <span class="material-symbols-outlined text-base">rocket_launch</span>
-          <span>Yayına Al</span>
-        <% end %>
-      <% end %>
-
-      <!-- 24 Saat İleri Sar (SLA Testi) -->
-      <%= button_to simulate_time_lapse_listing_path(@listing), method: :post, class: "inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-400 border border-amber-500/30 font-semibold text-xs transition cursor-pointer", title: "24 saat kuralını simüle eder" do %>
-        <span class="material-symbols-outlined text-sm text-amber-400">timer</span>
-        <span>24h SLA Testi</span>
-      <% end %>
-
-      <!-- Sil -->
-      <%= button_to listing_path(@listing), method: :delete, data: { turbo_confirm: "Bu aracı filodan silmek istediğinize emin misiniz?" }, class: "p-2.5 rounded-xl bg-white/[0.03] hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 border border-white/10 transition cursor-pointer", title: "İlanı Sil" do %>
-        <span class="material-symbols-outlined text-lg">delete</span>
+      <%= button_to listing_path(@listing), method: :delete, data: { turbo_confirm: "Bu ilanı silmek istediğinize emin misiniz?" }, class: "p-2 rounded-xl bg-slate-900 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 border border-slate-800 transition cursor-pointer", title: "İlanı Sil" do %>
+        <span class="material-symbols-outlined text-base">delete</span>
       <% end %>
     </div>
   </div>
 
-  <!-- MAIN SHOWROOM GRID: 12-Column Responsive Layout -->
-  <div class="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
-    <!-- SOL 8 KOLON: 3D / 360° Studio Showcase & Detailed Matrices -->
-    <div class="xl:col-span-8 space-y-6">
-      <!-- 1. 360° VİTRİN İÇİN MOD SEÇİCİ (TABS) -->
-      <div class="bg-slate-900/80 rounded-2xl border border-white/[0.08] p-1.5 shadow-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-1.5" role="tablist" aria-label="360 Vitrin Mod Seçici">
+  <!-- MAIN SHOWROOM GRID: 12 Columns -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <!-- SOL 8 KOLON: Studio 360 / 3D Stage -->
+    <div class="lg:col-span-8 space-y-4">
+      <!-- Tab Controls (Tesla / Polestar Studio) -->
+      <div class="flex items-center gap-2 bg-slate-900/60 p-1.5 rounded-2xl border border-slate-800/80 backdrop-blur-md">
         <% if @listing.has_splat? %>
           <button type="button"
                   id="tab-btn-splat"
                   onclick="switchShowroomTab('splat')"
-                  class="showroom-tab-btn flex-1 py-3 px-4 rounded-xl bg-blue-600 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-600/30 transition cursor-pointer">
-            <span class="material-symbols-outlined text-base">view_in_ar</span>
-            <span>⚡ 3D Gaussian Splatting (Gerçek WebGL Simülasyonu)</span>
-            <span class="px-2 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-mono">3D Splat</span>
+                  class="showroom-tab-btn flex-1 py-2 px-3.5 rounded-xl bg-blue-600 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm transition cursor-pointer">
+            <span class="material-symbols-outlined text-sm">view_in_ar</span>
+            <span>3D Gaussian Splatting</span>
           </button>
         <% end %>
 
         <button type="button"
                 id="tab-btn-photo"
                 onclick="switchShowroomTab('photo')"
-                class="showroom-tab-btn flex-1 py-3 px-4 rounded-xl <%= @listing.has_splat? ? 'text-slate-400 hover:text-white hover:bg-white/5' : 'bg-blue-600 text-white shadow-md shadow-blue-600/30' %> font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer">
-          <span class="material-symbols-outlined text-base">360</span>
-          <span>📸 360° Doğrulanmış Fotoğraf Turu</span>
-          <span class="px-2 py-0.5 rounded-full <%= @listing.has_splat? ? 'bg-white/10 text-slate-300' : 'bg-white/20 text-white' %> text-[10px] font-mono"><%= spin_image_urls.size %> Açı</span>
+                class="showroom-tab-btn flex-1 py-2 px-3.5 rounded-xl <%= @listing.has_splat? ? 'text-slate-400 hover:text-white hover:bg-slate-800/60' : 'bg-slate-800 text-white font-bold' %> text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
+          <span class="material-symbols-outlined text-sm text-blue-400">360</span>
+          <span>360° Doğrulanmış Fotoğraf Turu</span>
+          <span class="px-1.5 py-0.2 rounded bg-slate-700/60 text-slate-300 text-[10px] font-mono"><%= spin_image_urls.size %> Açı</span>
         </button>
 
         <button type="button"
                 id="tab-btn-guardrail"
                 onclick="switchShowroomTab('guardrail')"
-                class="showroom-tab-btn flex-1 py-3 px-4 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer">
-          <span class="material-symbols-outlined text-base">verified_user</span>
-          <span>🛡️ Tüketici Güvenliği & Ekspertiz Kilidi</span>
+                class="showroom-tab-btn flex-1 py-2 px-3.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
+          <span class="material-symbols-outlined text-sm text-emerald-400">verified_user</span>
+          <span>Tüketici Güvenliği & Ekspertiz Kilidi</span>
         </button>
       </div>
 
       <% if @listing.has_splat? %>
-        <!-- SEKME 1: CANLI 3D GAUSSIAN SPLATTING WEBGL SHOWROOM -->
-        <div id="tab-panel-splat" class="bg-gradient-to-b from-[#080C14] via-[#0E1424] to-[#070A10] rounded-3xl border border-white/10 shadow-2xl overflow-hidden relative flex flex-col justify-between">
-          <!-- Top Bar -->
-          <div class="px-5 py-3.5 bg-slate-950/80 border-b border-white/[0.08] flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300 backdrop-blur-md">
-            <div class="flex items-center gap-2.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span class="font-bold text-white"><%= @listing.title %></span>
-              <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 text-[10px] font-mono border border-blue-500/30">GaussianSplats3D WebGL</span>
-              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-white/5 text-slate-300 text-[11px] font-mono border border-white/10">
-                <span class="w-2 h-2 rounded-full" style="background-color: <%= v3d[:hex] %>;"></span>
-                <span><%= @listing.color %></span>
-              </span>
-            </div>
-            <div class="flex items-center gap-3 text-[11px] text-slate-400">
-              <span id="showroom-splat-angle-badge" class="font-mono text-blue-400 font-bold">Ön 3/4 (45° Altın Açı)</span>
-              <span>•</span>
-              <span class="hidden sm:inline">Sol Tık: 360° Döndür • Tekerlek: Yakınlaş • Sağ Tık: Pan</span>
-            </div>
+        <!-- 3D GAUSSIAN SPLATTING CONTAINER -->
+        <div id="tab-panel-splat" class="bg-slate-950 rounded-2xl border border-slate-850/80 shadow-2xl overflow-hidden relative">
+          <div class="px-4 py-2.5 bg-slate-900/80 border-b border-slate-850 flex items-center justify-between text-xs text-slate-400">
+            <span class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <strong class="text-white"><%= @listing.title %></strong>
+              <span class="text-slate-500">• 3D Gaussian Splatting WebGL</span>
+            </span>
+            <span class="font-mono text-[11px] text-slate-400">Sol Tık: Döndür • Tekerlek: Zum</span>
           </div>
 
-          <!-- 3D Splat Viewer Container -->
           <div id="splat-viewer-container"
                data-splat-url="<%= @listing.splat_url %>"
-               data-car-brand="<%= @listing.brand %>"
-               data-car-model="<%= @listing.model_name %>"
-               data-car-color="<%= @listing.color %>"
-               data-car-hex="<%= v3d[:hex] %>"
-               data-car-body="<%= v3d[:body_style] %>"
-               class="w-full h-[560px] relative bg-gradient-to-b from-[#090d16] via-[#0d1527] to-[#0a0f1d] cursor-grab active:cursor-grabbing select-none overflow-hidden">
-
-            <div id="showroom-splat-loading-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 z-20 text-white text-xs gap-3">
-              <div class="w-9 h-9 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-              <span class="font-mono text-slate-300">3D Gaussian Splatting Modeli Yükleniyor...</span>
-            </div>
-
-            <!-- Hotspot Pins Layer in 3D Space -->
-            <div id="showroom-splat-hotspots-layer" class="pointer-events-none absolute inset-0 z-10 overflow-hidden">
-              <!-- Pin 1: Ön Tampon -->
-              <div id="hotspot-pin-bumper" class="hotspot-3d-pin absolute pointer-events-auto cursor-pointer transform -translate-x-1/2 -translate-y-1/2 group" style="display: none; left: 42%; top: 62%;">
-                <div class="relative flex items-center justify-center">
-                  <span class="absolute w-6 h-6 rounded-full bg-amber-400/40 animate-ping"></span>
-                  <span class="relative w-4 h-4 rounded-full bg-amber-500 border-2 border-white shadow-lg flex items-center justify-center text-[9px] text-white font-bold">1</span>
-                </div>
-                <div class="absolute left-6 top-1/2 -translate-y-1/2 hidden group-hover:flex flex-col bg-slate-950/95 text-white text-[11px] px-3 py-2 rounded-xl border border-white/10 shadow-2xl whitespace-nowrap z-30">
-                  <span class="font-bold text-amber-400">Kozmetik Ekspertiz:</span>
-                  <span class="text-slate-300">Ön Tampon 2mm Taş İzi (Boya Gerektirmez)</span>
-                </div>
-              </div>
-
-              <!-- Pin 2: Jant -->
-              <div id="hotspot-pin-wheel" class="hotspot-3d-pin absolute pointer-events-auto cursor-pointer transform -translate-x-1/2 -translate-y-1/2 group" style="display: none; left: 68%; top: 66%;">
-                <div class="relative flex items-center justify-center">
-                  <span class="absolute w-6 h-6 rounded-full bg-blue-400/40 animate-ping"></span>
-                  <span class="relative w-4 h-4 rounded-full bg-blue-600 border-2 border-white shadow-lg flex items-center justify-center text-[9px] text-white font-bold">2</span>
-                </div>
-                <div class="absolute left-6 top-1/2 -translate-y-1/2 hidden group-hover:flex flex-col bg-slate-950/95 text-white text-[11px] px-3 py-2 rounded-xl border border-white/10 shadow-2xl whitespace-nowrap z-30">
-                  <span class="font-bold text-blue-400">Jant &amp; Yürüyen Aksam:</span>
-                  <span class="text-slate-300">19" Hafif Alaşım Jant (Çiziksiz / Orijinal Balans)</span>
-                </div>
-              </div>
-
-              <!-- Pin 3: Ön Cam -->
-              <div id="hotspot-pin-glass" class="hotspot-3d-pin absolute pointer-events-auto cursor-pointer transform -translate-x-1/2 -translate-y-1/2 group" style="display: none; left: 52%; top: 38%;">
-                <div class="relative flex items-center justify-center">
-                  <span class="absolute w-6 h-6 rounded-full bg-emerald-400/40 animate-ping"></span>
-                  <span class="relative w-4 h-4 rounded-full bg-emerald-500 border-2 border-white shadow-lg flex items-center justify-center text-[9px] text-white font-bold">3</span>
-                </div>
-                <div class="absolute left-6 top-1/2 -translate-y-1/2 hidden group-hover:flex flex-col bg-slate-950/95 text-white text-[11px] px-3 py-2 rounded-xl border border-white/10 shadow-2xl whitespace-nowrap z-30">
-                  <span class="font-bold text-emerald-400">Akustik Cam Kontrolü:</span>
-                  <span class="text-slate-300">Orijinal Fabrika Ön Camı (Çatlak / Taş Kırığı Yok)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Bottom Controls Bar for 3D Splat -->
-          <div class="px-5 py-3.5 bg-slate-950/80 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3 text-xs backdrop-blur-md">
-            <div class="flex items-center gap-2">
-              <button type="button"
-                      id="btn-splat-reset-cam"
-                      onclick="resetSplatCamera()"
-                      class="px-3 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/10 text-slate-300 border border-white/10 font-semibold text-xs transition cursor-pointer">
-                <span>Kamerayı Sıfırla</span>
-              </button>
-
-              <button type="button"
-                      id="btn-splat-toggle-hotspots"
-                      onclick="toggleSplatHotspots()"
-                      class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/10 text-slate-300 border border-white/10 font-semibold text-xs transition cursor-pointer">
-                <span class="material-symbols-outlined text-sm text-emerald-400">verified</span>
-                <span>Ekspertiz Pinleri</span>
-              </button>
-            </div>
-
-            <div class="flex items-center gap-2 font-mono text-[11px] text-slate-400">
-              <span>Dinamik Açı:</span>
-              <span id="showroom-splat-degree" class="font-bold text-white bg-white/10 px-2 py-0.5 rounded border border-white/10">45°</span>
-              <span class="text-slate-600">|</span>
-              <span class="text-emerald-400 font-semibold">✓ 1:1 <%= @listing.color %> WebGL Simülasyonu</span>
+               class="w-full h-[520px] relative bg-slate-950 cursor-grab active:cursor-grabbing select-none overflow-hidden">
+            <div id="showroom-splat-loading-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 z-20 text-white text-xs gap-2">
+              <div class="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span class="font-mono text-slate-400">GaussianSplats3D Yükleniyor...</span>
             </div>
           </div>
         </div>
       <% end %>
 
-      <!-- SEKME 2: 360° DOĞRULANMIŞ FOTOĞRAF TURU (BİREBİR AYNI ARAÇ) -->
-      <div id="tab-panel-photo" class="<%= @listing.has_splat? ? 'hidden ' : '' %>bg-gradient-to-b from-[#080C14] via-[#0E1424] to-[#070A10] rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col justify-between">
-        <!-- Top Bar -->
-        <div class="px-5 py-3.5 bg-slate-950/80 border-b border-white/[0.08] flex flex-wrap items-center justify-between gap-2 backdrop-blur-md">
-          <div class="flex items-center gap-2.5">
-            <span class="px-3 py-1 rounded-full bg-slate-900 border border-white/10 text-white font-mono text-xs font-bold">
-              <%= @listing.color %>
-            </span>
-            <span id="photo-gallery-badge" class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 font-mono text-xs font-extrabold border border-blue-500/30">
-              <%= spin_angle_labels.first %>
-            </span>
+      <!-- 360° FOTOĞRAF SAHNESİ & KUSUR HOTSPOTS -->
+      <div id="tab-panel-photo" class="<%= @listing.has_splat? ? 'hidden ' : '' %>bg-slate-950 rounded-2xl border border-slate-800/80 shadow-2xl overflow-hidden relative flex flex-col justify-between">
+        <!-- Stage Header Subbar -->
+        <div class="px-4 py-2.5 bg-slate-900/60 border-b border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-200 font-mono text-[11px]"><%= @listing.color %></span>
+            <span id="photo-gallery-badge" class="text-slate-300 font-medium"><%= spin_angle_labels.first %></span>
           </div>
-          <span class="text-xs text-slate-400 font-semibold flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-sm text-emerald-400">check_circle</span>
-            <span>Birebir Aynı Araç • Gerçek Piksel Fotoğrafları</span>
+          <span class="flex items-center gap-1.5 text-emerald-400 text-[11px] font-medium">
+            <span class="material-symbols-outlined text-xs">verified</span>
+            <span>Doğrulanmış Stüdyo Çekimi</span>
           </span>
         </div>
 
-        <!-- Main Photo Stage (Clean, crisp, no artificial stretching or warping!) -->
-        <div class="relative w-full h-[560px] flex items-center justify-center p-6 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-600/10 via-transparent to-transparent">
-          <img id="photo-gallery-main-image"
-               src="<%= spin_image_urls.first || fallback_src %>"
-               alt="<%= @listing.title %>"
-               class="w-full h-[520px] object-contain select-none transition-opacity duration-150 drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
-               onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
-               onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
+        <!-- Main Interactive 360 Area (Cloudimage 360 & Stimulus Controller) -->
+        <div class="relative w-full h-[500px] flex items-center justify-center bg-gradient-to-b from-slate-950 via-slate-900/40 to-slate-950 p-4">
+          <!-- Cloudimage 360 Target Container -->
+          <div data-vehicle-360-target="container"
+               class="w-full h-full flex items-center justify-center relative select-none">
+            <img id="photo-gallery-main-image"
+                 src="<%= spin_image_urls.first || fallback_src %>"
+                 alt="<%= @listing.title %>"
+                 class="max-h-full max-w-full object-contain pointer-events-none transition-opacity duration-100"
+                 onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
+                 onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
+          </div>
+
+          <!-- Pulsing Defect Pin Overlays (When available) -->
+          <% @listing.defects.each_with_index do |defect, d_idx| %>
+            <button type="button"
+                    onclick="window.openDefectModalFromPin(<%= defect.id %>)"
+                    style="left: <%= defect.position_x || 50 %>%; top: <%= defect.position_y || 50 %>%;"
+                    class="absolute z-20 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center group cursor-pointer"
+                    title="<%= defect.title %>">
+              <span class="w-6 h-6 rounded-full bg-amber-500/30 animate-ping absolute"></span>
+              <span class="w-4 h-4 rounded-full bg-amber-500 border border-white text-[9px] font-bold text-slate-950 flex items-center justify-center shadow-lg group-hover:scale-125 transition">
+                !
+              </span>
+              <span class="hidden group-hover:block absolute left-6 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-[10px] font-medium px-2 py-1 rounded shadow-xl whitespace-nowrap border border-slate-700">
+                <%= defect.part_name %>: <%= defect.micron_value %>µm (<%= defect.defect_type %>)
+              </span>
+            </button>
+          <% end %>
+
+          <!-- Subtle Drag-to-spin hint pill -->
+          <div class="absolute bottom-3 left-1/2 -translate-x-1/2 pointer-events-none px-3 py-1 rounded-full bg-slate-900/80 border border-slate-800 text-[11px] text-slate-400 flex items-center gap-1.5 backdrop-blur-sm shadow-lg">
+            <span class="material-symbols-outlined text-xs text-blue-400">sync</span>
+            <span>360° döndürmek için kaydırın</span>
+          </div>
         </div>
 
-        <!-- Thumbnails Strip -->
-        <div class="px-5 py-3.5 bg-slate-950/80 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3 backdrop-blur-md">
-          <div class="flex items-center gap-2 overflow-x-auto py-1">
-            <% spin_image_urls.each_with_index do |url, idx| %>
+        <!-- 6 Angle Fast Selector Dock -->
+        <div class="px-4 py-3 bg-slate-900/60 border-t border-slate-800/80 flex items-center justify-between gap-2 overflow-x-auto">
+          <div class="flex items-center gap-2">
+            <% verified_six_angles.each_with_index do |ang, idx| %>
               <button type="button"
-                      onclick="selectPhotoGalleryAngle(<%= idx %>, '<%= spin_angle_labels[idx] %>', '<%= url %>')"
-                      class="photo-thumb-btn w-16 h-11 rounded-xl overflow-hidden border-2 <%= idx == 0 ? 'border-blue-500 ring-2 ring-blue-500/30' : 'border-white/10 hover:border-white/30' %> transition flex-shrink-0 cursor-pointer">
-                <img src="<%= url %>" class="w-full h-full object-cover" alt="Angle <%= idx + 1 %>" />
+                      id="sync-angle-btn-<%= idx %>"
+                      onclick="selectPhotoGalleryAngle(<%= idx %>, '<%= ang[:label] %>', '<%= ang[:src] %>')"
+                      class="sync-angle-btn flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-900/80 border <%= idx == 0 ? 'border-blue-500 text-white' : 'border-slate-800 text-slate-400 hover:text-white' %> text-xs transition cursor-pointer">
+                <span class="w-1.5 h-1.5 rounded-full <%= idx == 0 ? 'bg-blue-400' : 'bg-slate-600' %>"></span>
+                <span class="font-medium"><%= ang[:short] %></span>
               </button>
             <% end %>
           </div>
-          <span class="text-xs font-mono text-slate-400 whitespace-nowrap">
-            Kare: <span id="photo-gallery-counter" class="font-bold text-white">1 / <%= spin_image_urls.size %></span>
+          <span class="text-[11px] font-mono text-slate-500 whitespace-nowrap">
+            Kare: <strong id="photo-gallery-counter" class="text-slate-300">1 / <%= spin_image_urls.size %></strong>
           </span>
         </div>
       </div>
 
-      <!-- TAB 3 PANEL: TÜKETİCİ GÜVENLİĞİ & EKSPERTİZ KİLİDİ -->
-      <div id="tab-panel-guardrail" class="hidden bg-slate-900/80 rounded-3xl border border-white/[0.08] shadow-2xl p-7 space-y-6 backdrop-blur-xl">
-        <div class="flex items-start justify-between gap-4 border-b border-white/[0.08] pb-4">
-          <div class="flex items-start gap-3.5">
-            <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-2xl">verified_user</span>
-            </div>
-            <div>
-              <h3 class="font-display text-base font-extrabold text-white">
-                🛡️ Tüketici Güvenliği & Eksik Fotoğraf Emniyet Kilidi
-              </h3>
-              <p class="text-xs text-slate-400 mt-0.5">
-                İkinci el otomotiv ticaretinde üretken yapay zekâ halüsinasyonlarını engelleyen etik koruma protokolü.
-              </p>
-            </div>
+      <!-- TAB PANEL: TÜKETİCİ GÜVENLİĞİ & EKSPERTİZ KİLİDİ -->
+      <div id="tab-panel-guardrail" class="hidden bg-slate-900/80 rounded-2xl border border-slate-800/80 p-6 space-y-4 text-xs">
+        <div class="flex items-center gap-3 pb-3 border-b border-slate-800">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <span class="material-symbols-outlined text-lg">verified_user</span>
           </div>
-          <span class="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-bold whitespace-nowrap">
-            SHA-256 Piksel Kilidi Aktif
-          </span>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <div class="p-5 rounded-2xl bg-rose-500/10 border border-rose-500/20 space-y-2">
-            <div class="font-extrabold text-rose-400 flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-base">block</span>
-              <span>Neden Üretken 3D Halüsinasyon Yasaktır?</span>
-            </div>
-            <p class="text-slate-300 leading-relaxed">
-              Eksik açılardan aracın görünmeyen yanını veya arka tamponunu yapay zekâ ile "tahmin ederek" sahte model üretmek, gerçek araçtaki <strong>göçükleri, taş izlerini ve boya kusurlarını gizler</strong>.
-            </p>
-          </div>
-
-          <div class="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 space-y-2">
-            <div class="font-extrabold text-emerald-400 flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-base">check_circle</span>
-              <span>AutoAorta AI Sıfır-Halüsinasyon Standardı</span>
-            </div>
-            <p class="text-slate-300 leading-relaxed">
-              AutoAorta AI yalnızca <strong>gerçek kamera sensöründen gelen fotoğrafları</strong> gösterir; fotoğraflanmayan açılar üretken yapay zekâ ile tamamlanmaz ve kozmetik kusurlar gizlenmez.
-            </p>
+          <div>
+            <h3 class="font-bold text-white text-sm">Tüketici Güvenliği & Ekspertiz Kilidi</h3>
+            <p class="text-slate-400 text-[11px]">Gerçek araç fotoğrafı güvencesi</p>
           </div>
         </div>
+        <p class="text-slate-300 leading-relaxed">
+          Sıfır Halüsinasyon Güvencesi: AutoAorta vitrinindeki hiçbir görsel yapay zeka ile boyanmamış veya kusurları gizlenmemiştir. Aracın tüm kaporta ve boya durumu ekspertiz raporuyla eşleştirilmiştir.
+        </p>
       </div>
 
-      <!-- BİZZAT AYNI ARACA AİT 6 AÇI SEÇİCİ DOCK -->
-      <div class="bg-slate-900/80 rounded-3xl border border-white/[0.08] p-5 shadow-2xl space-y-4 backdrop-blur-xl">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-blue-400 text-lg">360</span>
-            <span class="text-xs font-extrabold text-white uppercase tracking-wider">
-              Bizzat Aynı Araca Ait 6 Açı (Tıkla &amp; Fotoğrafta Göster)
-            </span>
-          </div>
-          <span class="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full">
-            1:1 Renk & Model Uyumu: <%= @listing.color %>
-          </span>
+      <!-- Before vs After Analiz Kartı (Required Citation) -->
+      <div id="before-after-analytics" class="p-4 rounded-2xl bg-slate-900/40 border border-slate-800/80 text-xs text-slate-400 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="font-semibold text-white">Stüdyo Kalite ve Tıklanma Performansı</span>
+          <span class="text-emerald-400 font-mono font-bold">+%170 CTR Artışı</span>
         </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-          <% verified_six_angles.each_with_index do |ang, idx| %>
-            <button type="button"
-                    id="sync-angle-btn-<%= idx %>"
-                    onclick="syncVehicleAngle(<%= idx %>, '<%= ang[:label] %>', '<%= ang[:src] %>')"
-                    class="sync-angle-btn flex flex-col gap-1.5 p-2 rounded-2xl bg-slate-950/80 border-2 <%= idx == 0 ? 'border-blue-500 ring-2 ring-blue-500/30' : 'border-white/10 hover:border-white/30' %> shadow-lg transition text-left cursor-pointer group">
-              <div class="relative w-full aspect-[16/10] rounded-xl overflow-hidden bg-slate-950">
-                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                     src="<%= ang[:src] %>"
-                     alt="<%= ang[:label] %>"
-                     onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
-                     onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
-                <span class="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded bg-slate-950/90 text-white font-mono text-[9px] font-bold border border-white/10">
-                  <%= ang[:short] %>
-                </span>
-              </div>
-              <div class="flex items-center justify-between px-0.5">
-                <span class="text-[10px] font-bold text-slate-300 group-hover:text-blue-400 truncate"><%= ang[:title] %></span>
-                <span class="text-[9px] font-mono text-slate-500 font-semibold"><%= ang[:deg] %></span>
-              </div>
-            </button>
-          <% end %>
-        </div>
-
-        <% integrity_verified = @photo_analyses.any? { |a| a.notes.to_s.include?("AI Bütünlük Kontrolü:") } %>
-        <% if integrity_verified %>
-          <div class="p-3.5 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-start sm:items-center gap-2.5 text-xs text-blue-300">
-            <span class="material-symbols-outlined text-blue-400 text-lg flex-shrink-0">fact_check</span>
-            <span class="font-semibold">
-              ✓ AI Bütünlük Kontrolü: 6 görselin tamamı aynı gövde rengine (<%= @listing.color %>) ve donanım paketine ait olarak doğrulandı. Farklı araç anomalisi yok.
-            </span>
-          </div>
-        <% end %>
-      </div>
-
-      <!-- EMNİYET GÜVENCESİ BANNERI (TEST COMPATIBILITY: Sıfır Halüsinasyon Güvencesi) -->
-      <div class="rounded-3xl border border-emerald-500/30 bg-gradient-to-r from-emerald-950/40 via-slate-900/60 to-blue-950/40 p-5 shadow-2xl flex items-start sm:items-center gap-4 backdrop-blur-xl">
-        <div class="w-11 h-11 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center flex-shrink-0 shadow-lg">
-          <span class="material-symbols-outlined text-2xl">shield_lock</span>
-        </div>
-        <div class="space-y-1 text-xs leading-relaxed">
-          <p class="font-bold text-white">
-            ✓ Sıfır Halüsinasyon Güvencesi: AutoAorta AI, eksik fotoğraflardan göçük/çizik silen üretken yapay zekâ tahminleri UYDURMAZ. Fotoğraflanmayan açılar gizlenmez, gerçek ekspertiz pikselleri %100 korunur.
-          </p>
-          <p class="text-[11px] text-slate-400">
-            Carvana & Impel.io Dürüst Otomotiv Perakendeciliği Standardı • Kamera Orijinallik İmzası Doğrulandı
-          </p>
-        </div>
-      </div>
-
-      <!-- BEFORE vs AFTER: Vitrin Karşılaştırma Kartı (Test Compatibility) -->
-      <div id="before-after-analytics" class="rounded-3xl border border-white/[0.08] bg-slate-900/80 overflow-hidden shadow-2xl scroll-mt-24 backdrop-blur-xl">
-        <div class="px-6 py-4 border-b border-white/[0.08] bg-slate-950/60 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
-              <span class="material-symbols-outlined text-lg">compare_arrows</span>
-            </div>
-            <div>
-              <h2 class="text-xs font-extrabold text-white uppercase tracking-wider">Önce / Sonra (Before vs After) Vitrin Karşılaştırması</h2>
-              <p class="text-[11px] text-slate-400">Geleneksel galeri çekimi ile AutoAorta AI Hero Shot vitrin performans analizi</p>
-            </div>
-          </div>
-          <span class="hidden sm:inline-flex px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-            🔥 CTR Artışı: +%170
-          </span>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-white/[0.08]">
-          <!-- SOL: Geleneksel Galeri İlanı -->
-          <div class="p-6 space-y-4 bg-white/[0.01]">
-            <div class="flex items-center justify-between">
-              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-bold">
-                <span>❌ Geleneksel Galeri İlanı</span>
-              </span>
-              <span class="text-[11px] text-slate-500">Standart Çekim</span>
-            </div>
-
-            <div class="relative aspect-video rounded-2xl overflow-hidden bg-slate-950 border border-white/10">
-              <img class="w-full h-full object-cover filter brightness-75 contrast-90"
-                   src="<%= spin_image_urls.last || brand_gallery[:rear] || fallback_src %>"
-                   alt="Geleneksel Yan Açı"
-                   onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
-                   onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
-            </div>
-
-            <div class="grid grid-cols-3 gap-2.5 pt-1 text-center">
-              <div class="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                <div class="text-slate-500 text-[10px] uppercase font-semibold">Tıklanma (CTR)</div>
-                <div class="text-base font-extrabold text-slate-300 mt-0.5">%1.4</div>
-                <div class="text-[10px] text-rose-400 font-medium">Sektör Altı</div>
-              </div>
-              <div class="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                <div class="text-slate-500 text-[10px] uppercase font-semibold">Vitrin Puanı</div>
-                <div class="text-base font-extrabold text-slate-300 mt-0.5">42/100</div>
-                <div class="text-[10px] text-slate-500">Optimizasyonsuz</div>
-              </div>
-              <div class="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                <div class="text-slate-500 text-[10px] uppercase font-semibold">Satış Süresi</div>
-                <div class="text-base font-extrabold text-slate-300 mt-0.5">38 Gün</div>
-                <div class="text-[10px] text-slate-500">Ortalama Stok</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- SAĞ: AutoAorta AI Optimize İlan -->
-          <div class="p-6 space-y-4 bg-blue-500/[0.02]">
-            <div class="flex items-center justify-between">
-              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold">
-                <span>⭐ AutoAorta AI Optimize Vitrin</span>
-              </span>
-              <span class="text-xs text-blue-400 font-semibold">Impel.io Standardı</span>
-            </div>
-
-            <div class="relative aspect-video rounded-2xl overflow-hidden bg-slate-950 border-2 border-blue-500/60 shadow-xl">
-              <img class="w-full h-full object-cover"
-                   src="<%= hero_src %>"
-                   alt="AutoAorta Hero Shot"
-                   onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
-                   onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
-              <div class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[11px] font-bold shadow-lg">
-                ⭐ 45° Hero Vitrin
-              </div>
-              <div class="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-lg bg-slate-950/90 text-[10px] text-blue-400 font-semibold border border-blue-500/30">
-                ✓ 360° Döner Sekans Aktif
-              </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2.5 pt-1 text-center">
-              <div class="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                <div class="text-slate-400 text-[10px] uppercase font-semibold">Tıklanma (CTR)</div>
-                <div class="text-base font-extrabold text-emerald-400 mt-0.5">%3.8</div>
-                <div class="text-[10px] text-emerald-300 font-bold">+%170 Artış</div>
-              </div>
-              <div class="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                <div class="text-slate-400 text-[10px] uppercase font-semibold">Vitrin Puanı</div>
-                <div class="text-base font-extrabold text-blue-400 mt-0.5"><%= @hero_analysis&.quality_score || 98 %>/100</div>
-                <div class="text-[10px] text-blue-300 font-medium">Stüdyo Simetrisi</div>
-              </div>
-              <div class="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                <div class="text-slate-400 text-[10px] uppercase font-semibold">Satış Süresi</div>
-                <div class="text-base font-extrabold text-emerald-400 mt-0.5">27 Gün</div>
-                <div class="text-[10px] text-emerald-300 font-bold">-11 Gün Hızlı</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <p id="ctr-source-note" class="px-6 py-3 border-t border-white/[0.08] bg-slate-950/60 text-[11px] text-slate-500">
+        <p id="ctr-source-note" class="text-[11px] text-slate-500">
           Kaynak: Cox Automotive sektör araştırması; bu ilana özel ölçüm değildir.
         </p>
       </div>
     </div>
 
-    <!-- SAĞ 4 KOLON: High-Converting Retail Action & Financing Hub -->
-    <div class="xl:col-span-4 space-y-6">
-      <!-- 1. Fiyat, Kredi Hesaplayıcı ve Ana Satın Alma Konsolu (Obsidian Glass) -->
-      <div class="p-6 sm:p-7 rounded-3xl bg-slate-900/90 border border-white/[0.08] shadow-2xl space-y-6 backdrop-blur-xl">
-        <div class="flex items-baseline justify-between pb-4 border-b border-white/[0.08]">
-          <div class="space-y-1">
-            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block">Satış Fiyatı</span>
-            <div class="font-display text-3xl sm:text-4xl font-black text-white tracking-tight">
-              <%= number_to_currency(@listing.price, unit: "₺", precision: 0, format: "%n %u") %>
-            </div>
+    <!-- SAĞ 4 KOLON: Fiyat, Ekspertiz ve Satış Kartı (Tesla/Polestar Style) -->
+    <div class="lg:col-span-4 space-y-5">
+      <!-- Satış ve Fiyat Paneli -->
+      <div class="p-6 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-xl space-y-5">
+        <!-- Fiyat & Durum -->
+        <div class="space-y-1 pb-4 border-b border-slate-800">
+          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">Satış Fiyatı</span>
+          <div class="font-display text-3xl font-extrabold text-white">
+            <%= number_to_currency(@listing.price, unit: "₺", precision: 0, format: "%n %u") %>
           </div>
-          <div class="text-right">
-            <span class="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/30 block">
-              Stokta Hazır
-            </span>
-            <span class="text-[11px] text-slate-400 mt-1 block">Krediye Uygun</span>
+          <div class="flex items-center gap-2 pt-1 text-xs">
+            <span class="text-emerald-400 font-semibold">Tramer Tutarı: <%= @listing.tramer.presence || "0 TL" %></span>
+            <span class="text-slate-600">•</span>
+            <span class="text-slate-400">~₺<%= number_with_delimiter(monthly_loan_estimate) %>/ay</span>
           </div>
         </div>
 
-        <!-- Canlı Kredi & Taksit Hesaplayıcı -->
-        <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] space-y-3.5">
-          <div class="flex items-center justify-between text-xs">
-            <div class="flex items-center gap-2 font-bold text-white">
-              <span class="material-symbols-outlined text-base text-blue-400">calculate</span>
-              <span>Taşıt Kredisi Simülatörü</span>
-            </div>
-            <span id="loan-monthly-badge" class="font-bold text-blue-400 font-mono text-sm">
-              ~₺<%= number_with_delimiter(monthly_loan_estimate) %> / ay
-            </span>
+        <!-- Araç Özellikleri Bento -->
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
+            <span class="text-[10px] text-slate-500 block uppercase">Kilometre</span>
+            <span class="font-bold text-white font-mono"><%= number_with_delimiter(@listing.mileage) %> km</span>
           </div>
-
-          <div class="space-y-2">
-            <div class="flex items-center justify-between text-[11px] text-slate-400">
-              <span>Peşinat: <strong id="loan-downpayment-text" class="text-slate-200">%30 Peşinat</strong></span>
-              <span id="loan-term-text" class="text-slate-200">36 Ay Vade</span>
-            </div>
-            <input id="loan-downpayment-slider"
-                   type="range"
-                   min="20"
-                   max="60"
-                   step="10"
-                   value="30"
-                   oninput="updateLoanEstimate(this.value)"
-                   class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500" />
-          </div>
-
-          <div class="flex items-center justify-between gap-1.5 pt-1 text-[10px] font-semibold text-slate-400">
-            <span class="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.05]">12 Ay</span>
-            <span class="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.05]">24 Ay</span>
-            <span class="px-2.5 py-1 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30">36 Ay (Önerilen)</span>
-            <span class="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.05]">48 Ay</span>
-          </div>
-        </div>
-
-        <!-- Primary High-Impact Buyer Action CTAs -->
-        <div class="space-y-3 pt-1">
-          <!-- Primary CTA 1: Kapora ile Rezerve Et -->
-          <button type="button"
-                  onclick="alert('Tebrikler! <%= j @listing.title %> için 48 saatlik online rezervasyon talebiniz oluşturuldu. Danışmanımız 10 dakika içinde sizinle iletişime geçecektir.');"
-                  class="w-full py-4 px-5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-xl shadow-orange-600/25 transition cursor-pointer active:scale-95">
-            <span class="material-symbols-outlined text-lg">local_fire_department</span>
-            <span>15.000 ₺ Kapora ile 48 Saat Rezerve Et</span>
-          </button>
-
-          <!-- Primary CTA 2: Test Sürüşü Randevusu -->
-          <button type="button"
-                  onclick="alert('<%= j @listing.title %> için Maslak Showroomumuzda randevu talebiniz alındı. Müşteri temsilcimiz teyit için arayacaktır.');"
-                  class="w-full py-3.5 px-4 rounded-2xl bg-white/[0.06] hover:bg-white/10 text-white font-bold text-xs flex items-center justify-center gap-2 border border-white/10 transition cursor-pointer">
-            <span class="material-symbols-outlined text-base text-blue-400">calendar_month</span>
-            <span>Test Sürüşü Randevusu Al</span>
-          </button>
-
-          <!-- Primary CTA 3: WhatsApp ile Danışmana Bağlan -->
-          <a href="https://wa.me/<%= @listing.dealer_phone.to_s.gsub(/[^0-9]/, '') %>?text=Merhaba,%20AutoAorta%20üzerindeki%20<%= ERB::Util.url_encode(@listing.title) %>%20(VIN:%20#{@listing.brand[0..2].upcase}#{@listing.id})%20aracı%20için%20bilgi%20almak%20ve%20teklif%20istemek%20istiyorum."
-             target="_blank"
-             class="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition active:scale-95">
-            <span class="material-symbols-outlined text-base">chat</span>
-            <span>WhatsApp ile Danışmana Bağlan</span>
-          </a>
-
-          <!-- Primary CTA 4: Telefon ile Ara -->
-          <a href="tel:<%= @listing.dealer_phone %>"
-             class="w-full py-3 px-4 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] text-slate-300 hover:text-white font-semibold text-xs flex items-center justify-center gap-2 border border-white/[0.08] transition">
-            <span class="material-symbols-outlined text-base text-blue-400">call</span>
-            <span>Showroom'u Ara: <%= @listing.dealer_phone %></span>
-          </a>
-        </div>
-      </div>
-
-      <!-- 2. AutoAorta 4 Müşteri Güvencesi Kartı -->
-      <div class="p-6 rounded-3xl bg-slate-900/80 border border-white/[0.08] shadow-xl space-y-4 backdrop-blur-xl">
-        <div class="flex items-center gap-2.5 font-display text-sm font-bold text-white">
-          <span class="material-symbols-outlined text-emerald-400 text-xl">security</span>
-          <span>AutoAorta Alıcı Güvenceleri</span>
-        </div>
-
-        <div class="space-y-3 text-xs">
-          <div class="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="material-symbols-outlined text-emerald-400 text-lg flex-shrink-0">verified</span>
-            <div>
-              <span class="font-bold text-white">TSE Onaylı 160 Nokta Ekspertiz</span>
-              <p class="text-slate-400 text-[11px] mt-0.5">Kaporta, motor, şasi ve yürüyen aksam bağımsız teknisyen onaylıdır.</p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="material-symbols-outlined text-blue-400 text-lg flex-shrink-0">lock</span>
-            <div>
-              <span class="font-bold text-white">7 Gün / 500 km Koşulsuz İade</span>
-              <p class="text-slate-400 text-[11px] mt-0.5">Aracı deneyin, memnun kalmazsanız paranız kesintisiz iade edilir.</p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="material-symbols-outlined text-amber-400 text-lg flex-shrink-0">shield</span>
-            <div>
-              <span class="font-bold text-white">12 Ay Kapsamlı Mekanik Garanti</span>
-              <p class="text-slate-400 text-[11px] mt-0.5">Motor ve şanzıman arızaları 1 yıl boyunca koruma altındadır.</p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="material-symbols-outlined text-indigo-400 text-lg flex-shrink-0">local_shipping</span>
-            <div>
-              <span class="font-bold text-white">Kapıya Ücretsiz Teslimat</span>
-              <p class="text-slate-400 text-[11px] mt-0.5">Türkiye'nin 81 iline özel kapalı kasa çekici ile adrese teslim edilir.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. Fabrika Teknik Özellikleri Künyesi -->
-      <div class="p-6 rounded-3xl bg-slate-900/80 border border-white/[0.08] shadow-xl space-y-4 backdrop-blur-xl">
-        <div class="flex items-center justify-between">
-          <span class="font-display text-sm font-bold text-white">Araç Künyesi & Teknik Detaylar</span>
-          <span class="material-symbols-outlined text-slate-500 text-base">tune</span>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2.5 text-xs">
-          <div class="p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-[10px] text-slate-500 uppercase font-semibold block">Kilometre</span>
-            <span class="font-bold text-white font-mono"><%= number_with_delimiter(@listing.mileage) %> KM</span>
-          </div>
-          <div class="p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-[10px] text-slate-500 uppercase font-semibold block">Model Yılı</span>
+          <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
+            <span class="text-[10px] text-slate-500 block uppercase">Model Yılı</span>
             <span class="font-bold text-white"><%= @listing.year %></span>
           </div>
-          <div class="p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-[10px] text-slate-500 uppercase font-semibold block">Yakıt Türü</span>
+          <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
+            <span class="text-[10px] text-slate-500 block uppercase">Yakıt / Motor</span>
             <span class="font-bold text-white"><%= @listing.fuel_type %></span>
           </div>
-          <div class="p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-[10px] text-slate-500 uppercase font-semibold block">Şanzıman</span>
+          <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
+            <span class="text-[10px] text-slate-500 block uppercase">Şanzıman</span>
             <span class="font-bold text-white"><%= @listing.transmission %></span>
-          </div>
-          <div class="p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-[10px] text-slate-500 uppercase font-semibold block">Kasa Tipi</span>
-            <span class="font-bold text-white"><%= @listing.body_type %></span>
-          </div>
-          <div class="p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-[10px] text-slate-500 uppercase font-semibold block">Gövde Rengi</span>
-            <span class="font-bold text-white"><%= @listing.color %></span>
           </div>
         </div>
 
-        <div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.05] text-xs text-slate-300 flex items-center justify-between">
-          <span class="text-slate-400">Tramer Kaydı:</span>
-          <span class="font-bold text-emerald-400 font-mono"><%= @listing.tramer.presence || "0 ₺ (Hasarsız)" %></span>
+        <!-- Aksiyon Butonları -->
+        <div class="space-y-2.5 pt-1">
+          <!-- Rezerve Et -->
+          <button type="button"
+                  onclick="alert('Tebrikler! <%= j @listing.title %> için rezervasyon kaydınız oluşturuldu. Satış danışmanımız sizi arayacaktır.');"
+                  class="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25 transition cursor-pointer active:scale-98">
+            <span class="material-symbols-outlined text-sm">lock</span>
+            <span>15.000 ₺ Kapora ile Rezerve Et</span>
+          </button>
+
+          <!-- PDF Ekspertiz Raporu İndir -->
+          <button type="button"
+                  onclick="alert('TSE Onaylı 160-Nokta Ekspertiz Raporu PDF olarak indiriliyor...');"
+                  class="w-full py-3 px-4 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-200 border border-slate-800 font-semibold text-xs flex items-center justify-center gap-2 transition cursor-pointer">
+            <span class="material-symbols-outlined text-sm text-emerald-400">picture_as_pdf</span>
+            <span>PDF Ekspertiz Raporunu İndir</span>
+          </button>
+
+          <!-- Takas Teklifi İlet -->
+          <button type="button"
+                  onclick="alert('Takas değerlendirme formu açılıyor. Mevcut aracınızın ruhsat ve km bilgilerini girerek anında değerleme alabilirsiniz.');"
+                  class="w-full py-3 px-4 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-200 border border-slate-800 font-semibold text-xs flex items-center justify-center gap-2 transition cursor-pointer">
+            <span class="material-symbols-outlined text-sm text-blue-400">swap_horizontal_circle</span>
+            <span>Takas Teklifi İlet</span>
+          </button>
+
+          <!-- WhatsApp İletişim -->
+          <a href="https://wa.me/<%= @listing.dealer_phone.to_s.gsub(/[^0-9]/, '') %>?text=Merhaba,%20AutoAorta'daki%20<%= ERB::Util.url_encode(@listing.title) %>%20(VIN:%20#{vin_code})%20hakkında%20bilgi%20almak%20istiyorum."
+             target="_blank"
+             class="w-full py-3 px-4 rounded-xl bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer">
+            <span class="material-symbols-outlined text-sm">chat</span>
+            <span>WhatsApp ile Danışmana Bağlan</span>
+          </a>
         </div>
       </div>
 
-      <!-- 4. Yetkili Showroom & Danışman Kartı -->
-      <div class="p-6 rounded-3xl bg-slate-900/80 border border-white/[0.08] shadow-xl space-y-4 backdrop-blur-xl">
-        <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-bold text-base shadow-lg ring-1 ring-white/20">
-            <%= @listing.dealer_name.to_s[0..1].upcase %>
+      <!-- Showroom Konumu & İletişim -->
+      <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 text-xs space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center font-bold">
+            AA
           </div>
           <div>
-            <h3 class="font-display text-sm font-bold text-white"><%= @listing.dealer_name %></h3>
-            <div class="flex items-center gap-1.5 text-xs text-slate-400 mt-0.5">
-              <span class="text-amber-400 font-bold">4.9 ⭐</span>
-              <span>(148 Müşteri Değerlendirmesi)</span>
-            </div>
+            <h4 class="font-bold text-white"><%= @listing.dealer_name %></h4>
+            <p class="text-[11px] text-slate-400">Maslak 1453 Showroom • 0850 300 80 90</p>
           </div>
         </div>
-
-        <div class="text-xs text-slate-400 space-y-2 pt-3 border-t border-white/[0.06]">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-slate-500 text-sm">location_on</span>
-            <span>Maslak Showroom, Büyükdere Cad. No: 142 İstanbul</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-slate-500 text-sm">schedule</span>
-            <span>Pzt - Cts: 09:00 - 19:30 (Pazar Açık)</span>
-          </div>
-        </div>
+        <p class="text-[11px] text-slate-500 border-t border-slate-800/80 pt-2">
+          Pazartesi – Cumartesi: 09:00 – 19:30 (Pazar günleri randevulu açıktır).
+        </p>
       </div>
     </div>
   </div>
 
-  <!-- LOWER BENTO: 160-Point Certified Inspection Matrix -->
-  <div class="space-y-6 pt-8 border-t border-white/[0.08]">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+  <!-- DETAYLI EKSPERTİZ ŞEMASI (ALT BÖLÜM - 2D GÖVDE MİKRON HARİTASI) -->
+  <div class="p-6 sm:p-8 rounded-3xl bg-slate-900/60 border border-slate-800/80 shadow-xl space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
       <div>
-        <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-emerald-400 text-2xl">verified_user</span>
-          <h2 class="font-display text-xl sm:text-2xl font-bold text-white tracking-tight">160-Nokta Ekspertiz &amp; Sertifikasyon Matrisi</h2>
-          <span id="inspection-demo-badge" class="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 text-[10px] font-bold uppercase tracking-wide">Örnek / Demo Veri</span>
+        <div class="flex items-center gap-2.5">
+          <span class="material-symbols-outlined text-emerald-400 text-xl">fact_check</span>
+          <h2 class="font-display text-lg sm:text-xl font-bold text-white">
+            2D Gövde Mikron ve Parça Ekspertiz Karnesi
+          </h2>
+          <span id="inspection-demo-badge" class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30 text-[10px] font-bold uppercase">
+            Örnek / Demo Veri
+          </span>
         </div>
-        <p class="text-xs text-slate-400 mt-1">Usta Ekspertiz Teknisyeni tarafından onaylanan lazer telemetri ve elektronik diyagnostik kaydı.</p>
+        <p class="text-xs text-slate-400 mt-1">
+          Lazer mikron kalınlık ölçer ve ultrasonik boya kalınlık testi sonuçları.
+        </p>
       </div>
+
       <div class="flex items-center gap-2">
-        <span class="px-4 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-bold shadow-sm">
+        <span class="px-3.5 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold">
           160 / 160 Nokta Onaylandı (Demo)
         </span>
       </div>
     </div>
 
-    <!-- 4 Inspection Pillars Bento -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-      <!-- Pillar 1: Powertrain & OBD -->
-      <div class="p-6 rounded-3xl bg-slate-900/80 border border-white/[0.08] shadow-xl space-y-4 backdrop-blur-xl">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-emerald-400">memory</span>
-            <span class="text-sm font-bold text-white">Motor &amp; Diyagnostik</span>
-          </div>
-          <span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>
-        </div>
-        <p class="text-xs text-slate-400">ECU hata kayıtları taranmıştır. Sıfır arıza kaydı.</p>
-        <div class="space-y-2 pt-1 text-xs">
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-slate-400">OBD-II Hata Kodu</span>
-            <span class="text-emerald-400 font-bold">0 Hata (Kusursuz)</span>
-          </div>
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-slate-400">Silindir Kompresyon</span>
-            <span class="text-emerald-400 font-bold">Fabrika Değeri</span>
-          </div>
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-slate-400">Şanzıman Debriyaj</span>
-            <span class="text-emerald-400 font-bold">%98 Kalan Ömür</span>
-          </div>
-        </div>
-      </div>
+    <!-- 2D Araç Parça Durumu Matrisi (Preline Table Pattern) -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
+      <% body_parts = [
+           { name: "Ön Kaput",           micron: 120, status: "Orijinal", is_defect: false },
+           { name: "Tavan",              micron: 110, status: "Orijinal", is_defect: false },
+           { name: "Bagaj Kapağı",       micron: 115, status: "Orijinal", is_defect: false },
+           { name: "Sol Ön Çamurluk",    micron: 125, status: "Orijinal", is_defect: false },
+           { name: "Sol Ön Kapı",        micron: 120, status: "Orijinal", is_defect: false },
+           { name: "Sol Arka Kapı",       micron: 120, status: "Orijinal", is_defect: false }
+         ] %>
 
-      <!-- Pillar 2: Paint Thickness & Body Scan -->
-      <div class="p-6 rounded-3xl bg-slate-900/80 border border-white/[0.08] shadow-xl space-y-4 backdrop-blur-xl">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-emerald-400">format_paint</span>
-            <span class="text-sm font-bold text-white">Kaporta &amp; Mikron Boya</span>
-          </div>
-          <span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>
-        </div>
-        <p class="text-xs text-slate-400">Ultrasonik boya mikron kalınlığı fabrika toleransında.</p>
-        <div class="space-y-2 pt-1 text-xs">
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-slate-400">Kaput &amp; Çamurluk</span>
-            <span class="text-emerald-400 font-bold">115 – 125 µm (Orijinal)</span>
-          </div>
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-slate-400">Kapılar &amp; Tavan</span>
-            <span class="text-emerald-400 font-bold">110 – 120 µm (Orijinal)</span>
-          </div>
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-slate-400">Değişen Parça</span>
-            <span class="text-emerald-400 font-bold">Yok (Tüm Parçalar Orijinal)</span>
-          </div>
-        </div>
-      </div>
+      <!-- Inject real defects into parts if matching -->
+      <% @listing.defects.each do |defect| %>
+        <% if defect.part_name.present? %>
+          <% matched = body_parts.find { |p| p[:name].downcase == defect.part_name.downcase } %>
+          <% if matched %>
+            <% matched[:micron] = defect.micron_value %>
+            <% matched[:status] = defect.defect_type %>
+            <% matched[:is_defect] = true %>
+          <% else %>
+            <% body_parts << { name: defect.part_name, micron: defect.micron_value, status: defect.defect_type, is_defect: true } %>
+          <% end %>
+        <% end %>
+      <% end %>
 
-      <!-- Pillar 3: Chassis & Structural Integrity -->
-      <div class="p-6 rounded-3xl bg-slate-900/80 border border-white/[0.08] shadow-xl space-y-4 backdrop-blur-xl">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-emerald-400">architecture</span>
-            <span class="text-sm font-bold text-white">Şasi &amp; Podye Direk</span>
+      <% body_parts.each do |part| %>
+        <div class="p-3.5 rounded-2xl <%= part[:is_defect] ? 'bg-amber-500/10 border border-amber-500/30' : 'bg-slate-950/60 border border-slate-800/80' %> space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="font-medium text-slate-300 text-[11px]"><%= part[:name] %></span>
+            <span class="w-2 h-2 rounded-full <%= part[:is_defect] ? 'bg-amber-400' : 'bg-emerald-400' %>"></span>
           </div>
-          <span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>
-        </div>
-        <p class="text-xs text-slate-400">Şasi kolları, podyeler ve tavan direkleri hatasız.</p>
-        <div class="space-y-2 pt-1 text-xs">
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-slate-400">Ön Şasi Kolları</span>
-            <span class="text-emerald-400 font-bold">Kusursuz / Kaynaksız</span>
+          <div class="font-mono text-sm font-bold <%= part[:is_defect] ? 'text-amber-300' : 'text-white' %>">
+            <%= part[:micron] %> µm
           </div>
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-slate-400">Podye &amp; Kuleler</span>
-            <span class="text-emerald-400 font-bold">Fabrika Punta İzi</span>
-          </div>
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-slate-400">Hava Yastıkları</span>
-            <span class="text-emerald-400 font-bold">Fabrika Çıkışlı (Açılmamış)</span>
+          <div class="text-[10px] <%= part[:is_defect] ? 'text-amber-400 font-semibold' : 'text-slate-400' %>">
+            <%= part[:status] %>
           </div>
         </div>
-      </div>
-
-      <!-- Pillar 4: Brakes, Suspension & Tires -->
-      <div class="p-6 rounded-3xl bg-slate-900/80 border border-white/[0.08] shadow-xl space-y-4 backdrop-blur-xl">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-emerald-400">tire_repair</span>
-            <span class="text-sm font-bold text-white">Fren &amp; Lastik Kondisyonu</span>
-          </div>
-          <span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>
-        </div>
-        <p class="text-xs text-slate-400">Fren balataları ve lastik diş derinliği güvenli seviyede.</p>
-        <div class="space-y-2 pt-1 text-xs">
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-slate-400">Ön / Arka Balata</span>
-            <span class="text-emerald-400 font-bold">%92 / %95 Kalan Ömür</span>
-          </div>
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-slate-400">Lastik Diş Derinliği</span>
-            <span class="text-emerald-400 font-bold">6.8 mm (Michelin Pilot)</span>
-          </div>
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-            <span class="text-slate-400">Fren Disk Eğrilik</span>
-            <span class="text-emerald-400 font-bold">0.02 mm (Titreşimsiz)</span>
-          </div>
-        </div>
-      </div>
+      <% end %>
     </div>
 
-    <!-- Donanım ve Konfor Özellikleri Çizelgesi -->
-    <div class="p-7 rounded-3xl bg-slate-900/80 border border-white/[0.08] shadow-xl space-y-5 backdrop-blur-xl">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2.5 font-display text-base font-bold text-white">
-          <span class="material-symbols-outlined text-blue-400">stars</span>
-          <span>Öne Çıkan Fabrika Donanımları &amp; Paketler</span>
+    <!-- Kusur Listesi Tablosu (Varsa) -->
+    <% if @listing.defects.any? %>
+      <div class="pt-2">
+        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Tespit Edilen Kusur ve İşlem Detayları</h4>
+        <div class="divide-y divide-slate-800 border border-slate-800 rounded-2xl overflow-hidden bg-slate-950/40 text-xs">
+          <% @listing.defects.each do |d| %>
+            <div class="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5">
+                <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold">
+                  <%= d.part_name %>
+                </span>
+                <span class="font-semibold text-white"><%= d.title %></span>
+              </div>
+              <div class="text-slate-400 text-[11px]">
+                <%= d.description %> (<strong class="text-white font-mono"><%= d.micron_value %> µm</strong>)
+              </div>
+            </div>
+          <% end %>
         </div>
-        <span class="text-xs text-slate-400 font-medium">AutoAorta Paket Doğrulama</span>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- HOTSPOT DEFECT DETAILS MODAL (Preline / Tailwind) -->
+  <div data-vehicle-360-target="modal"
+       class="hidden fixed inset-0 z-50 overflow-x-hidden overflow-y-auto bg-slate-950/80 backdrop-blur-md items-center justify-center p-4">
+    <div class="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4">
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+            !
+          </div>
+          <div>
+            <h3 data-vehicle-360-target="modalTitle" class="font-bold text-white text-sm">Kusur Detayı</h3>
+            <span data-vehicle-360-target="modalPart" class="text-slate-400 text-xs">Gövde Aksamı</span>
+          </div>
+        </div>
+        <button type="button"
+                data-action="click->vehicle-360#closeModal"
+                class="p-1 rounded-lg text-slate-400 hover:text-white bg-slate-800 transition cursor-pointer">
+          <span class="material-symbols-outlined text-sm">close</span>
+        </button>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-        <div class="space-y-2.5 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-          <span class="font-bold text-white block text-xs">Güvenlik &amp; Sürüş</span>
-          <ul class="space-y-1.5 text-slate-400 text-[11px]">
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> Şerit Takip Asistanı</li>
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> Kör Nokta Uyarı Sistemi</li>
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> Çarpışma Önleyici Acil Fren</li>
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> Adaptif Hız Sabitleyici (ACC)</li>
-          </ul>
+      <div class="grid grid-cols-2 gap-2 text-xs py-1">
+        <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+          <span class="text-[10px] text-slate-500 block">Mikron Değeri</span>
+          <span data-vehicle-360-target="modalMicron" class="font-bold text-amber-300 font-mono text-sm">165 µm</span>
         </div>
+        <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+          <span class="text-[10px] text-slate-500 block">İşlem Türü</span>
+          <span data-vehicle-360-target="modalType" class="font-bold text-white">Lokal Boya</span>
+        </div>
+      </div>
 
-        <div class="space-y-2.5 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-          <span class="font-bold text-white block text-xs">Konfor &amp; İç Mekan</span>
-          <ul class="space-y-1.5 text-slate-400 text-[11px]">
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> Panoramik Cam Tavan</li>
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> Isıtmalı Hafızalı Deri Koltuk</li>
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> 3 Bölgeli Otomatik Dijital Klima</li>
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> Ambiyans İç Aydınlatma (64 Renk)</li>
-          </ul>
-        </div>
+      <div class="text-xs text-slate-300 bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
+        <p data-vehicle-360-target="modalDesc">Açıklama</p>
+      </div>
 
-        <div class="space-y-2.5 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-          <span class="font-bold text-white block text-xs">Multimedya &amp; Ekran</span>
-          <ul class="space-y-1.5 text-slate-400 text-[11px]">
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> 12.3" Dijital Hayalet Gösterge</li>
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> Kablosuz Apple CarPlay / Android Auto</li>
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> Premium Surround Ses Sistemi</li>
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> Kablosuz Hızlı Akıllı Telefon Şarjı</li>
-          </ul>
-        </div>
-
-        <div class="space-y-2.5 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-          <span class="font-bold text-white block text-xs">Dış Tasarım &amp; Işık</span>
-          <ul class="space-y-1.5 text-slate-400 text-[11px]">
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> 19" Özel Tasarım Alaşım Jantlar</li>
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> Adaptif Matrix / Laser LED Far</li>
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> Karartılmış Fabrika Arka Camlar</li>
-            <li class="flex items-center gap-1.5"><span class="text-emerald-400 font-bold">✓</span> Elektrikli Akıllı Ayakla Açılan Bagaj</li>
-          </ul>
-        </div>
+      <div class="flex items-center justify-between pt-1 text-xs">
+        <span data-vehicle-360-target="modalSeverity" class="text-amber-400 text-[11px] font-medium">Hafif Kusur</span>
+        <button type="button"
+                data-action="click->vehicle-360#closeModal"
+                class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-medium transition cursor-pointer">
+          Kapat
+        </button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-  window.turntableFrames = <%= raw(spin_image_urls.to_json) %>;
-  window.turntableLabels = <%= raw(spin_angle_labels.to_json) %>;
-  window.verifiedSixAngles = <%= raw(verified_six_angles.to_json) %>;
-  window.turntableCurrentIndex = 0;
-  window.showroomActiveMode = "<%= @listing.has_splat? ? 'splat' : 'photo' %>";
-
-  // Preload all real vehicle photographs for zero-latency 360° spin
-  (function preloadTurntablePhotos() {
-    const allUrls = <%= raw(verified_six_angles.map { |a| a[:src] }.to_json) %>;
-    allUrls.forEach((url) => {
-      if (url) {
-        const img = new Image();
-        img.src = url;
+  // Global helper for opening modal from defect pins
+  window.openDefectModalFromPin = function(defectId) {
+    const defects = <%= raw(@listing.defects.map { |d| { id: d.id, part_name: d.part_name, title: d.title, micron_value: d.micron_value, defect_type: d.defect_type, description: d.description, severity: d.severity } }.to_json) %>;
+    const matched = defects.find(d => d.id === defectId);
+    if (matched) {
+      const controllerEl = document.querySelector('[data-controller="vehicle-360"]');
+      if (controllerEl) {
+        const controller = window.Stimulus?.getControllerForElementAndIdentifier(controllerEl, 'vehicle-360');
+        if (controller && controller.openDefectModal) {
+          controller.openDefectModal(matched);
+        }
       }
-    });
-  })();
+    }
+  };
 
-  // 1. Sekme Değiştirici
+  // Showroom tab switcher
   window.switchShowroomTab = function(mode) {
-    window.showroomActiveMode = mode;
     const panels = {
       "splat": document.getElementById("tab-panel-splat"),
       "photo": document.getElementById("tab-panel-photo"),
@@ -911,14 +485,12 @@
     };
 
     Object.keys(panels).forEach((key) => {
-      if (panels[key]) {
-        panels[key].classList.toggle("hidden", key !== mode);
-      }
+      if (panels[key]) panels[key].classList.toggle("hidden", key !== mode);
       if (buttons[key]) {
         if (key === mode) {
-          buttons[key].className = "showroom-tab-btn flex-1 py-3 px-4 rounded-xl bg-blue-600 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-600/30 transition cursor-pointer";
+          buttons[key].className = "showroom-tab-btn flex-1 py-2 px-3.5 rounded-xl bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition cursor-pointer";
         } else {
-          buttons[key].className = "showroom-tab-btn flex-1 py-3 px-4 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer";
+          buttons[key].className = "showroom-tab-btn flex-1 py-2 px-3.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs flex items-center justify-center gap-1.5 transition cursor-pointer";
         }
       }
     });
@@ -928,7 +500,6 @@
     }
   };
 
-  // 2. 2D Fotoğraf Galerisi Seçici (Yüksek çözünürlüklü, optik deformasyonsuz / esnemesiz)
   window.selectPhotoGalleryAngle = function(idx, label, url) {
     const mainImg = document.getElementById("photo-gallery-main-image");
     if (mainImg && url) {
@@ -938,63 +509,20 @@
         mainImg.style.opacity = "1.0";
       }, 50);
     }
-
     const badge = document.getElementById("photo-gallery-badge");
     if (badge && label) badge.textContent = label;
-
     const counter = document.getElementById("photo-gallery-counter");
     if (counter) counter.textContent = `${idx + 1} / <%= spin_image_urls.size %>`;
 
-    const thumbBtns = document.querySelectorAll(".photo-thumb-btn");
-    thumbBtns.forEach((btn, i) => {
-      if (i === idx) {
-        btn.className = "photo-thumb-btn w-16 h-11 rounded-xl overflow-hidden border-2 border-blue-500 ring-2 ring-blue-500/30 transition flex-shrink-0 cursor-pointer";
-      } else {
-        btn.className = "photo-thumb-btn w-16 h-11 rounded-xl overflow-hidden border-2 border-white/10 hover:border-white/30 transition flex-shrink-0 cursor-pointer";
-      }
-    });
-
-    window.highlightAngleButton(idx);
-  };
-
-  // 3. 6 Doğrulanmış Açı Seçici (Tıklandığında fotoğrafı o açıya getirir)
-  window.syncVehicleAngle = function(idx, label, src) {
-    if (window.switchShowroomTab && window.showroomActiveMode !== "photo" && !document.getElementById("tab-panel-splat")) {
-      window.switchShowroomTab("photo");
-    }
-    window.selectPhotoGalleryAngle(idx, label, src);
-    window.highlightAngleButton(idx);
-  };
-
-  window.highlightAngleButton = function(activeIdx) {
     for (let i = 0; i < 6; i++) {
       const btn = document.getElementById(`sync-angle-btn-${i}`);
       if (btn) {
-        if (i === activeIdx) {
-          btn.className = "sync-angle-btn flex flex-col gap-1.5 p-2 rounded-2xl bg-slate-950/80 border-2 border-blue-500 ring-2 ring-blue-500/30 shadow-lg transition text-left cursor-pointer group";
+        if (i === idx) {
+          btn.className = "sync-angle-btn flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-900/80 border border-blue-500 text-white text-xs transition cursor-pointer";
         } else {
-          btn.className = "sync-angle-btn flex flex-col gap-1.5 p-2 rounded-2xl bg-slate-950/80 border-2 border-white/10 hover:border-white/30 shadow-lg transition text-left cursor-pointer group";
+          btn.className = "sync-angle-btn flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-400 hover:text-white text-xs transition cursor-pointer";
         }
       }
-    }
-  };
-
-  // 4. Kredi Simülatörü Hesaplama Fonksiyonu
-  window.updateLoanEstimate = function(downPaymentPct) {
-    const totalVehiclePrice = <%= @listing.price.to_f %>;
-    const downPaymentRatio = parseInt(downPaymentPct, 10) / 100;
-    const loanAmount = totalVehiclePrice * (1 - downPaymentRatio);
-    const months = 36;
-    const monthlyPayment = Math.round(loanAmount / months);
-
-    const downPaymentEl = document.getElementById("loan-downpayment-text");
-    if (downPaymentEl) {
-      downPaymentEl.textContent = `%${downPaymentPct} Peşinat (₺${Math.round(totalVehiclePrice * downPaymentRatio).toLocaleString()})`;
-    }
-
-    const badgeEl = document.getElementById("loan-monthly-badge");
-    if (badgeEl) {
-      badgeEl.textContent = `~₺${monthlyPayment.toLocaleString()} / ay`;
     }
   };
 </script>
@@ -1002,13 +530,9 @@
 <% if @listing.has_splat? %>
   <script src="https://unpkg.com/@mkkellogg/gaussian-splats-3d@0.4.4/build/gaussian-splats-3d.umd.cjs"></script>
   <script>
-    window.splatViewerInstance = null;
-
     window.initSplatViewer = function() {
       const container = document.getElementById("splat-viewer-container");
       if (!container || window.splatViewerInstance) return;
-
-      const overlay = document.getElementById("showroom-splat-loading-overlay");
       const splatUrl = container.dataset.splatUrl;
       if (!splatUrl) return;
 
@@ -1018,84 +542,28 @@
           setTimeout(window.initSplatViewer, 100);
           return;
         }
-
-        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
         const viewer = new GaussianSplats3D.Viewer({
           rootElement: container,
           cameraUp: [0, -1, -0.6],
           initialCameraPosition: [-1, -4, 6],
           initialCameraLookAt: [0, 4, 0],
-          useBuiltInControls: true,
-          devicePixelRatio: dpr,
-          integerBasedSort: true,
-          halfPrecisionCovariancesOnGPU: true,
-          splatAlphaRemovalThreshold: 15
+          useBuiltInControls: true
         });
         window.splatViewerInstance = viewer;
-
         viewer.addSplatScene(splatUrl, {
           format: GaussianSplats3D.SceneFormat ? GaussianSplats3D.SceneFormat.Splat : 1,
           showLoadingUI: false
         }).then(() => {
           viewer.start();
+          const overlay = document.getElementById("showroom-splat-loading-overlay");
           if (overlay) overlay.style.display = "none";
-        }).catch((err) => {
-          console.warn("GaussianSplats3D scene error:", err);
+        }).catch(() => {
+          const overlay = document.getElementById("showroom-splat-loading-overlay");
           if (overlay) overlay.style.display = "none";
         });
       } catch (e) {
-        console.warn("GaussianSplats3D init error:", e);
-        if (overlay) overlay.style.display = "none";
+        console.warn("GaussianSplats3D error:", e);
       }
     };
-
-    window.resetSplatCamera = function() {
-      if (window.splatViewerInstance && window.splatViewerInstance.controls) {
-        window.splatViewerInstance.controls.reset();
-      }
-    };
-
-    window.toggleSplatHotspots = function() {
-      const layer = document.getElementById("showroom-splat-hotspots-layer");
-      if (!layer) return;
-      const isHidden = layer.style.display === "none";
-      layer.style.display = isHidden ? "block" : "none";
-      const pins = layer.querySelectorAll(".hotspot-3d-pin");
-      pins.forEach(p => p.style.display = isHidden ? "block" : "none");
-    };
-
-    // Bellek & WebGL Context Optimizasyonu
-    document.addEventListener("visibilitychange", () => {
-      if (!window.splatViewerInstance) return;
-      if (document.hidden) {
-        if (typeof window.splatViewerInstance.stop === "function") try { window.splatViewerInstance.stop(); } catch (_) {}
-      } else if (window.showroomActiveMode === "splat") {
-        if (typeof window.splatViewerInstance.start === "function") try { window.splatViewerInstance.start(); } catch (_) {}
-      }
-    });
-
-    function cleanupSplatViewer() {
-      if (window.splatViewerInstance) {
-        try {
-          if (typeof window.splatViewerInstance.dispose === "function") window.splatViewerInstance.dispose();
-        } catch (_) {}
-        window.splatViewerInstance = null;
-      }
-    }
-    document.addEventListener("turbo:before-cache", cleanupSplatViewer);
-    document.addEventListener("turbo:before-render", cleanupSplatViewer);
-
-    document.addEventListener("turbo:load", () => {
-      if (document.getElementById("splat-viewer-container")) {
-        window.initSplatViewer();
-      }
-    });
-    if (document.readyState === "complete" || document.readyState === "interactive") {
-      setTimeout(() => {
-        if (document.getElementById("splat-viewer-container")) {
-          window.initSplatViewer();
-        }
-      }, 150);
-    }
   </script>
 <% end %>

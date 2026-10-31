@@ -3,7 +3,7 @@ module ApplicationHelper
     "BMW"           => "/vehicles/bmw/01_front_three_quarter.jpg",
     "Tesla"         => "/vehicles/tesla/01_front_three_quarter.jpg",
     "Porsche"       => "/vehicles/porsche/01_front_three_quarter.jpg",
-    "Audi"          => "/vehicles/bmw/01_front_three_quarter.jpg",
+    "Audi"          => "/vehicles/audi/01_front_three_quarter.jpg",
     "Mercedes-Benz" => "/vehicles/bmw/01_front_three_quarter.jpg"
   }.freeze
 
@@ -15,6 +15,14 @@ module ApplicationHelper
       "rear_three_quarter"  => "/vehicles/bmw/04_rear_three_quarter.jpg",
       "rear"                => "/vehicles/bmw/05_rear.jpg",
       "interior"            => "/vehicles/bmw/06_interior.jpg"
+    },
+    "Audi" => {
+      "front_three_quarter" => "/vehicles/audi/01_front_three_quarter.jpg",
+      "front"               => "/vehicles/audi/02_front.jpg",
+      "side"                => "/vehicles/audi/03_side.jpg",
+      "rear_three_quarter"  => "/vehicles/audi/04_rear_three_quarter.jpg",
+      "rear"                => "/vehicles/audi/05_rear.jpg",
+      "interior"            => "/vehicles/audi/06_interior.jpg"
     },
     "Tesla" => {
       "front_three_quarter" => "/vehicles/tesla/01_front_three_quarter.jpg",
@@ -66,8 +74,6 @@ module ApplicationHelper
     return false unless photo.present? && photo.respond_to?(:blob) && photo.blob.present?
     return false if photo.blob.byte_size.to_i <= 2048
 
-    # For seeded fleet photos (01_... to 06_...), always use the verified single-vehicle gallery
-    # so no legacy mismatched blobs from older database seeds can ever surface.
     filename = photo.blob.filename.to_s
     return false if filename.match?(/\A0[1-6]_/)
 
@@ -111,9 +117,19 @@ module ApplicationHelper
   def vehicle_3d_config(listing)
     brand = listing&.brand.to_s
     case brand
+    when "Audi"
+      {
+        color_label: "Mythos Black Metallic (0E) - Audi e-tron GT",
+        color_tr: "Mitik Siyah (Mythos Black Metallic)",
+        paint_code: "0E • Mythos Black",
+        hex: "#1A1D20",
+        rgb: [ 0.10, 0.11, 0.12 ],
+        body_style: "fastback",
+        package_name: "Karbon Paket & Bang & Olufsen"
+      }
     when "Tesla"
       {
-        color_label: "Pearl White Multi-Coat (PPSW) - PlayCanvas WebGL 3D",
+        color_label: "Pearl White Multi-Coat (PPSW) - Tesla",
         color_tr: "İnci Beyazı (Pearl White Multi-Coat)",
         paint_code: "PPSW • Multi-Coat White",
         hex: "#F1F5F9",
@@ -123,23 +139,23 @@ module ApplicationHelper
       }
     when "Porsche"
       {
-        color_label: "Volcano Grey Metallic (2H) - PlayCanvas WebGL 3D",
-        color_tr: "Koyu Gri (Volcano Grey Metallic)",
+        color_label: "Volcano Grey Metallic (2H) - Porsche Taycan 4S",
+        color_tr: "Volkan Grisi (Volcano Grey Metallic)",
         paint_code: "2H • Volcano Grey Metallic",
         hex: "#3B4046",
         rgb: [ 0.23, 0.25, 0.28 ],
-        body_style: "suv",
-        package_name: "Macan GTS Sport Package"
+        body_style: "sedan",
+        package_name: "Performance Plus Batarya"
       }
     else
       {
-        color_label: "Mineral Grey Metallic (B39) - PlayCanvas WebGL 3D",
+        color_label: "Mineral Grey Metallic (B39) - BMW i4 M50",
         color_tr: "Mineral Gri (Mineral Grey Metallic)",
         paint_code: "B39 • Mineral Grey Metallic",
         hex: "#525860",
         rgb: [ 0.32, 0.35, 0.38 ],
         body_style: "sedan",
-        package_name: "M-Sport"
+        package_name: "M Sport Pro & Lazer Far"
       }
     end
   end

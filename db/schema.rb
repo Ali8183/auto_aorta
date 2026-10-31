@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_23_233000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_210503) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -37,6 +37,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_23_233000) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "defects", force: :cascade do |t|
+    t.integer "listing_id", null: false
+    t.string "title"
+    t.string "part_name"
+    t.text "description"
+    t.integer "micron_value"
+    t.string "defect_type"
+    t.float "position_x"
+    t.float "position_y"
+    t.integer "frame_index"
+    t.string "severity"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["listing_id"], name: "index_defects_on_listing_id"
   end
 
   create_table "listings", force: :cascade do |t|
@@ -80,5 +96,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_23_233000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "defects", "listings"
   add_foreign_key "photo_analyses", "listings"
 end
