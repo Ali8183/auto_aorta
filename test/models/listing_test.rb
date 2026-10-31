@@ -164,4 +164,32 @@ class ListingTest < ActiveSupport::TestCase
     assert_includes report[:message], "AI Bütünlük Kontrolü: 2 dış görselin tamamı aynı gövde rengine (Mineral Grey)"
     assert_equal 0, items[2][:analysis].spin_order
   end
+
+  test "has_splat? returns false when no splat is attached or present on disk" do
+    assert_not @listing.has_splat?
+    assert_nil @listing.splat_url
+  end
+
+  test "has_splat? returns true when splat file is attached" do
+    @listing.splat.attach(
+      io: StringIO.new("splat_binary_data"),
+      filename: "model.splat",
+      content_type: "application/octet-stream"
+    )
+
+    assert @listing.has_splat?
+    assert_not_nil @listing.splat_url
+    assert_includes @listing.splat_url, "model.splat"
+  end
+
+  test "has_splat? returns true when public splat file exists on disk" do
+    splat_path = Rails.root.join("public", "splats", "#{@listing.id}.splat")
+    FileUtils.mkdir_p(File.dirname(splat_path))
+    File.binwrite(splat_path, "dummy_splat_bytes")
+
+    assert @listing.has_splat?
+    assert_equal "/splats/#{@listing.id}.splat", @listing.splat_url
+  ensure
+    FileUtils.rm_f(splat_path)
+  end
 end

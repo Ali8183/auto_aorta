@@ -36,6 +36,19 @@ class Listing < ApplicationRecord
 
   has_many_attached :photos
   has_many :photo_analyses, dependent: :destroy
+  has_one_attached :splat
+
+  def has_splat?
+    splat.attached? || File.exist?(Rails.root.join("public", "splats", "#{id}.splat"))
+  end
+
+  def splat_url
+    if splat.attached?
+      Rails.application.routes.url_helpers.rails_blob_url(splat, only_path: true)
+    elsif File.exist?(Rails.root.join("public", "splats", "#{id}.splat"))
+      "/splats/#{id}.splat"
+    end
+  end
 
   validates :title, :brand, :model_name, :year, :price, presence: true
   validates :year, numericality: { greater_than: 1900, less_than_or_equal_to: ->(_) { Time.current.year + 1 } }

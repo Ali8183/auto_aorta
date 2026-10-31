@@ -106,6 +106,9 @@
                         class: "h-full flex items-center border-b-2 #{defined?(@listing) && @listing&.persisted? ? 'border-[#1D4ED8] text-[#1D4ED8] font-semibold' : 'border-transparent text-slate-600 hover:text-slate-900'} transition-colors" do %>
               Vehicle 360 Studio
             <% end %>
+            <%= link_to capture_path, class: "h-full flex items-center border-b-2 #{current_page?(capture_path) ? 'border-[#1D4ED8] text-[#1D4ED8] font-semibold' : 'border-transparent text-slate-600 hover:text-slate-900'} transition-colors" do %>
+              108 Kare 3D Çekim Stüdyosu
+            <% end %>
             <%= link_to (defined?(@listing) && @listing&.persisted? ? listing_path(@listing, anchor: "before-after-analytics") : root_path(anchor: "telemetry-analytics")),
                         class: "h-full flex items-center border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition-colors" do %>
               CTR & Performance Analytics

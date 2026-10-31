@@ -34,6 +34,7 @@ end
 fleet_specs = [
   # 1. Sedan: BMW 320i M Sport (G20) - Mineral Gri (Mineral Grey Metallic)
   {
+    splat_path: "public/splats/bmw_320i.splat",
     attributes: {
       title: "2023 BMW 320i M Sport (G20) Mineral Gri Harman Kardon AI Studio",
       brand: "BMW",
@@ -54,7 +55,7 @@ fleet_specs = [
         - 6 açının tamamı bizzat aynı Mineral Gri G20 M-Sport gövdesine aittir (AI Bütünlük Kontrolü Onaylı).
         - M Aerodinamik Paket & 19" M Çift Kollu Stil Jantlar
         - Harman Kardon Surround Ses Sistemi & BMW Live Cockpit Professional
-        - Senkronize PlayCanvas WebGL 3D & Doğrulanmış Gerçek Piksel 360° Tur
+        - Gerçek 3D Gaussian Splatting WebGL Motoru & Doğrulanmış 360° Stüdyo Turu
       DESC
     },
     photos: [
@@ -68,6 +69,7 @@ fleet_specs = [
   },
   # 2. Electric: Tesla Model 3 Long Range - İnci Beyazı (Pearl White Multi-Coat)
   {
+    splat_path: "public/splats/tesla_model_3.splat",
     attributes: {
       title: "2024 Tesla Model 3 Long Range Dual Motor AWD İnci Beyazı",
       brand: "Tesla",
@@ -88,7 +90,7 @@ fleet_specs = [
         - 6 açının tamamı bizzat aynı İnci Beyazı Tesla Model 3 aracına aittir (AI Bütünlük Kontrolü Onaylı).
         - Çift Motorlu Dört Çeker (498 HP) & 629 km WLTP Menzil
         - Otopilot & 15.4" Merkezi Dokunmatik Ekran & Akustik Cam Tavan
-        - Senkronize PlayCanvas WebGL 3D & Doğrulanmış Gerçek Piksel 360° Tur
+        - Gerçek 3D Gaussian Splatting WebGL Motoru & Doğrulanmış 360° Stüdyo Turu
       DESC
     },
     photos: [
@@ -102,6 +104,7 @@ fleet_specs = [
   },
   # 3. SUV / Sport: Porsche Macan GTS - Koyu Gri (Volcano Grey Metallic)
   {
+    splat_path: "public/splats/porsche_macan.splat",
     attributes: {
       title: "2024 Porsche Macan GTS Koyu Gri (Volcano Grey) Sport Chrono",
       brand: "Porsche",
@@ -122,7 +125,7 @@ fleet_specs = [
         - 6 açının tamamı bizzat aynı Koyu Gri Porsche Macan aracına aittir (AI Bütünlük Kontrolü Onaylı).
         - Sport Chrono Paketi & Porsche Aktif Süspansiyon Yönetimi (PASM)
         - 21" RS Spyder Design Jantlar & Panoramik Cam Tavan
-        - Senkronize PlayCanvas WebGL 3D & Doğrulanmış Gerçek Piksel 360° Tur
+        - Gerçek 3D Gaussian Splatting WebGL Motoru & Doğrulanmış 360° Stüdyo Turu
       DESC
     },
     photos: [
@@ -151,6 +154,16 @@ fleet_specs.each_with_index do |spec, car_idx|
     puts "✓"
   end
 
+  if spec[:splat_path] && File.exist?(Rails.root.join(spec[:splat_path]))
+    print "  Attaching authentic 3D Gaussian Splat model (#{spec[:splat_path]})... "
+    listing.splat.attach(
+      io: File.open(Rails.root.join(spec[:splat_path])),
+      filename: "#{listing.brand.downcase}_digital_twin.splat",
+      content_type: "application/octet-stream"
+    )
+    puts "✓"
+  end
+
   puts "  Running AutoAorta AI Vision Optimization & Consistency Check..."
   listing.start_ai_optimization!
   puts "  ✓ Optimized! Hero photo ID: #{listing.hero_photo_id}, 360 Spin frames: #{listing.spin_photos.size}"
@@ -159,5 +172,5 @@ end
 puts "\n== Fleet Seeding Completed Successfully! =="
 puts "Total Listings: #{Listing.count}"
 Listing.all.each do |l|
-  puts "- #{l.title} (Color: #{l.color}, Status: #{l.status}, Photos: #{l.photos.count})"
+  puts "- #{l.title} (Color: #{l.color}, Status: #{l.status}, Photos: #{l.photos.count}, Has Splat: #{l.has_splat?})"
 end

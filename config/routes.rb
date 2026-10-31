@@ -5,11 +5,17 @@ Rails.application.routes.draw do
 
   resources :listings do
     member do
+      get :capture
+      get :download_capture_zip
+      post :download_capture_zip
       post :optimize
       post :publish
       post :simulate_time_lapse
     end
   end
+
+  get "capture", to: "listings#capture_new", as: :capture
+  post "capture/download_zip", to: "listings#download_capture_zip", as: :capture_download_zip
 
   # Embeddable 360° Spin Widget for external websites / portals
   namespace :embed do

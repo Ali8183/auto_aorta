@@ -67,6 +67,12 @@
 
     <!-- Quick Studio Actions Toolbar -->
     <div class="flex flex-wrap items-center gap-2">
+      <!-- 108 Kare 3D Çekim -->
+      <%= link_to capture_listing_path(@listing), class: "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#1D4ED8] border border-blue-200 font-semibold text-xs shadow-xs transition cursor-pointer", title: "108 Kare 3D Fotogrametri Çekim Stüdyosu" do %>
+        <span class="material-symbols-outlined text-sm">videocam</span>
+        <span>108 Kare 3D Çekim</span>
+      <% end %>
+
       <!-- AI Optimizasyonunu Başlat -->
       <%= button_to optimize_listing_path(@listing), method: :post, class: "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs shadow-xs transition cursor-pointer" do %>
         <span class="material-symbols-outlined text-sm text-[#1D4ED8]">sync</span>
@@ -122,102 +128,182 @@
     <div class="xl:col-span-8 space-y-6">
       <!-- 1. 360° VİTRİN İÇİN MOD SEÇİCİ (TABS) -->
       <div class="bg-white rounded-2xl border border-slate-200 p-2 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2" role="tablist" aria-label="360 Vitrin Mod Seçici">
+        <% if @listing.has_splat? %>
+          <button type="button"
+                  id="tab-btn-splat"
+                  onclick="switchShowroomTab('splat')"
+                  class="showroom-tab-btn flex-1 py-2.5 px-3.5 rounded-xl bg-[#1D4ED8] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer">
+            <span class="material-symbols-outlined text-base">view_in_ar</span>
+            <span>⚡ 3D Gaussian Splatting (Gerçek WebGL Simülasyonu)</span>
+            <span class="px-1.5 py-0.5 rounded-full bg-blue-100 text-[#1D4ED8] text-[10px] font-mono">3D Splat</span>
+          </button>
+        <% end %>
+
         <button type="button"
                 id="tab-btn-photo"
                 onclick="switchShowroomTab('photo')"
-                class="showroom-tab-btn flex-1 py-2.5 px-3.5 rounded-xl bg-[#1D4ED8] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer">
-          <span>📸 360° Doğrulanmış Fotoğraf Turu (2D Stüdyo)</span>
-          <span class="px-1.5 py-0.5 rounded-full bg-blue-100 text-[#1D4ED8] text-[10px] font-mono"><%= spin_image_urls.size %> Açı</span>
+                class="showroom-tab-btn flex-1 py-2.5 px-3.5 rounded-xl <%= @listing.has_splat? ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' : 'bg-[#1D4ED8] text-white shadow-sm' %> font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer">
+          <span class="material-symbols-outlined text-base">360</span>
+          <span>📸 360° Doğrulanmış Fotoğraf Turu</span>
+          <span class="px-1.5 py-0.5 rounded-full <%= @listing.has_splat? ? 'bg-slate-200 text-slate-700' : 'bg-blue-100 text-[#1D4ED8]' %> text-[10px] font-mono"><%= spin_image_urls.size %> Açı</span>
         </button>
 
         <button type="button"
                 id="tab-btn-guardrail"
                 onclick="switchShowroomTab('guardrail')"
                 class="showroom-tab-btn flex-1 py-2.5 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer">
+          <span class="material-symbols-outlined text-base">verified_user</span>
           <span>🛡️ Tüketici Güvenliği & Ekspertiz Kilidi</span>
         </button>
       </div>
 
-      <!-- SEKME 1: 2D FOTOĞRAFİK DÖNER VİTRİN (VARSAYILAN) -->
-      <div id="tab-panel-photo" class="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden select-none relative group flex flex-col justify-between">
-        <div id="turntable-container" class="relative flex flex-col justify-between w-full bg-gradient-to-b from-slate-100 via-slate-50 to-white">
-          <div data-controller="vehicle-spin"
-               data-vehicle-spin-images-value="<%= spin_image_urls.to_json %>"
-               data-vehicle-spin-angles-value="<%= spin_angle_labels.to_json %>"
-               data-vehicle-spin-current-index-value="0"
-               class="flex flex-col w-full">
+      <% if @listing.has_splat? %>
+        <!-- SEKME 1: CANLI 3D GAUSSIAN SPLATTING WEBGL SHOWROOM -->
+        <div id="tab-panel-splat" class="bg-slate-950 rounded-2xl border border-slate-700 shadow-xl overflow-hidden relative flex flex-col justify-between">
+          <!-- Top Bar -->
+          <div class="px-4 py-3 bg-slate-900 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="font-bold text-white"><%= @listing.title %></span>
+              <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 text-[10px] font-mono">GaussianSplats3D WebGL</span>
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-800 text-slate-200 text-[11px] font-mono border border-slate-700">
+                <span class="w-2 h-2 rounded-full" style="background-color: <%= v3d[:hex] %>;"></span>
+                <span><%= @listing.color %></span>
+              </span>
+            </div>
+            <div class="flex items-center gap-3 text-[11px] text-slate-400">
+              <span id="showroom-splat-angle-badge" class="font-mono text-blue-400 font-bold">Ön 3/4 (45° Altın Açı)</span>
+              <span>•</span>
+              <span class="hidden sm:inline">Sol Tık: 360° Döndür • Tekerlek: Yakınlaş • Sağ Tık: Pan</span>
+            </div>
+          </div>
 
-            <div class="relative z-20 w-full px-5 py-3.5 bg-white/90 backdrop-blur-md border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-2 pointer-events-auto">
-              <div class="flex flex-wrap items-center gap-2">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-white font-mono text-xs font-bold tracking-tight shadow-xs">
-                  <span class="w-2.5 h-2.5 rounded-full border border-white/40" style="background-color: <%= v3d[:hex] %>;"></span>
-                  <span><%= @listing.color %></span>
-                </span>
-                <span id="turntable-angle-badge"
-                      class="px-3 py-1 rounded-full bg-blue-50 text-[#1D4ED8] font-mono text-xs font-extrabold shadow-xs border border-blue-200"
-                      data-vehicle-spin-target="angleLabel">
-                  <%= spin_angle_labels.first %>
-                </span>
-              </div>
+          <!-- 3D Splat Viewer Container -->
+          <div id="splat-viewer-container"
+               data-splat-url="<%= @listing.splat_url %>"
+               data-car-brand="<%= @listing.brand %>"
+               data-car-model="<%= @listing.model_name %>"
+               data-car-color="<%= @listing.color %>"
+               data-car-hex="<%= v3d[:hex] %>"
+               data-car-body="<%= v3d[:body_style] %>"
+               class="w-full h-[540px] relative bg-gradient-to-b from-[#090d16] via-[#0d1527] to-[#0a0f1d] cursor-grab active:cursor-grabbing select-none overflow-hidden">
+
+            <div id="showroom-splat-loading-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 z-20 text-white text-xs gap-3">
+              <div class="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span class="font-mono text-slate-300">3D Gaussian Splatting Modeli Yükleniyor...</span>
             </div>
 
-            <div id="turntable-drag-stage"
-                 class="relative z-10 w-full h-[540px] flex items-center justify-center cursor-grab active:cursor-grabbing px-4 sm:px-8 overflow-hidden bg-gradient-to-b from-slate-100/80 via-white to-slate-100/90"
-                 data-vehicle-spin-target="spinContainer"
-                 data-action="pointerdown->vehicle-spin#onPointerDown">
-
-              <img id="turntable-main-image"
-                   data-vehicle-spin-target="image"
-                   src="<%= spin_image_urls.first || fallback_src %>"
-                   alt="<%= @listing.title %>"
-                   class="w-full h-[540px] object-contain pointer-events-none select-none transition-transform duration-75"
-                   onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
-                   onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
-            </div>
-
-            <div class="relative z-20 w-full px-5 pb-4 pt-2.5 bg-slate-50 border-t border-slate-200">
-              <div class="flex flex-col gap-2">
-                <div class="relative flex items-center w-full py-1">
-                  <input id="turntable-angle-slider"
-                         type="range"
-                         min="0"
-                         max="<%= [spin_image_urls.size - 1, 0].max %>"
-                         value="0"
-                         oninput="syncTurntableByIndex(parseInt(this.value, 10))"
-                         class="w-full h-4 bg-transparent cursor-pointer appearance-none z-10 accent-[#1D4ED8] focus:outline-none"
-                         data-vehicle-spin-target="slider"
-                         data-action="input->vehicle-spin#onSliderChange" />
+            <!-- Hotspot Pins Layer in 3D Space -->
+            <div id="showroom-splat-hotspots-layer" class="pointer-events-none absolute inset-0 z-10 overflow-hidden">
+              <!-- Pin 1: Ön Tampon -->
+              <div id="hotspot-pin-bumper" class="hotspot-3d-pin absolute pointer-events-auto cursor-pointer transform -translate-x-1/2 -translate-y-1/2 group" style="display: none; left: 42%; top: 62%;">
+                <div class="relative flex items-center justify-center">
+                  <span class="absolute w-6 h-6 rounded-full bg-amber-400/40 animate-ping"></span>
+                  <span class="relative w-4 h-4 rounded-full bg-amber-500 border-2 border-white shadow-lg flex items-center justify-center text-[9px] text-white font-bold">1</span>
                 </div>
+                <div class="absolute left-6 top-1/2 -translate-y-1/2 hidden group-hover:flex flex-col bg-slate-900/95 text-white text-[11px] px-2.5 py-1.5 rounded-lg border border-slate-700 shadow-xl whitespace-nowrap z-30">
+                  <span class="font-bold text-amber-400">Kozmetik Ekspertiz:</span>
+                  <span class="text-slate-300">Ön Tampon 2mm Taş İzi (Boya Gerektirmez)</span>
+                </div>
+              </div>
 
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <div class="flex items-center gap-2">
-                    <button type="button"
-                            onclick="stepTurntableAngle(-1)"
-                            data-action="click->vehicle-spin#previousFrame"
-                            class="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition cursor-pointer">
-                      <span class="material-symbols-outlined text-base">skip_previous</span>
-                    </button>
-                    <button type="button"
-                            data-action="click->vehicle-spin#toggleAutoSpin"
-                            data-vehicle-spin-target="autoPlayBtn"
-                            class="flex items-center gap-1 px-3.5 py-1.5 rounded-lg bg-[#1D4ED8] text-white hover:bg-blue-800 text-xs font-bold shadow-xs transition cursor-pointer">
-                      <span class="material-symbols-outlined text-sm">play_arrow</span>
-                      <span>360° Otomatik Döndür</span>
-                    </button>
-                    <button type="button"
-                            onclick="stepTurntableAngle(1)"
-                            data-action="click->vehicle-spin#nextFrame"
-                            class="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition cursor-pointer">
-                      <span class="material-symbols-outlined text-base">skip_next</span>
-                    </button>
-                    <span class="text-xs font-mono text-slate-600 ml-2">
-                      Açı Kare: <span id="turntable-frame-counter" class="font-bold text-slate-900" data-vehicle-spin-target="currentFrame">1 / <%= spin_image_urls.size %></span>
-                    </span>
-                  </div>
+              <!-- Pin 2: Jant -->
+              <div id="hotspot-pin-wheel" class="hotspot-3d-pin absolute pointer-events-auto cursor-pointer transform -translate-x-1/2 -translate-y-1/2 group" style="display: none; left: 68%; top: 66%;">
+                <div class="relative flex items-center justify-center">
+                  <span class="absolute w-6 h-6 rounded-full bg-blue-400/40 animate-ping"></span>
+                  <span class="relative w-4 h-4 rounded-full bg-blue-600 border-2 border-white shadow-lg flex items-center justify-center text-[9px] text-white font-bold">2</span>
+                </div>
+                <div class="absolute left-6 top-1/2 -translate-y-1/2 hidden group-hover:flex flex-col bg-slate-900/95 text-white text-[11px] px-2.5 py-1.5 rounded-lg border border-slate-700 shadow-xl whitespace-nowrap z-30">
+                  <span class="font-bold text-blue-400">Jant &amp; Yürüyen Aksam:</span>
+                  <span class="text-slate-300">19" Hafif Alaşım Jant (Çiziksiz / Orijinal Balans)</span>
+                </div>
+              </div>
+
+              <!-- Pin 3: Ön Cam -->
+              <div id="hotspot-pin-glass" class="hotspot-3d-pin absolute pointer-events-auto cursor-pointer transform -translate-x-1/2 -translate-y-1/2 group" style="display: none; left: 52%; top: 38%;">
+                <div class="relative flex items-center justify-center">
+                  <span class="absolute w-6 h-6 rounded-full bg-emerald-400/40 animate-ping"></span>
+                  <span class="relative w-4 h-4 rounded-full bg-emerald-500 border-2 border-white shadow-lg flex items-center justify-center text-[9px] text-white font-bold">3</span>
+                </div>
+                <div class="absolute left-6 top-1/2 -translate-y-1/2 hidden group-hover:flex flex-col bg-slate-900/95 text-white text-[11px] px-2.5 py-1.5 rounded-lg border border-slate-700 shadow-xl whitespace-nowrap z-30">
+                  <span class="font-bold text-emerald-400">Akustik Cam Kontrolü:</span>
+                  <span class="text-slate-300">Orijinal Fabrika Ön Camı (Çatlak / Taş Kırığı Yok)</span>
                 </div>
               </div>
             </div>
           </div>
+
+          <!-- Bottom Controls Bar for 3D Splat -->
+          <div class="px-4 py-3 bg-slate-900 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-2">
+              <button type="button"
+                      id="btn-splat-reset-cam"
+                      onclick="resetSplatCamera()"
+                      class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-semibold text-xs transition cursor-pointer">
+                <span>Kamerayı Sıfırla</span>
+              </button>
+
+              <button type="button"
+                      id="btn-splat-toggle-hotspots"
+                      onclick="toggleSplatHotspots()"
+                      class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-semibold text-xs transition cursor-pointer">
+                <span class="material-symbols-outlined text-sm text-emerald-400">verified</span>
+                <span>Ekspertiz Pinleri</span>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-2 font-mono text-[11px] text-slate-400">
+              <span>Dinamik Açı:</span>
+              <span id="showroom-splat-degree" class="font-bold text-white bg-slate-800 px-2 py-0.5 rounded border border-slate-700">45°</span>
+              <span class="text-slate-600">|</span>
+              <span class="text-emerald-400 font-semibold">✓ 1:1 <%= @listing.color %> WebGL Simülasyonu</span>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- SEKME 2: 360° DOĞRULANMIŞ FOTOĞRAF TURU (BİREBİR AYNI ARAÇ) -->
+      <div id="tab-panel-photo" class="<%= @listing.has_splat? ? 'hidden ' : '' %>bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden flex flex-col justify-between">
+        <!-- Top Bar -->
+        <div class="px-5 py-3.5 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-full bg-slate-900 text-white font-mono text-xs font-bold">
+              <%= @listing.color %>
+            </span>
+            <span id="photo-gallery-badge" class="px-3 py-1 rounded-full bg-blue-50 text-[#1D4ED8] font-mono text-xs font-extrabold border border-blue-200">
+              <%= spin_angle_labels.first %>
+            </span>
+          </div>
+          <span class="text-xs text-slate-500 font-semibold flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm text-emerald-600">check_circle</span>
+            <span>Birebir Aynı Araç • Gerçek Piksel Fotoğrafları</span>
+          </span>
+        </div>
+
+        <!-- Main Photo Stage (Clean, crisp, no artificial stretching or warping!) -->
+        <div class="relative w-full h-[540px] flex items-center justify-center p-4 bg-gradient-to-b from-slate-100/70 via-white to-slate-100/70">
+          <img id="photo-gallery-main-image"
+               src="<%= spin_image_urls.first || fallback_src %>"
+               alt="<%= @listing.title %>"
+               class="w-full h-[520px] object-contain select-none transition-opacity duration-150"
+               onload="if(this.naturalWidth<=1){this.src='<%= fallback_src %>';}"
+               onerror="this.onerror=null;this.src='<%= fallback_src %>';" />
+        </div>
+
+        <!-- Thumbnails Strip -->
+        <div class="px-4 py-3 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2 overflow-x-auto py-1">
+            <% spin_image_urls.each_with_index do |url, idx| %>
+              <button type="button"
+                      onclick="selectPhotoGalleryAngle(<%= idx %>, '<%= spin_angle_labels[idx] %>', '<%= url %>')"
+                      class="photo-thumb-btn w-14 h-10 rounded-lg overflow-hidden border-2 <%= idx == 0 ? 'border-[#1D4ED8] ring-2 ring-blue-500/20' : 'border-slate-300 hover:border-slate-400' %> transition flex-shrink-0 cursor-pointer">
+                <img src="<%= url %>" class="w-full h-full object-cover" alt="Angle <%= idx + 1 %>" />
+              </button>
+            <% end %>
+          </div>
+          <span class="text-xs font-mono text-slate-600 whitespace-nowrap">
+            Kare: <span id="photo-gallery-counter" class="font-bold text-slate-900">1 / <%= spin_image_urls.size %></span>
+          </span>
         </div>
       </div>
 
@@ -886,14 +972,23 @@
     window.highlightAngleButton(idx);
   };
 
+  // ============================================================================
+  // AUTOAORTA 360° SHOWROOM & 2D PHOTO GALLERY SYSTEM
+  // ============================================================================
+  window.showroomActiveMode = "<%= @listing.has_splat? ? 'splat' : 'photo' %>";
+
+  // 1. Sekme Değiştirici
   window.switchShowroomTab = function(mode) {
+    window.showroomActiveMode = mode;
     const panels = {
-      photo: document.getElementById("tab-panel-photo"),
-      guardrail: document.getElementById("tab-panel-guardrail")
+      "splat": document.getElementById("tab-panel-splat"),
+      "photo": document.getElementById("tab-panel-photo"),
+      "guardrail": document.getElementById("tab-panel-guardrail")
     };
     const buttons = {
-      photo: document.getElementById("tab-btn-photo"),
-      guardrail: document.getElementById("tab-btn-guardrail")
+      "splat": document.getElementById("tab-btn-splat"),
+      "photo": document.getElementById("tab-btn-photo"),
+      "guardrail": document.getElementById("tab-btn-guardrail")
     };
 
     Object.keys(panels).forEach((key) => {
@@ -908,46 +1003,148 @@
         }
       }
     });
+
+    if (mode === "splat" && window.initSplatViewer) {
+      window.initSplatViewer();
+    }
   };
 
+  // 2. 2D Fotoğraf Galerisi Seçici (Yüksek çözünürlüklü, optik deformasyonsuz / esnemesiz)
+  window.selectPhotoGalleryAngle = function(idx, label, url) {
+    const mainImg = document.getElementById("photo-gallery-main-image");
+    if (mainImg && url) {
+      mainImg.style.opacity = "0.5";
+      setTimeout(() => {
+        mainImg.src = url;
+        mainImg.style.opacity = "1.0";
+      }, 50);
+    }
 
-  // ============================================================================
-  // 2D STUDIO TURNTABLE DRAG-TO-SPIN (SECONDARY TAB)
-  // ============================================================================
-  (function initDragToSpinTurntable() {
-    const stage = document.getElementById("turntable-drag-stage");
-    if (!stage) return;
+    const badge = document.getElementById("photo-gallery-badge");
+    if (badge && label) badge.textContent = label;
 
-    let isDragging = false;
-    let startX = 0;
-    const stepPixels = 42;
+    const counter = document.getElementById("photo-gallery-counter");
+    if (counter) counter.textContent = `${idx + 1} / <%= spin_image_urls.size %>`;
 
-    stage.addEventListener("pointerdown", (e) => {
-      if (e.target.closest(".hotspot-pin") || e.target.closest("button") || e.target.closest("input")) {
-        return;
-      }
-      isDragging = true;
-      startX = e.clientX;
-      if (stage.setPointerCapture) {
-        try { stage.setPointerCapture(e.pointerId); } catch (_) {}
-      }
-    });
-
-    stage.addEventListener("pointermove", (e) => {
-      if (!isDragging) return;
-      const deltaX = e.clientX - startX;
-      if (Math.abs(deltaX) >= stepPixels) {
-        const direction = deltaX > 0 ? 1 : -1;
-        window.stepTurntableAngle(direction);
-        startX = e.clientX;
+    const thumbBtns = document.querySelectorAll(".photo-thumb-btn");
+    thumbBtns.forEach((btn, i) => {
+      if (i === idx) {
+        btn.className = "photo-thumb-btn w-14 h-10 rounded-lg overflow-hidden border-2 border-[#1D4ED8] ring-2 ring-blue-500/20 transition flex-shrink-0 cursor-pointer";
+      } else {
+        btn.className = "photo-thumb-btn w-14 h-10 rounded-lg overflow-hidden border-2 border-slate-300 hover:border-slate-400 transition flex-shrink-0 cursor-pointer";
       }
     });
 
-    const stopDrag = () => { isDragging = false; };
-    stage.addEventListener("pointerup", stopDrag);
-    stage.addEventListener("pointercancel", stopDrag);
-    stage.addEventListener("pointerleave", stopDrag);
-  })();
+    window.highlightAngleButton(idx);
+  };
+
+  // 3. 6 Doğrulanmış Açı Seçici (Tıklandığında fotoğrafı o açıya getirir)
+  window.syncVehicleAngle = function(idx, label, src) {
+    if (window.switchShowroomTab && window.showroomActiveMode !== "photo" && !document.getElementById("tab-panel-splat")) {
+      window.switchShowroomTab("photo");
+    }
+    window.selectPhotoGalleryAngle(idx, label, src);
+    window.highlightAngleButton(idx);
+  };
 </script>
 
+<% if @listing.has_splat? %>
+  <script src="https://unpkg.com/@mkkellogg/gaussian-splats-3d@0.4.4/build/gaussian-splats-3d.umd.cjs"></script>
+  <script>
+    window.splatViewerInstance = null;
 
+    window.initSplatViewer = function() {
+      const container = document.getElementById("splat-viewer-container");
+      if (!container || window.splatViewerInstance) return;
+
+      const overlay = document.getElementById("showroom-splat-loading-overlay");
+      const splatUrl = container.dataset.splatUrl;
+      if (!splatUrl) return;
+
+      try {
+        const GaussianSplats3D = window.GaussianSplats3D || window["Gaussian Splats 3D"];
+        if (!GaussianSplats3D || !GaussianSplats3D.Viewer) {
+          setTimeout(window.initSplatViewer, 100);
+          return;
+        }
+
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        const viewer = new GaussianSplats3D.Viewer({
+          rootElement: container,
+          cameraUp: [0, -1, -0.6],
+          initialCameraPosition: [-1, -4, 6],
+          initialCameraLookAt: [0, 4, 0],
+          useBuiltInControls: true,
+          devicePixelRatio: dpr,
+          integerBasedSort: true,
+          halfPrecisionCovariancesOnGPU: true,
+          splatAlphaRemovalThreshold: 15
+        });
+        window.splatViewerInstance = viewer;
+
+        viewer.addSplatScene(splatUrl, {
+          format: GaussianSplats3D.SceneFormat ? GaussianSplats3D.SceneFormat.Splat : 1,
+          showLoadingUI: false
+        }).then(() => {
+          viewer.start();
+          if (overlay) overlay.style.display = "none";
+        }).catch((err) => {
+          console.warn("GaussianSplats3D scene error:", err);
+          if (overlay) overlay.style.display = "none";
+        });
+      } catch (e) {
+        console.warn("GaussianSplats3D init error:", e);
+        if (overlay) overlay.style.display = "none";
+      }
+    };
+
+    window.resetSplatCamera = function() {
+      if (window.splatViewerInstance && window.splatViewerInstance.controls) {
+        window.splatViewerInstance.controls.reset();
+      }
+    };
+
+    window.toggleSplatHotspots = function() {
+      const layer = document.getElementById("showroom-splat-hotspots-layer");
+      if (!layer) return;
+      const isHidden = layer.style.display === "none";
+      layer.style.display = isHidden ? "block" : "none";
+      const pins = layer.querySelectorAll(".hotspot-3d-pin");
+      pins.forEach(p => p.style.display = isHidden ? "block" : "none");
+    };
+
+    // DeepSeek R1 Bellek & WebGL Context Optimizasyonu
+    document.addEventListener("visibilitychange", () => {
+      if (!window.splatViewerInstance) return;
+      if (document.hidden) {
+        if (typeof window.splatViewerInstance.stop === "function") try { window.splatViewerInstance.stop(); } catch (_) {}
+      } else if (window.showroomActiveMode === "splat") {
+        if (typeof window.splatViewerInstance.start === "function") try { window.splatViewerInstance.start(); } catch (_) {}
+      }
+    });
+
+    function cleanupSplatViewer() {
+      if (window.splatViewerInstance) {
+        try {
+          if (typeof window.splatViewerInstance.dispose === "function") window.splatViewerInstance.dispose();
+        } catch (_) {}
+        window.splatViewerInstance = null;
+      }
+    }
+    document.addEventListener("turbo:before-cache", cleanupSplatViewer);
+    document.addEventListener("turbo:before-render", cleanupSplatViewer);
+
+    document.addEventListener("turbo:load", () => {
+      if (document.getElementById("splat-viewer-container")) {
+        window.initSplatViewer();
+      }
+    });
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+      setTimeout(() => {
+        if (document.getElementById("splat-viewer-container")) {
+          window.initSplatViewer();
+        }
+      }, 150);
+    }
+  </script>
+<% end %>

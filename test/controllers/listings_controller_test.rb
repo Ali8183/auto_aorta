@@ -37,6 +37,8 @@ class ListingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", /#{@listing.title}/
     assert_select "#tab-btn-photo", /360° Doğrulanmış Fotoğraf Turu/
     assert_select "#tab-btn-guardrail", /Tüketici Güvenliği & Ekspertiz Kilidi/
+    assert_select "#tab-btn-splat", false
+    assert_select "#tab-panel-splat", false
     assert_select "#tab-btn-playcanvas", false
     assert_select "#tab-panel-photo:not(.hidden)"
     assert_select "#gaussian-splat-container", false
@@ -48,6 +50,63 @@ class ListingsControllerTest < ActionDispatch::IntegrationTest
     assert_match "Kaynak: Cox Automotive sektör araştırması; bu ilana özel ölçüm değildir.", response.body
     assert_match "160 / 160 Nokta Onaylandı (Demo)", response.body
     assert_match "Sıfır Halüsinasyon Güvencesi", response.body
+  end
+
+  test "should show 3D tab and GaussianSplats3D viewer when listing has splat" do
+    @listing.splat.attach(
+      io: StringIO.new("splat_test_bytes"),
+      filename: "test_model.splat",
+      content_type: "application/octet-stream"
+    )
+
+    get listing_url(@listing)
+    assert_response :success
+    assert_select "#tab-btn-splat", /3D Gaussian Splatting/
+    assert_select "#tab-panel-splat"
+    assert_select "#splat-viewer-container"
+    assert_match "gaussian-splats-3d@0.4.4", response.body
+    assert_match "GaussianSplats3D.Viewer", response.body
+  end
+
+  test "should get capture for listing" do
+    get capture_listing_url(@listing)
+    assert_response :success
+    assert_select "[data-controller='vehicle-capture']"
+    assert_match "Şimdi telefonu bir seviye alçalt/yükselt ve tekrar dön", response.body
+    assert_match "Kareleri ZIP indir", response.body
+    assert_match "Bulutlu Hava", response.body
+    assert_match "Gölgesiz Alan", response.body
+    assert_match "Yavaş Hareket", response.body
+    assert_match "1.5-2 m", response.body
+  end
+
+  test "should get standalone capture" do
+    get capture_url
+    assert_response :success
+    assert_select "[data-controller='vehicle-capture']"
+  end
+
+  test "should download capture zip via GET" do
+    get download_capture_zip_listing_url(@listing)
+    assert_response :success
+    assert_equal "application/zip", response.content_type
+    assert_includes response.headers["Content-Disposition"], "auto_aorta_bmw_capture_108_frames.zip"
+  end
+
+  test "should download capture zip via POST with client frames" do
+    post download_capture_zip_listing_url(@listing), params: {
+      frames: [
+        {
+          index: 1,
+          ring: "düşük",
+          sector: 1,
+          filename: "frame_001_halka_1_dusuk_sektor_01.jpg",
+          data: "data:image/jpeg;base64,/9j/4AAQSkZJRg=="
+        }
+      ].to_json
+    }
+    assert_response :success
+    assert_equal "application/zip", response.content_type
   end
 
   test "should get new" do

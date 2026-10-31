@@ -39,3 +39,6 @@
 !/app/assets/builds/tailwind.css
 
 /node_modules/
+.vscode/
+scratch/
+
