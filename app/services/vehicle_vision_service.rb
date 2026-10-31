@@ -3,14 +3,16 @@ require "json"
 require "base64"
 
 class VehicleVisionService
+  HEURISTIC_NOTE_PREFIX = "Heuristik mod (dosya adı tahmini)".freeze
+
   DEFAULT_ANGLE_SEQUENCE = [
-    { angle: "front_three_quarter", spin: 1, base_score: 98, note: "AI Vision Studio: %98 stüdyo simetrisi ve 45° vitrin açısı tespit edildi. Impel/Carvana standardında Ana Vitrin Görseli (Hero Shot) olarak seçildi." },
-    { angle: "front",               spin: 2, base_score: 94, note: "AI Vision Studio: Ön ızgara, far netliği ve plaka alanı hizalandı. 360° döner sekansına (2. Kare) atandı." },
-    { angle: "side",                spin: 3, base_score: 92, note: "AI Vision Studio: Gövde çizgileri ve jant derinliği optimize edildi. 360° döner sekansına (3. Kare) atandı." },
-    { angle: "rear_three_quarter",  spin: 4, base_score: 95, note: "AI Vision Studio: Arka 3/4 omuz çizgisi ve dinamik perspektif yakalandı. 360° döner sekansına (4. Kare) atandı." },
-    { angle: "rear",                spin: 5, base_score: 90, note: "AI Vision Studio: Arka bagaj ve stop lambaları simetrisi doğrulandı. 360° döner sekansına (5. Kare) atandı." },
-    { angle: "interior",            spin: 0, base_score: 88, note: "AI Vision Studio: Kokpit aydınlatması ve multimedya ekranı netliği onaylandı. İç mekan galerisine ayrıldı." },
-    { angle: "detail",              spin: 0, base_score: 86, note: "AI Vision Studio: Lastik/jant kondisyonu ve mikro boya yansıması analiz edildi. Detay galerisine ayrıldı." }
+    { angle: "front_three_quarter", spin: 1, base_score: 98, note: "#{HEURISTIC_NOTE_PREFIX}: Ön 3/4 açısı varsayıldı; Hero Shot adayı." },
+    { angle: "front",               spin: 2, base_score: 94, note: "#{HEURISTIC_NOTE_PREFIX}: Ön açı varsayıldı; 360° sekansında 2. kare." },
+    { angle: "side",                spin: 3, base_score: 92, note: "#{HEURISTIC_NOTE_PREFIX}: Yan profil varsayıldı; 360° sekansında 3. kare." },
+    { angle: "rear_three_quarter",  spin: 4, base_score: 95, note: "#{HEURISTIC_NOTE_PREFIX}: Arka 3/4 açısı varsayıldı; 360° sekansında 4. kare." },
+    { angle: "rear",                spin: 5, base_score: 90, note: "#{HEURISTIC_NOTE_PREFIX}: Arka açı varsayıldı; 360° sekansında 5. kare." },
+    { angle: "interior",            spin: 0, base_score: 88, note: "#{HEURISTIC_NOTE_PREFIX}: İç mekan varsayıldı; 360° sekansına dahil edilmedi." },
+    { angle: "detail",              spin: 0, base_score: 86, note: "#{HEURISTIC_NOTE_PREFIX}: Detay/jant varsayıldı; 360° sekansına dahil edilmedi." }
   ].freeze
 
   def initialize(listing)
@@ -36,7 +38,7 @@ class VehicleVisionService
         is_hero_candidate: false,
         notes: spec[:note]
       )
-      analyses << { photo: photo, analysis: analysis }
+      analyses << { photo: photo, analysis: analysis, spec: spec }
     end
 
     # Enforce single-vehicle body color and model consistency across all photos
@@ -62,53 +64,88 @@ class VehicleVisionService
     @listing
   end
 
+  # Two layers:
+  # 1. Filename hint check (always runs): excludes photos whose filename names another brand
+  #    or carries an explicit mismatch marker.
+  # 2. Real color/make consistency check: ONLY runs when every exterior photo was analysed by a
+  #    multimodal LLM that returned a body color. The "AI Bütünlük Kontrolü" confirmation is
+  #    written only when this real check actually ran and passed.
   def validate_vehicle_consistency!(analyses = nil)
-    target_items = if analyses.present?
-      analyses
-    else
+    persisted_mode = analyses.blank?
+    target_items = if persisted_mode
       @listing.photo_analyses.map do |pa|
         photo = @listing.photos.find { |p| p.blob_id == pa.blob_id }
         { photo: photo, analysis: pa }
       end
+    else
+      analyses
     end
 
     anomalies = []
     expected_brand = @listing.brand.to_s.downcase
 
+    # Layer 1: filename hint check
     target_items.each do |item|
       photo = item[:photo]
       analysis = item[:analysis]
       fname = photo&.filename.to_s.downcase
 
-      # Detect cross-vehicle or cross-color anomaly in filename/metadata
       conflicting_brand = %w[bmw tesla porsche mercedes audi bugatti ferrari lamborghini playstation hyundai].any? { |b| fname.include?(b) && !expected_brand.include?(b) }
       explicit_mismatch = fname.match?(/mismatch|anomaly|different_car|wrong_color|red_/)
 
       if conflicting_brand || explicit_mismatch
-        item[:anomalous] = true
-        analysis.spin_order = 0
-        analysis.is_hero_candidate = false
-        anomaly_note = "⚠️ AI Bütünlük Kilidi: Farklı araç veya renk anomalisi tespit edildi (#{fname}) ve 3D sekansından çıkarıldı."
-        analysis.notes = [ analysis.notes, anomaly_note ].compact.join(" | ")
+        mark_anomalous!(item, "⚠️ Bütünlük Kilidi (dosya adı kontrolü): Farklı marka/renk ipucu tespit edildi (#{fname}) ve 360° sekansından çıkarıldı.")
         anomalies << fname
-        Rails.logger.warn("[VehicleVisionService] #{anomaly_note}")
       end
     end
 
-    consistency_note = "✓ AI Bütünlük Kontrolü: 6 görselin tamamı aynı gövde rengine (Mineral Gri) ve M-Sport paketine ait olarak doğrulandı. Farklı araç anomalisi yok."
-    Rails.logger.info("[VehicleVisionService] #{consistency_note}")
+    # Layer 2: real LLM-based body color / make consistency check
+    exterior = target_items.reject { |i| i[:anomalous] }.select do |i|
+      %w[front_three_quarter front side rear_three_quarter rear].include?(i[:analysis].detected_angle)
+    end
 
-    target_items.reject { |i| i[:anomalous] }.each do |item|
-      analysis = item[:analysis]
-      unless analysis.notes.to_s.include?("AI Bütünlük Kontrolü:")
-        analysis.notes = [ analysis.notes, consistency_note ].compact.join(" ")
+    check_performed = false
+    consistency_note = nil
+
+    if persisted_mode
+      # Color data is not persisted; only report what an earlier real check already recorded.
+      check_performed = exterior.any? && exterior.all? { |i| i[:analysis].notes.to_s.include?("AI Bütünlük Kontrolü:") }
+    elsif exterior.any? && exterior.all? { |i| i.dig(:spec, :source) == :llm && i.dig(:spec, :color).present? }
+      check_performed = true
+      colors = exterior.map { |i| normalize_color(i[:spec][:color]) }
+      majority_color = colors.tally.max_by { |_, c| c }.first
+
+      exterior.each do |item|
+        color_ok = normalize_color(item[:spec][:color]) == majority_color
+        make = item[:spec][:make].to_s.downcase
+        make_ok = make.blank? || make.include?(expected_brand) || expected_brand.include?(make)
+        next if color_ok && make_ok
+
+        mark_anomalous!(item, "⚠️ AI Bütünlük Kilidi: Vision modeli farklı renk/marka tespit etti (#{item[:spec][:color]} / #{item[:spec][:make]}) ve 360° sekansından çıkarıldı.")
+        anomalies << item[:photo]&.filename.to_s
       end
-      analysis.save! if analyses.nil? && analysis.persisted?
+
+      verified = exterior.reject { |i| i[:anomalous] }
+      if verified.any?
+        display_color = verified.first[:spec][:color]
+        consistency_note = "✓ AI Bütünlük Kontrolü: #{verified.size} dış görselin tamamı aynı gövde rengine (#{display_color}) ve markaya (#{@listing.brand}) ait olarak doğrulandı. Farklı araç anomalisi yok."
+        verified.each do |item|
+          item[:analysis].notes = [ item[:analysis].notes, consistency_note ].compact.join(" ")
+        end
+        Rails.logger.info("[VehicleVisionService] #{consistency_note}")
+      end
+    else
+      Rails.logger.info("[VehicleVisionService] Renk/model bütünlük kontrolü yapılmadı (Vision API sonucu yok, heuristik mod).")
+    end
+
+    if persisted_mode
+      target_items.each { |i| i[:analysis].save! if i[:analysis].persisted? && i[:analysis].changed? }
     end
 
     {
       valid: anomalies.empty?,
       consistent: anomalies.empty?,
+      verified: check_performed,
       verified_count: target_items.size - anomalies.size,
       anomaly_count: anomalies.size,
       message: consistency_note
@@ -116,6 +153,19 @@ class VehicleVisionService
   end
 
   private
+
+  def mark_anomalous!(item, note)
+    item[:anomalous] = true
+    analysis = item[:analysis]
+    analysis.spin_order = 0
+    analysis.is_hero_candidate = false
+    analysis.notes = [ analysis.notes, note ].compact.join(" | ")
+    Rails.logger.warn("[VehicleVisionService] #{note}")
+  end
+
+  def normalize_color(color)
+    color.to_s.downcase.gsub(/metalik|metallic|metal|pearl|inci|[^a-zçğıöşü ]/, "").squeeze(" ").strip
+  end
 
   def analyze_photo(photo, idx)
     # 1. Try real Multimodal Vision AI if API keys are available
@@ -169,7 +219,9 @@ class VehicleVisionService
       Analyze this car vehicle photo. Return ONLY a valid JSON object without markdown or formatting:
       {
         "angle": "front_three_quarter" | "front" | "side" | "rear_three_quarter" | "rear" | "interior" | "wheel",
-        "quality_score": <number between 85 and 99>,
+        "quality_score": <number between 1 and 100>,
+        "body_color": "<dominant exterior body color in English, or null for interior shots>",
+        "make": "<vehicle manufacturer if identifiable, else null>",
         "notes": "<short explanation in Turkish of studio lighting and angle>"
       }
     PROMPT
@@ -206,7 +258,7 @@ class VehicleVisionService
 
   def call_gemini_vision(base64_image, mime_type)
     api_key = ENV["GEMINI_API_KEY"]
-    uri = URI("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=#{api_key}")
+    uri = URI("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=#{api_key}")
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.open_timeout = 6
@@ -219,7 +271,7 @@ class VehicleVisionService
       contents: [
         {
           parts: [
-            { text: "Analyze this automotive vehicle photo. Return JSON only: {\"angle\": \"front_three_quarter\"|\"front\"|\"side\"|\"rear_three_quarter\"|\"rear\"|\"interior\"|\"wheel\", \"quality_score\": 95, \"notes\": \"...\"}" },
+            { text: "Analyze this automotive vehicle photo. Return JSON only: {\"angle\": \"front_three_quarter\"|\"front\"|\"side\"|\"rear_three_quarter\"|\"rear\"|\"interior\"|\"wheel\", \"quality_score\": 1-100, \"body_color\": \"dominant exterior body color in English or null\", \"make\": \"manufacturer or null\", \"notes\": \"...\"}" },
             { inline_data: { mime_type: mime_type, data: base64_image } }
           ]
         }
@@ -258,7 +310,7 @@ class VehicleVisionService
         {
           role: "user",
           content: [
-            { type: "text", text: "Analyze vehicle photo angle and quality. Return JSON: {\"angle\": \"front_three_quarter\"|\"front\"|\"side\"|\"rear_three_quarter\"|\"rear\"|\"interior\"|\"wheel\", \"quality_score\": 95, \"notes\": \"...\"}" },
+            { type: "text", text: "Analyze vehicle photo angle and quality. Return JSON: {\"angle\": \"front_three_quarter\"|\"front\"|\"side\"|\"rear_three_quarter\"|\"rear\"|\"interior\"|\"wheel\", \"quality_score\": 1-100, \"body_color\": \"dominant exterior body color in English or null\", \"make\": \"manufacturer or null\", \"notes\": \"...\"}" },
             { type: "image_url", image_url: { url: "data:#{mime_type};base64,#{base64_image}" } }
           ]
         }
@@ -300,7 +352,10 @@ class VehicleVisionService
       angle: angle,
       spin: spin,
       score: score,
-      note: "🤖 [LLM Vision Engine] #{note}"
+      note: "🤖 [LLM Vision Engine] #{note}",
+      color: json_data["body_color"].presence,
+      make: json_data["make"].presence,
+      source: :llm
     }
   end
 
@@ -360,7 +415,8 @@ class VehicleVisionService
       angle: detected_angle,
       spin: spin_order,
       score: base_score,
-      note: note
+      note: note,
+      source: :heuristic
     }
   end
 end

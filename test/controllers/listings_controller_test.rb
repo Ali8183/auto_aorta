@@ -36,15 +36,17 @@ class ListingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h1", /#{@listing.title}/
     assert_select "#tab-btn-photo", /360° Doğrulanmış Fotoğraf Turu/
-    assert_select "#tab-btn-playcanvas", /3D Gaussian Splatting Canlı Showroom/
     assert_select "#tab-btn-guardrail", /Tüketici Güvenliği & Ekspertiz Kilidi/
-    assert_select "#gaussian-splat-container"
-    assert_select "canvas#gaussian-splat-canvas"
-    assert_match "gaussian-splats-3d@0.4.4", response.body
-    assert_match "⚡ 3D GAUSSIAN SPLATTING RECONSTRUCTION - Fotoğraf Piksellerinden Üretilmiş Gerçek 3D Dijital İkiz (Zero-CAD / 100% Real Pixels)", response.body
-    assert_match "Kozmetik Durum: 2mm yüzeysel taş izi (Boya gerektirmez)", response.body
-    assert_match "19 inç M-Sport Jant: Çiziksiz, balans hatasız", response.body
-    assert_match "Orijinal fabrika camı: Çatlak yok", response.body
+    assert_select "#tab-btn-playcanvas", false
+    assert_select "#tab-panel-photo:not(.hidden)"
+    assert_select "#gaussian-splat-container", false
+    assert_select "#carvana-inspection-card", false
+    assert_no_match "gaussian-splats-3d", response.body
+    assert_no_match "100% Real Pixels", response.body
+    assert_no_match "Gerçek 3D Dijital İkiz", response.body
+    assert_select "#inspection-demo-badge", /Örnek \/ Demo Veri/
+    assert_match "Kaynak: Cox Automotive sektör araştırması; bu ilana özel ölçüm değildir.", response.body
+    assert_match "160 / 160 Nokta Onaylandı (Demo)", response.body
     assert_match "Sıfır Halüsinasyon Güvencesi", response.body
   end
 

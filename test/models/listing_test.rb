@@ -119,15 +119,21 @@ class ListingTest < ActiveSupport::TestCase
     assert @listing.draft?
   end
 
-  test "validate_vehicle_consistency! verifies single-vehicle integrity and excludes mismatched color/model photos from 3D spin" do
+  test "validate_vehicle_consistency! does not claim color verification in heuristic mode and still excludes mismatched photos" do
     service = VehicleVisionService.new(@listing)
     service.call
     report = service.validate_vehicle_consistency!
 
     assert report[:valid]
-    assert_includes report[:message], "✓ AI Bütünlük Kontrolü: 6 görselin tamamı aynı gövde rengine (Mineral Gri) ve M-Sport paketine ait olarak doğrulandı. Farklı araç anomalisi yok."
+    assert_not report[:verified], "Without a Vision API result the color check must not be reported as performed"
+    assert_nil report[:message]
+    @listing.photo_analyses.each do |analysis|
+      assert_includes analysis.notes, "Heuristik mod (dosya adı tahmini)"
+      assert_not_includes analysis.notes, "AI Bütünlük Kontrolü:"
+      assert_not_includes analysis.notes, "AI Vision Studio"
+    end
 
-    # Attach an anomalous different vehicle/color photo and verify it is excluded from 3D spin sequence
+    # Attach an anomalous different vehicle/color photo and verify it is excluded from the 360° spin sequence
     @listing.photos.attach(
       io: StringIO.new("anomalous_bytes"),
       filename: "porsche_red_rear.jpg",
@@ -138,5 +144,24 @@ class ListingTest < ActiveSupport::TestCase
     anomalous_analysis = @listing.photo_analyses.order(:id).last
     assert_equal 0, anomalous_analysis.spin_order
     assert_not anomalous_analysis.is_hero_candidate?
+  end
+
+  test "validate_vehicle_consistency! writes confirmation only when a real Vision color check ran" do
+    service = VehicleVisionService.new(@listing)
+    photos = @listing.photos.to_a
+    angles = %w[front_three_quarter front side interior]
+    colors = [ "Mineral Grey", "Mineral Grey", "Red", nil ]
+
+    items = photos.each_with_index.map do |photo, i|
+      analysis = @listing.photo_analyses.build(blob_id: photo.blob_id, detected_angle: angles[i], quality_score: 90, spin_order: i < 3 ? i + 1 : 0)
+      { photo: photo, analysis: analysis, spec: { source: :llm, color: colors[i], make: "BMW" } }
+    end
+
+    report = service.validate_vehicle_consistency!(items)
+
+    assert report[:verified]
+    assert_equal 1, report[:anomaly_count]
+    assert_includes report[:message], "AI Bütünlük Kontrolü: 2 dış görselin tamamı aynı gövde rengine (Mineral Grey)"
+    assert_equal 0, items[2][:analysis].spin_order
   end
 end
